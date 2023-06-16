@@ -1,33 +1,31 @@
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import { useQuery, useQueryClient } from 'react-query'
-import { useToastContext } from '../../utils/hooks'
 
 interface Props {
     chatroomId: string
 }
-const Scoreboard: React.FC<Props> = ({ chatroomId: chatroomId }) => {
+
+const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
     const [show, setShow] = useState(true)
+    const [scores, setScores] = useState([])
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-    const { showErrorToast } = useToastContext()
 
-    const queryClient = useQueryClient()
-    const QK_SCORES = 'scoreboard'
-
-    const fetchScores = async (chatroomId: string) => {
-        return axios.get(`/api/${chatroomId}/scores`).then(({ data }) => data)
-    }
-
-    const { isLoading, error, data, isSuccess } = useQuery(
-        QK_SCORES,
-        () => fetchScores(chatroomId),
-        {
-            onError: (e) => showErrorToast(e),
+    useEffect(() => {
+        const fetchScores = async () => {
+            try {
+                const response = await axios.get(`/api/${chatroomId}/scores`)
+                setScores(response.data)
+            } catch (error) {
+                console.error(error)
+            }
         }
-    )
+
+        fetchScores()
+    }, [chatroomId])
+
     return (
         <>
             <Modal show={show} onHide={handleClose}>
@@ -35,13 +33,11 @@ const Scoreboard: React.FC<Props> = ({ chatroomId: chatroomId }) => {
                     <Modal.Title>Game End Scores</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {data &&
-                        !isLoading &&
-                        data.map((score: any, index: number) => (
-                            <p key={index}>
-                                {score.user_name}: {score.points}
-                            </p>
-                        ))}
+                    {scores.map((score, index) => (
+                        <p key={index}>
+                            {score.user_name}: {score.points}
+                        </p>
+                    ))}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

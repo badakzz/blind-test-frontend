@@ -1,58 +1,57 @@
-import { useState, FormEvent } from 'react'
-import { useRouter } from 'next/router'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser } from '../store/authSlice'
+import { RootState } from '../store'
+import { redirect } from 'react-router-dom'
 
 const Login: React.FC = () => {
-    const [identifier, setIdentifier] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [error, setError] = useState<any>(null)
+    const [error, setError] = useState<string | null>(null)
+    const dispatch = useDispatch()
+    const { isLoggedIn, loading } = useSelector(
+        (state: RootState) => state.auth
+    )
 
-    const router = useRouter()
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault()
 
-    const login = async (identifier: string, password: string) => {
-        const response = await fetch('/api/v1/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ identifier, password }),
-        })
-
-        if (response.ok) {
-            router.push('/views/home')
-        } else {
-            // Handle login errors
-            setError('Invalid credentials')
-        }
-    }
-
-    const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault()
         try {
-            await login(identifier, password)
+            await dispatch(loginUser({ email, password }) as any)
+            return redirect('/')
         } catch (error) {
-            setError(error)
+            setError('Invalid email or password')
         }
     }
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="Email or Username"
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                />
-                <button type="submit">Login</button>
+        <div>
+            <h2>Login</h2>
+            {error && <p>{error}</p>}
+            <form onSubmit={handleLogin}>
+                <div>
+                    <label>Email:</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" disabled={loading}>
+                    Login
+                </button>
             </form>
-            {error && <div className="text-danger">{error}</div>}
-        </>
+        </div>
     )
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User, ChatMessage } from '../../utils/types'
+import { User, ChatMessage } from '../utils/types'
 import { Socket } from 'socket.io-client'
 
 type Props = {

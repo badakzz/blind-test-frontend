@@ -1,28 +1,29 @@
-import React, { ReactNode, useEffect } from 'react'
-import { Navbar, Container, Nav, NavDropdown, Image } from 'react-bootstrap'
+import React from 'react'
+import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
-import { User } from '../../utils/types'
-import { useAuth } from '../hooks/useAuth'
+import { useSelector, useDispatch } from 'react-redux'
+import { RootState } from '../store'
+import { logoutUser } from '../store/authSlice'
 
 type Props = {
-    children?: ReactNode
-    title?: string
-    user?: User
+    children?: React.ReactNode
 }
 
 const Layout: React.FC<Props> = ({ children }) => {
     const navigate = useNavigate()
-    const handleLogout = async () => {
-        await fetch('/api/v1/auth/logout', {
-            method: 'POST',
-        })
-        navigate('/')
+    const dispatch = useDispatch()
 
-        // If you need to destroy the session on the client-side or navigate to another page, do it here.
-        // For example, using Router.push("/") to navigate to the home page.
+    const { token, isLoggedIn, user } = useSelector(
+        (state: RootState) => state.auth
+    )
+    console.log('user', user)
+
+    const handleLogout = async () => {
+        await dispatch(logoutUser() as any)
+        navigate('/')
     }
-    const { user, logout } = useAuth()
+
     const imagePath = `../../public/logo.png`
 
     return (
@@ -34,7 +35,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                 variant="light"
                 className="align-items-center justify-content-center text-center"
             >
-                <Navbar.Brand to="/">
+                <Navbar.Brand as={Link} to="/">
                     <Image
                         src={imagePath}
                         width="80"
@@ -44,13 +45,13 @@ const Layout: React.FC<Props> = ({ children }) => {
                     />
                     Blind Test
                 </Navbar.Brand>
-                <Nav.Link to="/">
+                <Nav.Link as={Link} to="/">
                     <FaPlayCircle className="mr-2" />
                     Play
                 </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    {user?.user_name ? (
+                    {isLoggedIn ? (
                         <Nav className="me-auto">
                             <NavDropdown
                                 title={user.user_name}
@@ -71,13 +72,17 @@ const Layout: React.FC<Props> = ({ children }) => {
                     ) : (
                         <Nav>
                             <Nav.Item>
-                                <Nav.Link to="/login" className="ml-1">
+                                <Nav.Link
+                                    as={Link}
+                                    to="/login"
+                                    className="ml-1"
+                                >
                                     Login
                                 </Nav.Link>
                             </Nav.Item>
                         </Nav>
                     )}
-                    {user && (
+                    {isLoggedIn && (
                         <Nav>
                             <FaSignOutAlt />
                             <Nav.Item>
