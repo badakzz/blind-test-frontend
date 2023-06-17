@@ -7,7 +7,7 @@ interface AuthState {
     isLoggedIn: boolean
     loading: boolean
     error: string | null
-    user: User | null // Add this field
+    user: User | null
 }
 
 const initialState: AuthState = {
@@ -19,6 +19,7 @@ const initialState: AuthState = {
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
+
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -58,7 +59,7 @@ export const logoutUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
     'auth/signupUser',
     async (
-        userData: { email: string; password: string },
+        userData: { user_name: string; email: string; password: string },
         { rejectWithValue }
     ) => {
         try {
@@ -78,7 +79,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         storeToken(state, action) {
-            state.token = action.payload
+            state.token = action.payload.token
         },
     },
     extraReducers: (builder) => {
@@ -111,3 +112,6 @@ const authSlice = createSlice({
 export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
+function dispatch(arg0: any) {
+    throw new Error('Function not implemented.')
+}

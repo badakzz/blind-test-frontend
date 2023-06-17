@@ -1,6 +1,9 @@
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
+import { createApiClient } from '../utils/helpers'
+import { useDispatch } from 'react-redux'
+import { getCSRFToken } from '../store/csrfSlice'
 
 interface Props {
     chatroomId: string
@@ -12,6 +15,14 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
+
+    const dispatch = useDispatch()
+    const apiClient = createApiClient()
+
+    // todo: check usage of csrf generation and csrf helper usage
+    useEffect(() => {
+        dispatch(getCSRFToken() as any)
+    }, [dispatch])
 
     useEffect(() => {
         const fetchScores = async () => {
@@ -25,6 +36,15 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
 
         fetchScores()
     }, [chatroomId])
+
+    // check usage
+    const postScoreBoard = async (scoreboard: any) => {
+        try {
+            const response = await apiClient.post(`/${chatroomId}/scores`)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
         <>
