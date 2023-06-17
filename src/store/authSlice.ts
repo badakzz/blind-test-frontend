@@ -18,6 +18,8 @@ const initialState: AuthState = {
     user: null,
 }
 
+const serverPort = process.env.REACT_APP_SERVER_PORT
+console.log('serverPort', serverPort)
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -25,7 +27,11 @@ export const loginUser = createAsyncThunk(
         { rejectWithValue }
     ) => {
         try {
-            const response = await axios.post('/api/auth/login', credentials)
+            // dev
+            const response = await axios.post(
+                `localhost:${serverPort}/api/auth/login`,
+                credentials
+            )
             return response.data
         } catch (error) {
             return rejectWithValue('Invalid email or password')
@@ -41,6 +47,24 @@ export const logoutUser = createAsyncThunk(
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
             return rejectWithValue('Logout failed')
+        }
+    }
+)
+
+export const signupUser = createAsyncThunk(
+    'auth/signupUser',
+    async (
+        userData: { email: string; password: string },
+        { rejectWithValue }
+    ) => {
+        try {
+            const response = await axios.post(
+                `localhost:${serverPort}/api/auth/signup`,
+                userData
+            )
+            return response.data
+        } catch (error) {
+            return rejectWithValue('Signup failed')
         }
     }
 )
@@ -66,6 +90,10 @@ const authSlice = createSlice({
                 state.error = action.payload as string
             })
             .addCase(logoutUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload as string
+            })
+            .addCase(signupUser.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string
             })

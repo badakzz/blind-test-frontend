@@ -12,13 +12,13 @@ const Home: React.FC = () => {
             </p>
             <div>
                 <Button>Play</Button>
-                <Link to="/auth/login">Not a member? Sign up now</Link>
+                <Link to="/login">Not a member? Sign up now</Link>
                 <p>
-                    Or, join a <Link to="/chat/chatroom">chat room</Link> and
-                    talk with your friends!
+                    Or, join a <Link to="/chatroom">chat room</Link> and talk
+                    with your friends!
                 </p>
                 <p>
-                    Or, join a <Link to="/auth/signup">Sign up</Link>
+                    Or, join a <Link to="/signup">Sign up</Link>
                 </p>
             </div>
         </div>

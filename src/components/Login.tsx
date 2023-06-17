@@ -12,7 +12,6 @@ const Login: React.FC = () => {
     const { isLoggedIn, loading } = useSelector(
         (state: RootState) => state.auth
     )
-
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
 

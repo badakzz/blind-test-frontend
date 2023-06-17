@@ -10,10 +10,13 @@ const Signup: React.FC = () => {
     const handleSignup = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post('/api/auth/signup', {
-                email,
-                password,
-            })
+            const response = await axios.post(
+                `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/auth/signup`,
+                {
+                    email,
+                    password,
+                }
+            )
             const { token } = response.data
             // Store the token in localStorage or a state management solution
             // Redirect the user or update the UI based on the successful signup
