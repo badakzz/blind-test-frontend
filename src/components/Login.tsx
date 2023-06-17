@@ -5,23 +5,30 @@ import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
     const dispatch = useDispatch()
     const { isLoggedIn, loading } = useSelector(
         (state: RootState) => state.auth
     )
     const navigate = useNavigate()
-
+    console.log({ email, password })
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-
+        console.log({ email, password })
         try {
-            await dispatch(loginUser({ email, password }) as any)
+            const action = await dispatch(loginUser({ email, password }) as any)
+            if (loginUser.rejected.match(action)) {
+                throw new Error(action.payload as string)
+            }
+
             navigate('/')
         } catch (error) {
-            setError('Invalid email or password')
+            setError(`Error occurred during login: ${error.message}`)
+            // If the login fails, reset the form fields and do not navigate to the home page
+            setEmail('')
+            setPassword('')
         }
     }
 

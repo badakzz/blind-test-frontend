@@ -25,15 +25,18 @@ export const loginUser = createAsyncThunk(
         credentials: { email: string; password: string },
         { rejectWithValue }
     ) => {
+        console.log('login')
         try {
-            // dev
+            // todo: add config for dev / prod
             const response = await axios.post(
-                `localhost:${serverPort}/api/auth/login`,
-                credentials
+                `http://localhost:${serverPort}/api/auth/login`,
+                credentials,
+                { withCredentials: true }
             )
             return response.data
         } catch (error) {
-            return rejectWithValue('Invalid email or password')
+            console.log('throw')
+            throw rejectWithValue('Invalid email or password')
         }
     }
 )
@@ -42,7 +45,9 @@ export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
     async (_, { rejectWithValue }) => {
         try {
-            await axios.post('/api/auth/logout')
+            await axios.post(`http://localhost:${serverPort}/api/auth/logout`, {
+                withCredentials: true,
+            })
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
             return rejectWithValue('Logout failed')
