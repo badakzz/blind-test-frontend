@@ -14,7 +14,7 @@ const SpotifyCallback = () => {
             // After successfully getting the access token, you can store it and redirect the user to the desired page
 
             // Example code to redirect to the desired page
-            navigate('/desired-page')
+            navigate('/')
         }
     }, [navigate])
 

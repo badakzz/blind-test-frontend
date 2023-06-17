@@ -19,7 +19,6 @@ const initialState: AuthState = {
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
-console.log('serverPort', serverPort)
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -72,7 +71,11 @@ export const signupUser = createAsyncThunk(
 const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {},
+    reducers: {
+        storeToken(state, action) {
+            state.token = action.payload
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(loginUser.pending, (state) => {

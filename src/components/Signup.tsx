@@ -1,12 +1,18 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { authActions } from '../store/authSlice'
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+
+    const dispatch = useDispatch()
+    const storeToken = (token) => dispatch(authActions.storeToken(token))
+    const navigate = useNavigate()
 
     const handleSignup = async (e) => {
         e.preventDefault()
@@ -21,8 +27,8 @@ const Signup: React.FC = () => {
                 { withCredentials: true }
             )
             const { token } = response.data
-            // Store the token in localStorage or a state management solution
-            // Redirect the user or update the UI based on the successful signup
+            storeToken(token) // Dispatch the action to store the token in Redux state
+            navigate('/')
         } catch (error) {
             setError(
                 `Error occurred during signup: ${error.response.data.error}`

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser } from '../store/authSlice'
 import { RootState } from '../store'
-import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
@@ -12,12 +12,14 @@ const Login: React.FC = () => {
     const { isLoggedIn, loading } = useSelector(
         (state: RootState) => state.auth
     )
+    const navigate = useNavigate()
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
 
         try {
             await dispatch(loginUser({ email, password }) as any)
-            return redirect('/')
+            navigate('/')
         } catch (error) {
             setError('Invalid email or password')
         }
