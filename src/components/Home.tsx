@@ -1,22 +1,5 @@
-import Link from 'next/link'
 import { Button } from 'react-bootstrap'
-import { GetServerSideProps } from 'next'
-// import { withIronSession } from 'next-iron-session'
-// import { IRON_SESSION_CONFIG } from '../../../utils/helpers'
-import { useSession } from 'next-auth/react'
-
-// export const getServerSideProps: GetServerSideProps = withIronSession(
-//     async ({ req }) => {
-//         const session = req.session.get('user')
-
-//         return {
-//             props: {
-//                 user: session || null,
-//             },
-//         }
-//     },
-//     IRON_SESSION_CONFIG
-// )
+import { Link } from 'react-router-dom'
 
 const Home: React.FC = () => {
     return (
@@ -29,13 +12,13 @@ const Home: React.FC = () => {
             </p>
             <div>
                 <Button>Play</Button>
-                <Link href="auth/login">Not a member? Sign up now</Link>
+                <Link to="/login">Not a member? Sign up now</Link>
                 <p>
-                    Or, join a <Link href="chat/chatroom">chat room</Link> and
-                    talk with your friends!
+                    Or, join a <Link to="/chatroom">chat room</Link> and talk
+                    with your friends!
                 </p>
                 <p>
-                    Or, join a <Link href="auth/signup">Sign up</Link>
+                    Or, join a <Link to="/signup">Sign up</Link>
                 </p>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { User } from '../../utils/types'
+import { User } from '../utils/types'
 
 type Props = {
     user: User | null
