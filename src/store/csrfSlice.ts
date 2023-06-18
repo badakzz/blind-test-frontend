@@ -2,19 +2,19 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 interface CSRFState {
-    token: string | null
+    csrfToken: string | null
     loading: boolean
     error: string | null
 }
 
 const initialState: CSRFState = {
-    token: null,
+    csrfToken: null,
     loading: false,
     error: null,
 }
 
 export const getCSRFToken = createAsyncThunk(
-    'auth/getCSRFToken',
+    'csrf/getCSRFToken',
     async (_, thunkAPI) => {
         try {
             const response = await axios.get(
@@ -40,7 +40,7 @@ const csrfSlice = createSlice({
             })
             .addCase(getCSRFToken.fulfilled, (state, action) => {
                 state.loading = false
-                state.token = action.payload
+                state.csrfToken = action.payload
             })
             .addCase(getCSRFToken.rejected, (state, action) => {
                 state.loading = false
@@ -49,7 +49,7 @@ const csrfSlice = createSlice({
     },
 })
 
-export const { actions: authActions } = csrfSlice
+export const { actions: csrfActions } = csrfSlice
 
 export default csrfSlice.reducer
 function dispatch(arg0: any) {
