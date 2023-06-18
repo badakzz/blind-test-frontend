@@ -1,7 +1,7 @@
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import { createApiClient } from '../utils/helpers'
+import { useApiClient } from '../utils/hooks/useApiClient'
 import { useDispatch } from 'react-redux'
 import { getCSRFToken } from '../store/csrfSlice'
 
@@ -17,17 +17,19 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
     const handleShow = () => setShow(true)
 
     const dispatch = useDispatch()
-    const apiClient = createApiClient()
+    const apiClient = useApiClient()
 
     // todo: check usage of csrf generation and csrf helper usage
-    useEffect(() => {
-        dispatch(getCSRFToken() as any)
-    }, [dispatch])
+    // useEffect(() => {
+    //     dispatch(getCSRFToken() as any)
+    // }, [dispatch])
 
     useEffect(() => {
         const fetchScores = async () => {
             try {
-                const response = await axios.get(`/api/${chatroomId}/scores`)
+                const response = await axios.get(
+                    `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
+                )
                 setScores(response.data)
             } catch (error) {
                 console.error(error)
@@ -46,6 +48,14 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
         }
     }
 
+    const test = () => {
+        postScoreBoard({
+            chatroomId: 'liunu2qx0.8ac6pz8ylwh',
+            user_id: 1,
+            points: 1,
+        })
+    }
+
     return (
         <>
             <Modal show={show} onHide={handleClose}>
@@ -62,6 +72,9 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Close
+                    </Button>
+                    <Button variant="secondary" onClick={test}>
+                        Test
                     </Button>
                 </Modal.Footer>
             </Modal>
