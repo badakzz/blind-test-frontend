@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { authActions } from '../store/authSlice'
+import { signupUser } from '../store/authSlice'
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('')
@@ -11,28 +10,44 @@ const Signup: React.FC = () => {
     const [error, setError] = useState('')
 
     const dispatch = useDispatch()
-    const storeToken = (token) => dispatch(authActions.storeToken(token))
     const navigate = useNavigate()
 
-    const handleSignup = async (e) => {
+    // const handleSignupOld = async (e) => {
+    //     e.preventDefault()
+    //     try {
+    //         const response = await apiClient.post(
+    //             `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/auth/signup`,
+    //             {
+    //                 user_name: username,
+    //                 email,
+    //                 password,
+    //             },
+    //             { withCredentials: true }
+    //         )
+    //         const { token } = response.data
+    //         storeToken(token) // Dispatch the action to store the token in Redux state
+    //         navigate('/')
+    //     } catch (error) {
+    //         setError(
+    //             `Error occurred during signup: ${error.response.data.error}`
+    //         )
+    //         console.error(error)
+    //     }
+    // }
+
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            const response = await axios.post(
-                `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/auth/signup`,
-                {
-                    user_name: username,
-                    email,
-                    password,
-                },
-                { withCredentials: true }
+            const action = await dispatch(
+                signupUser({ user_name: username, email, password }) as any
             )
-            const { token } = response.data
-            storeToken(token) // Dispatch the action to store the token in Redux state
+            if (signupUser.rejected.match(action)) {
+                throw new Error(action.payload as string)
+            }
+
             navigate('/')
         } catch (error) {
-            setError(
-                `Error occurred during signup: ${error.response.data.error}`
-            )
+            setError(`Error occurred during signup: ${error.message}`)
             console.error(error)
         }
     }
@@ -76,3 +91,6 @@ const Signup: React.FC = () => {
 }
 
 export default Signup
+function dispatch(arg0: any) {
+    throw new Error('Function not implemented.')
+}

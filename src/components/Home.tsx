@@ -1,7 +1,37 @@
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCSRFToken } from '../store/csrfSlice'
+import { useApiClient } from '../utils/hooks/useApiClient'
+import { useEffect } from 'react'
 
 const Home: React.FC = () => {
+    const dispatch = useDispatch()
+    const csrfToken = useSelector((state: any) => state.csrf.token)
+    const apiClient = useApiClient()
+
+    const putScoreBoard = async (scoreboard: any) => {
+        try {
+            const response = await apiClient.put('/scoreboards', scoreboard) // Use the correct endpoint
+            // Process the response if needed
+            console.log(response)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const test = () => {
+        putScoreBoard({
+            chatroom_id: 'liunu2qx0.8ac6pz8ylwh',
+            user_id: 1,
+            points: 1,
+        })
+    }
+
+    useEffect(() => {
+        dispatch(getCSRFToken() as any)
+    }, [dispatch])
+
     return (
         <div>
             <h1>Play Blind-Test with your friends using Spotify playlist!</h1>
@@ -21,6 +51,7 @@ const Home: React.FC = () => {
                     Or, join a <Link to="/signup">Sign up</Link>
                 </p>
             </div>
+            <Button onClick={test}>Click</Button>
         </div>
     )
 }

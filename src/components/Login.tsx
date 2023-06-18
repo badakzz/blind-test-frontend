@@ -13,10 +13,8 @@ const Login: React.FC = () => {
         (state: RootState) => state.auth
     )
     const navigate = useNavigate()
-    console.log({ email, password })
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        console.log({ email, password })
         try {
             const action = await dispatch(loginUser({ email, password }) as any)
             if (loginUser.rejected.match(action)) {
