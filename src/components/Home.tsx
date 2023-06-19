@@ -1,23 +1,23 @@
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { getCSRFToken } from '../store/csrfSlice'
-import { useApiClient } from '../utils/hooks/useApiClient'
-import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
+import axios from 'axios'
 
 const Home: React.FC = () => {
-    const dispatch = useDispatch()
-    const csrfToken = useSelector((state: any) => state.csrf.token)
-    const apiClient = useApiClient()
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const putScoreBoard = async (scoreboard: any) => {
-        try {
-            const response = await apiClient.put('/scoreboards', scoreboard) // Use the correct endpoint
-            // Process the response if needed
-            console.log(response)
-        } catch (error) {
-            console.error(error)
-        }
+        const response = await axios.put(
+            'http://localhost:3002/api/v1/scoreboards',
+            scoreboard,
+            {
+                withCredentials: true,
+                headers: {
+                    'X-CSRF-Token': csrfToken, // Include the CSRF token in the request headers
+                },
+            }
+        )
     }
 
     const test = () => {
@@ -27,10 +27,6 @@ const Home: React.FC = () => {
             points: 1,
         })
     }
-
-    useEffect(() => {
-        dispatch(getCSRFToken() as any)
-    }, [dispatch])
 
     return (
         <div>

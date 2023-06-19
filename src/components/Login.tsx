@@ -13,6 +13,7 @@ const Login: React.FC = () => {
         (state: RootState) => state.auth
     )
     const navigate = useNavigate()
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
@@ -24,7 +25,6 @@ const Login: React.FC = () => {
             navigate('/')
         } catch (error) {
             setError(`Error occurred during login: ${error.message}`)
-            // If the login fails, reset the form fields and do not navigate to the home page
             setEmail('')
             setPassword('')
         }
