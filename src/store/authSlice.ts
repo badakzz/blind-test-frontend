@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { User } from '../utils/types'
+import { getCSRFToken } from './csrfSlice'
 
 interface AuthState {
     token: string | null
@@ -24,19 +25,17 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
         credentials: { email: string; password: string },
-        { rejectWithValue }
+        { dispatch, rejectWithValue }
     ) => {
-        console.log('login')
         try {
-            // todo: add config for dev / prod
+            await dispatch(getCSRFToken()) // Fetch the CSRF token before login
             const response = await axios.post(
-                `http://localhost:${serverPort}/api/auth/login`,
+                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
                 { withCredentials: true }
             )
             return response.data
         } catch (error) {
-            console.log('throw')
             throw rejectWithValue('Invalid email or password')
         }
     }
@@ -46,9 +45,12 @@ export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
     async (_, { rejectWithValue }) => {
         try {
-            await axios.post(`http://localhost:${serverPort}/api/auth/logout`, {
-                withCredentials: true,
-            })
+            await axios.post(
+                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/logout`,
+                {
+                    withCredentials: true,
+                }
+            )
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
             return rejectWithValue('Logout failed')
@@ -64,8 +66,9 @@ export const signupUser = createAsyncThunk(
     ) => {
         try {
             const response = await axios.post(
-                `localhost:${serverPort}/api/auth/signup`,
-                userData
+                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/signup`,
+                userData,
+                { withCredentials: true }
             )
             return response.data
         } catch (error) {

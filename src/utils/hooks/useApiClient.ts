@@ -1,19 +1,23 @@
 import axios from 'axios'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../store'
+import { getCSRFToken } from '../../store/csrfSlice'
 
 export const useApiClient = () => {
     const apiClient = axios.create({
-        baseURL: `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/v1`,
+        baseURL: `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1`,
         withCredentials: true,
     })
 
     const { csrfToken } = useSelector((state: RootState) => state.csrf)
-    console.log('token', csrfToken)
+    const dispatch = useDispatch()
+
+    if (!csrfToken) {
+        dispatch(getCSRFToken() as any)
+    }
 
     apiClient.interceptors.request.use((config) => {
         const url = config.baseURL + config.url // Get the complete URL
-        console.log('Request URL:', url)
         config.headers['X-CSRF-TOKEN'] = csrfToken
         return config
     })

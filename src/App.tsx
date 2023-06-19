@@ -1,4 +1,3 @@
-import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Home, Login, Signup } from './components'
 import { Layout } from './components'

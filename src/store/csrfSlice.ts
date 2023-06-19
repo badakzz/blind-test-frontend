@@ -16,12 +16,20 @@ const initialState: CSRFState = {
 export const getCSRFToken = createAsyncThunk(
     'csrf/getCSRFToken',
     async (_, thunkAPI) => {
+        //@ts-ignore
+        const { csrfToken } = thunkAPI.getState().csrf
+        if (csrfToken) {
+            // CSRF token already exists, no need to fetch it again
+            return csrfToken
+        }
         try {
             const response = await axios.get(
-                `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
+                `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
                 { withCredentials: true }
             )
-            return response.data.csrfToken
+            const token = response.data.csrfToken
+            thunkAPI.dispatch(csrfActions.storeCSRFToken(token))
+            return token
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to retrieve CSRF token')
         }
@@ -31,16 +39,17 @@ export const getCSRFToken = createAsyncThunk(
 const csrfSlice = createSlice({
     name: 'csrf',
     initialState,
-    reducers: {},
+    reducers: {
+        storeCSRFToken(state, action) {
+            state.csrfToken = action.payload
+        },
+    },
     extraReducers: (builder) => {
         builder
-            .addCase(getCSRFToken.pending, (state) => {
-                state.loading = true
-                state.error = null
-            })
             .addCase(getCSRFToken.fulfilled, (state, action) => {
-                state.loading = false
                 state.csrfToken = action.payload
+                state.loading = false
+                state.error = null
             })
             .addCase(getCSRFToken.rejected, (state, action) => {
                 state.loading = false
@@ -52,6 +61,3 @@ const csrfSlice = createSlice({
 export const { actions: csrfActions } = csrfSlice
 
 export default csrfSlice.reducer
-function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
-}

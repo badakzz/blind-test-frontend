@@ -1,9 +1,6 @@
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
-import { useApiClient } from '../utils/hooks/useApiClient'
-import { useDispatch } from 'react-redux'
-import { getCSRFToken } from '../store/csrfSlice'
 
 interface Props {
     chatroomId: string
@@ -16,19 +13,11 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
 
-    const dispatch = useDispatch()
-    const apiClient = useApiClient()
-
-    // todo: check usage of csrf generation and csrf helper usage
-    // useEffect(() => {
-    //     dispatch(getCSRFToken() as any)
-    // }, [dispatch])
-
     useEffect(() => {
         const fetchScores = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
+                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
                 )
                 setScores(response.data)
             } catch (error) {
@@ -38,23 +27,6 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
 
         fetchScores()
     }, [chatroomId])
-
-    // check usage
-    const postScoreBoard = async (scoreboard: any) => {
-        try {
-            const response = await apiClient.post(`/${chatroomId}/scores`)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const test = () => {
-        postScoreBoard({
-            chatroomId: 'liunu2qx0.8ac6pz8ylwh',
-            user_id: 1,
-            points: 1,
-        })
-    }
 
     return (
         <>
@@ -73,9 +45,9 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="secondary" onClick={test}>
+                    {/* <Button variant="secondary" onClick={test}>
                         Test
-                    </Button>
+                    </Button> */}
                 </Modal.Footer>
             </Modal>
         </>

@@ -17,7 +17,6 @@ const Layout: React.FC<Props> = ({ children }) => {
     const { token, isLoggedIn, user } = useSelector(
         (state: RootState) => state.auth
     )
-    console.log('user', user)
 
     const handleLogout = async () => {
         await dispatch(logoutUser() as any)
