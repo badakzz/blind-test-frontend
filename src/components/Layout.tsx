@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
-import { logoutUser } from '../store/authSlice'
+import { authActions, loginUser, logoutUser } from '../store/authSlice'
 
 type Props = {
     children?: React.ReactNode
@@ -19,8 +19,12 @@ const Layout: React.FC<Props> = ({ children }) => {
     )
 
     const handleLogout = async () => {
-        await dispatch(logoutUser() as any)
-        navigate('/')
+        try {
+            await dispatch(logoutUser() as any)
+            navigate('/')
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const imagePath = `../../public/logo.png`
