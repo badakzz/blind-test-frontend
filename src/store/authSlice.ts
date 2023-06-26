@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { User } from '../utils/types'
 import { getCSRFToken } from './csrfSlice'
+import Cookies from 'js-cookie'
 
 interface AuthState {
     token: string | null
@@ -34,6 +35,11 @@ export const loginUser = createAsyncThunk(
                 credentials,
                 { withCredentials: true }
             )
+            const { token } = response.data
+            Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+                expires: 7,
+            }) // Add expiration for security
+            dispatch(authActions.storeToken({ token }))
             return response.data
         } catch (error) {
             throw rejectWithValue('Invalid email or password')

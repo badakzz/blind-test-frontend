@@ -4,19 +4,18 @@ import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
-import { authActions, loginUser, logoutUser } from '../store/authSlice'
+import { logoutUser } from '../store/authSlice'
+import { User } from '../utils/types'
+import Cookies from 'js-cookie'
 
 type Props = {
+    user: User
     children?: React.ReactNode
 }
 
-const Layout: React.FC<Props> = ({ children }) => {
+const Layout: React.FC<Props> = ({ user, children }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
-    const { token, isLoggedIn, user } = useSelector(
-        (state: RootState) => state.auth
-    )
 
     const handleLogout = async () => {
         try {
@@ -54,7 +53,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                 </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    {isLoggedIn ? (
+                    {user ? (
                         <Nav className="me-auto">
                             <NavDropdown
                                 title={user.user_name}
@@ -85,7 +84,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </Nav.Item>
                         </Nav>
                     )}
-                    {isLoggedIn && (
+                    {user && (
                         <Nav>
                             <FaSignOutAlt />
                             <Nav.Item>

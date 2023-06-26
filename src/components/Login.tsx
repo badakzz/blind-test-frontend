@@ -4,7 +4,9 @@ import { loginUser } from '../store/authSlice'
 import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
 
-const Login: React.FC = () => {
+const Login: React.FC<{
+    setUser: (user: { email: string; password: string }) => void
+}> = ({ setUser }) => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [error, setError] = useState<string | null>(null)
@@ -21,7 +23,7 @@ const Login: React.FC = () => {
             if (loginUser.rejected.match(action)) {
                 throw new Error(action.payload as string)
             }
-
+            setUser({ email, password })
             navigate('/')
         } catch (error) {
             setError(`Error occurred during login: ${error.message}`)
