@@ -5,8 +5,8 @@ import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
 
 const Login: React.FC = () => {
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
     const dispatch = useDispatch()
     const { isLoggedIn, loading } = useSelector(
@@ -17,11 +17,8 @@ const Login: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            const action = await dispatch(loginUser({ email, password }) as any)
-            if (loginUser.rejected.match(action)) {
-                throw new Error(action.payload as string)
-            }
-
+            const credentials = { email, password }
+            await dispatch(loginUser(credentials) as any)
             navigate('/')
         } catch (error) {
             setError(`Error occurred during login: ${error.message}`)

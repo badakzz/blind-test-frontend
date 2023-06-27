@@ -1,26 +1,48 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
-import { logoutUser } from '../store/authSlice'
+import { authActions, logoutUser } from '../store/authSlice'
+import { User } from '../utils/types'
+import Cookies from 'js-cookie'
+import userEvent from '@testing-library/user-event'
+import { AuthState } from '../store/authSlice'
 
 type Props = {
     children?: React.ReactNode
 }
 
 const Layout: React.FC<Props> = ({ children }) => {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
+    useEffect(() => {
+        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
+        if (token) {
+            dispatch(authActions.storeToken({ token }))
+        }
 
-    const { token, isLoggedIn, user } = useSelector(
-        (state: RootState) => state.auth
-    )
+        // Load user data from localStorage
+        let user = localStorage.getItem('user')
+        if (user) {
+            user = JSON.parse(user)
+            dispatch(authActions.setUser(user))
+        }
+        console.log(user) // move the log here
+    }, [dispatch])
+    const user = useSelector((state: RootState) => state.auth) as AuthState
+
+    const navigate = useNavigate()
 
     const handleLogout = async () => {
-        await dispatch(logoutUser() as any)
-        navigate('/')
+        try {
+            await dispatch(logoutUser() as any)
+            Cookies.remove(process.env.REACT_APP_JWT_COOKIE_NAME) // Remove JWT cookie
+            localStorage.removeItem('user') // Remove user from local storage
+            navigate('/')
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const imagePath = `../../public/logo.png`
@@ -50,10 +72,11 @@ const Layout: React.FC<Props> = ({ children }) => {
                 </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    {isLoggedIn ? (
+                    {user ? (
                         <Nav className="me-auto">
                             <NavDropdown
-                                title={user.user_name}
+                                // title={user?.user_name}
+                                title="xd"
                                 id="collasible-nav-dropdown"
                             >
                                 <NavDropdown.Item to="#action/3.1">
@@ -81,7 +104,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </Nav.Item>
                         </Nav>
                     )}
-                    {isLoggedIn && (
+                    {user && (
                         <Nav>
                             <FaSignOutAlt />
                             <Nav.Item>

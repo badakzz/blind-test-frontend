@@ -2,8 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { User } from '../utils/types'
 import { getCSRFToken } from './csrfSlice'
+import Cookies from 'js-cookie'
 
-interface AuthState {
+export interface AuthState {
     token: string | null
     isLoggedIn: boolean
     loading: boolean
@@ -34,6 +35,16 @@ export const loginUser = createAsyncThunk(
                 credentials,
                 { withCredentials: true }
             )
+            const { token, user } = response.data
+            Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
+                expires: 7,
+            }) // Add expiration for security
+            dispatch(authActions.storeToken({ token }))
+            dispatch(authActions.setUser(user)) // This is a new action you need to define in your slice
+
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify(user))
+
             return response.data
         } catch (error) {
             throw rejectWithValue('Invalid email or password')
@@ -84,6 +95,9 @@ const authSlice = createSlice({
         storeToken(state, action) {
             state.token = action.payload.token
         },
+        setUser(state, action) {
+            state.user = action.payload.user // or just action.payload depending on how your data is structured
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -100,6 +114,12 @@ const authSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string
+            })
+            .addCase(logoutUser.fulfilled, (state, action) => {
+                state.loading = false
+                state.token = null
+                state.isLoggedIn = false
+                state.user = null
             })
             .addCase(logoutUser.rejected, (state, action) => {
                 state.loading = false
