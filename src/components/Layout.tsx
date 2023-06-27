@@ -4,22 +4,41 @@ import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
-import { logoutUser } from '../store/authSlice'
+import { authActions, logoutUser } from '../store/authSlice'
 import { User } from '../utils/types'
 import Cookies from 'js-cookie'
+import userEvent from '@testing-library/user-event'
+import { AuthState } from '../store/authSlice'
 
 type Props = {
-    user: User
     children?: React.ReactNode
 }
 
-const Layout: React.FC<Props> = ({ user, children }) => {
-    const navigate = useNavigate()
+const Layout: React.FC<Props> = ({ children }) => {
     const dispatch = useDispatch()
+    useEffect(() => {
+        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
+        if (token) {
+            dispatch(authActions.storeToken({ token }))
+        }
+
+        // Load user data from localStorage
+        let user = localStorage.getItem('user')
+        if (user) {
+            user = JSON.parse(user)
+            dispatch(authActions.setUser(user))
+        }
+        console.log(user) // move the log here
+    }, [dispatch])
+    const user = useSelector((state: RootState) => state.auth) as AuthState
+
+    const navigate = useNavigate()
 
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser() as any)
+            Cookies.remove(process.env.REACT_APP_JWT_COOKIE_NAME) // Remove JWT cookie
+            localStorage.removeItem('user') // Remove user from local storage
             navigate('/')
         } catch (error) {
             console.error(error)
@@ -56,7 +75,8 @@ const Layout: React.FC<Props> = ({ user, children }) => {
                     {user ? (
                         <Nav className="me-auto">
                             <NavDropdown
-                                title={user.user_name}
+                                // title={user?.user_name}
+                                title="xd"
                                 id="collasible-nav-dropdown"
                             >
                                 <NavDropdown.Item to="#action/3.1">
