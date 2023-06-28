@@ -72,11 +72,10 @@ const Layout: React.FC<Props> = ({ children }) => {
                 </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    {user ? (
+                    {user?.user ? (
                         <Nav className="me-auto">
                             <NavDropdown
-                                // title={user?.user_name}
-                                title="xd"
+                                title={user?.user.user_name}
                                 id="collasible-nav-dropdown"
                             >
                                 <NavDropdown.Item to="#action/3.1">
@@ -104,7 +103,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </Nav.Item>
                         </Nav>
                     )}
-                    {user && (
+                    {user.user && (
                         <Nav>
                             <FaSignOutAlt />
                             <Nav.Item>

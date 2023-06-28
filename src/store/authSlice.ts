@@ -29,7 +29,6 @@ export const loginUser = createAsyncThunk(
         { dispatch, rejectWithValue }
     ) => {
         try {
-            await dispatch(getCSRFToken()) // Fetch the CSRF token before login
             const response = await axios.post(
                 `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
