@@ -12,7 +12,6 @@ const App: React.FC = () => {
     useEffect(() => {
         const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
         if (token) {
-            console.log('app set token', token)
             dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])

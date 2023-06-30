@@ -2,7 +2,6 @@ import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { useApiClient } from '../utils/hooks/useApiClient'
 import axios from 'axios'
 
 const Home: React.FC = () => {
@@ -11,7 +10,7 @@ const Home: React.FC = () => {
 
     const putScoreBoard = async (scoreboard: any) => {
         await axios.put(
-            'http://localhost:3002/api/v1/scoreboards',
+            `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scoreboards`,
             scoreboard,
             {
                 withCredentials: true,
