@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { User } from '../utils/types'
-import { getCSRFToken } from './csrfSlice'
 import Cookies from 'js-cookie'
 
 export interface AuthState {
@@ -10,6 +9,7 @@ export interface AuthState {
     loading: boolean
     error: string | null
     user: User | null
+    csrfToken: string
 }
 
 const initialState: AuthState = {
@@ -18,6 +18,7 @@ const initialState: AuthState = {
     loading: false,
     error: null,
     user: null,
+    csrfToken: null,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
@@ -29,7 +30,6 @@ export const loginUser = createAsyncThunk(
         { dispatch, rejectWithValue }
     ) => {
         try {
-            await dispatch(getCSRFToken()) // Fetch the CSRF token before login
             const response = await axios.post(
                 `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
@@ -40,11 +40,20 @@ export const loginUser = createAsyncThunk(
                 expires: 7,
             }) // Add expiration for security
             dispatch(authActions.storeToken({ token }))
-            dispatch(authActions.setUser(user)) // This is a new action you need to define in your slice
+            dispatch(authActions.setUser(user))
 
             // Store user data in localStorage
             localStorage.setItem('user', JSON.stringify(user))
-
+            if (response.status === 200) {
+                const csrfResponse = await axios.get(
+                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
+                    { withCredentials: true }
+                )
+                return {
+                    user: response.data,
+                    csrfToken: csrfResponse.data.csrfToken,
+                }
+            }
             return response.data
         } catch (error) {
             throw rejectWithValue('Invalid email or password')
@@ -96,7 +105,10 @@ const authSlice = createSlice({
             state.token = action.payload.token
         },
         setUser(state, action) {
-            state.user = action.payload.user // or just action.payload depending on how your data is structured
+            state.user = action.payload
+        },
+        setLoggedIn(state, action) {
+            state.isLoggedIn = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -107,9 +119,10 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false
-                state.token = action.payload
+                state.token = action.payload.user.token // store only the JWT token string
                 state.isLoggedIn = true
                 state.user = action.payload.user
+                state.csrfToken = action.payload.csrfToken
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false

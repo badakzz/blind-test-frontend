@@ -2,23 +2,25 @@ import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { useApiClient } from '../utils/hooks/useApiClient'
 import axios from 'axios'
 
 const Home: React.FC = () => {
-    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const jwtToken = useSelector((state: RootState) => state.auth.token)
-    console.log('csrftoken', csrfToken)
-    console.log('jwtToken', jwtToken)
-    const apiClient = useApiClient()
+    const csrfToken = useSelector((state: RootState) => state.auth.csrfToken)
+
     const putScoreBoard = async (scoreboard: any) => {
-        const response = await apiClient.put('/scoreboards', scoreboard, {
-            withCredentials: true,
-            headers: {
-                'X-CSRF-Token': csrfToken, // Include the CSRF jwtToken in the request headers
-                Authorization: `Bearer ${jwtToken}`, // Include the JWT jwtToken in the Authorization header
-            },
-        })
+        await axios.put(
+            `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scoreboards`,
+            scoreboard,
+            {
+                withCredentials: true,
+                headers: {
+                    //@ts-ignore
+                    Authorization: `Bearer ${jwtToken}`,
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+            }
+        )
     }
 
     const test = () => {

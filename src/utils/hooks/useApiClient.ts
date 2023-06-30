@@ -1,22 +1,16 @@
 import axios from 'axios'
-import { useMemo, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { RootState } from '../../store'
-import { csrfActions, getCSRFToken } from '../../store/csrfSlice'
 
 export const useApiClient = () => {
-    const { csrfToken } = useSelector((state: RootState) => state.csrf)
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const apiClient = axios.create({
         baseURL: `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1`,
         withCredentials: true,
-    })
-
-    apiClient.interceptors.request.use((config) => {
-        if (csrfToken) {
-            config.headers['X-CSRF-TOKEN'] = csrfToken
-        }
-        return config
+        xsrfHeaderName: 'X-CSRF-TOKEN',
+        xsrfCookieName: process.env.REACT_APP_CSRF_COOKIE_NAME,
+        headers: { 'X-CSRF-TOKEN': csrfToken },
     })
 
     return apiClient
