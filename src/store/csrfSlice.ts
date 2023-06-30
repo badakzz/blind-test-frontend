@@ -5,23 +5,25 @@ interface CSRFState {
     loading: boolean
     error: string | null
     fetchInProgress: boolean
+    csrfToken: string
 }
 
 const initialState: CSRFState = {
     loading: false,
     error: null,
     fetchInProgress: false,
+    csrfToken: null,
 }
 
 export const getCSRFToken = createAsyncThunk(
     'csrf/getCSRFToken',
     async (_, thunkAPI) => {
         try {
-            await axios.get(
+            const response = await axios.get(
                 `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
                 { withCredentials: true }
             )
-            return
+            return response.data.csrfToken
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to retrieve CSRF token')
         }
@@ -37,10 +39,11 @@ const csrfSlice = createSlice({
             .addCase(getCSRFToken.pending, (state) => {
                 state.fetchInProgress = true
             })
-            .addCase(getCSRFToken.fulfilled, (state) => {
+            .addCase(getCSRFToken.fulfilled, (state, action) => {
                 state.loading = false
                 state.error = null
                 state.fetchInProgress = false
+                state.csrfToken = action.payload
             })
             .addCase(getCSRFToken.rejected, (state, action) => {
                 state.loading = false

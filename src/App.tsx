@@ -10,15 +10,16 @@ import { getCSRFToken } from './store/csrfSlice'
 const App: React.FC = () => {
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        dispatch(getCSRFToken() as any)
-    }, [dispatch])
-    useEffect(() => {
-        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
-        }
-    }, [dispatch])
+    // useEffect(() => {
+    //     dispatch(getCSRFToken() as any)
+    // }, [dispatch])
+
+    // useEffect(() => {
+    //     const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
+    //     if (token) {
+    //         dispatch(authActions.storeToken({ token }))
+    //     }
+    // }, [dispatch])
 
     return (
         <Layout>

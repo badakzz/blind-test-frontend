@@ -28,7 +28,7 @@ const Layout: React.FC<Props> = ({ children }) => {
             user = JSON.parse(user)
             dispatch(authActions.setUser(user))
         }
-        console.log(user) // move the log here
+        // console.log(user) // move the log here
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
 

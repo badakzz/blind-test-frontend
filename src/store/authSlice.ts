@@ -10,6 +10,7 @@ export interface AuthState {
     loading: boolean
     error: string | null
     user: User | null
+    csrfToken: string
 }
 
 const initialState: AuthState = {
@@ -18,6 +19,7 @@ const initialState: AuthState = {
     loading: false,
     error: null,
     user: null,
+    csrfToken: null,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
@@ -43,7 +45,16 @@ export const loginUser = createAsyncThunk(
 
             // Store user data in localStorage
             localStorage.setItem('user', JSON.stringify(user))
-
+            if (response.status === 200) {
+                const csrfResponse = await axios.get(
+                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
+                    { withCredentials: true }
+                )
+                return {
+                    user: response.data,
+                    csrfToken: csrfResponse.data.csrfToken,
+                }
+            }
             return response.data
         } catch (error) {
             throw rejectWithValue('Invalid email or password')
@@ -105,10 +116,12 @@ const authSlice = createSlice({
                 state.error = null
             })
             .addCase(loginUser.fulfilled, (state, action) => {
+                console.log('payload', action.payload) // add this line
                 state.loading = false
-                state.token = action.payload
+                state.token = action.payload.user.token // store only the JWT token string
                 state.isLoggedIn = true
                 state.user = action.payload.user
+                state.csrfToken = action.payload.csrfToken
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false
