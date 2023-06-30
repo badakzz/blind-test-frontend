@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { User } from '../utils/types'
-import { getCSRFToken } from './csrfSlice'
 import Cookies from 'js-cookie'
 
 export interface AuthState {
@@ -41,7 +40,7 @@ export const loginUser = createAsyncThunk(
                 expires: 7,
             }) // Add expiration for security
             dispatch(authActions.storeToken({ token }))
-            dispatch(authActions.setUser(user)) // This is a new action you need to define in your slice
+            dispatch(authActions.setUser(user))
 
             // Store user data in localStorage
             localStorage.setItem('user', JSON.stringify(user))
@@ -106,7 +105,10 @@ const authSlice = createSlice({
             state.token = action.payload.token
         },
         setUser(state, action) {
-            state.user = action.payload.user // or just action.payload depending on how your data is structured
+            state.user = action.payload
+        },
+        setLoggedIn(state, action) {
+            state.isLoggedIn = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -116,7 +118,6 @@ const authSlice = createSlice({
                 state.error = null
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-                console.log('payload', action.payload) // add this line
                 state.loading = false
                 state.token = action.payload.user.token // store only the JWT token string
                 state.isLoggedIn = true
