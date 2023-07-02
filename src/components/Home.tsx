@@ -6,11 +6,11 @@ import axios from 'axios'
 
 const Home: React.FC = () => {
     const jwtToken = useSelector((state: RootState) => state.auth.token)
-    const csrfToken = useSelector((state: RootState) => state.auth.csrfToken)
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const putScoreBoard = async (scoreboard: any) => {
         await axios.put(
-            `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scoreboards`,
+            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scoreboards`,
             scoreboard,
             {
                 withCredentials: true,

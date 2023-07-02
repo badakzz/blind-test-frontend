@@ -1,6 +1,6 @@
 // components/PlaylistSelectionModal.tsx
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { getAvailableGenres, getPlaylistsByGenre } from '../spotify'
 
 interface PlaylistSelectionModalProps {
     show: boolean
@@ -18,19 +18,26 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
 
     useEffect(() => {
         const fetchPlaylists = async () => {
-            const genreIdList = await getAvailableGenres().then((genres: any) =>
-                genres.map((item: any) => item.id)
+            const genres = await axios.get(
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_NODE_SERVER_PORT}/api/genres`
             )
-            const promises = genreIdList.map((genre: any) =>
-                getPlaylistsByGenre(genre)
+            const genreIdList = genres.data.map((genre: any) => genre.id)
+
+            const promises = genreIdList.map((genreId: any) =>
+                axios.get(
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_NODE_SERVER_PORT}/api/playlists/${genreId}`
+                )
             )
+
             const playlistListByGenre = await Promise.all(promises)
 
             const playlistList = playlistListByGenre.reduce(
                 (acc: any, playlists: any) => {
                     return playlists
                         ? acc.concat(
-                              playlists.filter((item: any) => item !== null)
+                              playlists.data.filter(
+                                  (item: any) => item !== null
+                              )
                           )
                         : acc
                 },

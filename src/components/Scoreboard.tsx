@@ -17,7 +17,7 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
         const fetchScores = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
                 )
                 setScores(response.data)
             } catch (error) {

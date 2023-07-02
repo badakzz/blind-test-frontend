@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { io } from 'socket.io-client'
 import { User } from '../utils/types/User'
-import {
-    CreateOrJoinChatroom,
-    ChatMessagesContainer,
-    PlaylistSelectionModal,
-    Scoreboard,
-} from './'
-import { getMultipleRandomTrackPreviewsFromPlaylist } from '../spotify'
+import { CreateOrJoinChatroom } from './'
 import { startGame, startPlayback } from '../utils/helpers'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 interface ChatroomProps {
     user: User | null
@@ -31,42 +28,62 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isCreator, setIsCreator] = useState<boolean>(false)
     const [isGameStarting, setIsGameStarting] = useState<boolean>(false)
 
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const audioRef = useRef(typeof window === 'undefined' ? null : new Audio())
 
     useEffect(() => {
         if (playlistId) {
             const fetchTrackPreviews = async () => {
-                const previews =
-                    await getMultipleRandomTrackPreviewsFromPlaylist(
-                        playlistId,
-                        10
-                    )
+                const response = await axios.get(
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/tracks/${playlistId}`,
+                    {
+                        params: {
+                            numPreviews: 10,
+                        },
+                    }
+                )
+                const previews = response.data
                 setTrackPreviews((prevState) => [...prevState, ...previews]) // spread the contents of previews
             }
             fetchTrackPreviews()
         }
     }, [playlistId])
 
+    // useEffect(() => {
+    //     const newSocket = io('http://localhost:3001')
+    //     setSocket(newSocket)
+
+    //     newSocket.on('users', (users) => {
+    //         setUsers(users)
+    //     })
+
+    //     const createChatroom = async () => {
+    //         const response = await axios.post(
+    //             `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`
+    //         )
+    //         const chatroomId = response.data.chatroomId
+    //         const currentUrl = window.location.href
+    //         const roomUrl = `${currentUrl}?chatroomId=${chatroomId}`
+    //         alert(
+    //             `Chatroom created! Share this link with others to join: ${roomUrl}`
+    //         )
+    //         setCurrentChatroomId(chatroomId) // Set the current chatroom id
+    //     }
+    //     createChatroom()
+
+    //     return () => {
+    //         newSocket.off('users')
+    //         newSocket.disconnect()
+    //     }
+    // }, [])
+
     useEffect(() => {
-        const newSocket = io('http://localhost:3001')
+        const newSocket = io(
+            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_WEBSOCKET_SERVER_PORT}`
+        )
         setSocket(newSocket)
 
-        newSocket.on('chatroomCreated', (chatroomId) => {
-            // Display the chatroom link when the room is created
-            const currentUrl = window.location.href
-            const roomUrl = `${currentUrl}?chatroomId=${chatroomId}`
-            alert(
-                `Chatroom created! Share this link with others to join: ${roomUrl}`
-            )
-            setCurrentChatroomId(chatroomId) // Set the current chatroom id
-        })
-
-        newSocket.on('users', (users) => {
-            setUsers(users)
-        })
-
         return () => {
-            newSocket.off('chatroomCreated')
             newSocket.disconnect()
         }
     }, [])
@@ -192,7 +209,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         }
     }, [socket])
 
-    const handleCreateRoom = (username) => {
+    const handleCreateRoom = async (username) => {
         let finalUsername = username
 
         if (user) {
@@ -201,7 +218,26 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             finalUsername = `guest${users.length + 1}`
         }
 
-        if (finalUsername) {
+        if (finalUsername && socket) {
+            const response = await axios.post(
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                }
+            )
+
+            const chatroomId = response.data.chatroomId
+            const currentUrl = window.location.href
+            const roomUrl = `${currentUrl}?chatroomId=${chatroomId}`
+            alert(
+                `Chatroom created! Share this link with others to join: ${roomUrl}`
+            )
+            setCurrentChatroomId(chatroomId)
+
             socket.emit('createRoom', username)
             setValidatedUsername(true)
             setIsCreator(true)
@@ -243,7 +279,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         socket.emit('startGame', currentChatroomId, trackPreviews)
         setIsGameStarting(true)
     }
-
+    console.log('user', user)
     return (
         <div>
             <h1>Chatroom</h1>
@@ -254,7 +290,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     onJoin={handleJoinRoom}
                 />
             )}
-            {validatedUsername && !playlistId && (
+            {/* {validatedUsername && !playlistId && (
                 <>
                     {isCreator ? (
                         <>
@@ -290,7 +326,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     socket={socket}
                 />
             )} */}
-            {isGameStopped && <Scoreboard chatroomId={currentChatroomId} />}
+            {/* {isGameStopped && <Scoreboard chatroomId={currentChatroomId} />} */}
         </div>
     )
 }

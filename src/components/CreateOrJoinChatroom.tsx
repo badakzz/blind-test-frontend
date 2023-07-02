@@ -8,7 +8,7 @@ type Props = {
 }
 
 const CreateOrJoinRoom: React.FC<Props> = ({ onCreate, onJoin, user }) => {
-    const [username, setUsername] = useState(user ? user.user_name : '')
+    const [username, setUsername] = useState(user ? user?.user_name : '')
     const [chatroomId, setChatroomId] = useState('')
 
     const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
