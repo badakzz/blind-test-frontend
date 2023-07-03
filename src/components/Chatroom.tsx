@@ -91,7 +91,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         setSocket(newSocket)
 
         newSocket.on('connectedUsers', (users) => {
-            setConnectedUsers(users)
+            // map over the users array and pull out the username property from each user
+            const usernames = users.map((user) => user.username)
+            setConnectedUsers(usernames)
         })
 
         return () => {
