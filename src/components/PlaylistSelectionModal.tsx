@@ -19,13 +19,13 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
     useEffect(() => {
         const fetchPlaylists = async () => {
             const genres = await axios.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_NODE_SERVER_PORT}/api/genres`
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/genres`
             )
             const genreIdList = genres.data.map((genre: any) => genre.id)
 
             const promises = genreIdList.map((genreId: any) =>
                 axios.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_NODE_SERVER_PORT}/api/playlists/${genreId}`
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/playlists/${genreId}`
                 )
             )
 

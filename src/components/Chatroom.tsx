@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { io } from 'socket.io-client'
 import { User } from '../utils/types/User'
-import { CreateOrJoinChatroom } from './'
+import {
+    ChatMessagesContainer,
+    CreateOrJoinChatroom,
+    PlaylistSelectionModal,
+    Scoreboard,
+} from './'
 import { startGame, startPlayback } from '../utils/helpers'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
@@ -14,7 +19,7 @@ interface ChatroomProps {
 const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [socket, setSocket] = useState(null)
     const [messages, setMessages] = useState([])
-    const [users, setUsers] = useState([])
+    const [connectedUsers, setConnectedUsers] = useState<User[]>([])
     const [validatedUsername, setValidatedUsername] = useState(false)
     const [playlistId, setPlaylistId] = useState(null)
     const [trackPreviews, setTrackPreviews] = useState([])
@@ -83,7 +88,12 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         )
         setSocket(newSocket)
 
+        newSocket.on('connectedUsers', (users) => {
+            setConnectedUsers(users)
+        })
+
         return () => {
+            newSocket.off('connectedUsers')
             newSocket.disconnect()
         }
     }, [])
@@ -215,7 +225,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         if (user) {
             finalUsername = user.user_name
         } else if (!username) {
-            finalUsername = `guest${users.length + 1}`
+            finalUsername = `guest${connectedUsers.length + 1}`
         }
 
         if (finalUsername && socket) {
@@ -230,7 +240,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 }
             )
 
-            const chatroomId = response.data.chatroomId
+            const chatroomId = response.data.chatroom_id
             const currentUrl = window.location.href
             const roomUrl = `${currentUrl}?chatroomId=${chatroomId}`
             alert(
@@ -251,7 +261,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             if (user) {
                 finalUsername = user.user_name
             } else if (!username) {
-                finalUsername = `guest${users.length + 1}`
+                finalUsername = `guest${connectedUsers.length + 1}`
             }
             if (finalUsername) {
                 setValidatedUsername(true)
@@ -290,7 +300,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     onJoin={handleJoinRoom}
                 />
             )}
-            {/* {validatedUsername && !playlistId && (
+            {validatedUsername && !playlistId && (
                 <>
                     {isCreator ? (
                         <>
@@ -309,7 +319,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     )}
                 </>
             )}
-            {playlistId && !gameStarted && (
+            {/* {playlistId && !gameStarted && (
                 <button
                     onClick={() => {
                         handleStartGame()
@@ -319,14 +329,15 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     Start Game
                 </button>
             )}
-            {/* {gameStarted && (
+            {gameStarted && (
                 <ChatMessagesContainer
                     messages={messages}
-                    users={users}
+                    user={user}
                     socket={socket}
+                    connectedUsers={connectedUsers}
                 />
-            )} */}
-            {/* {isGameStopped && <Scoreboard chatroomId={currentChatroomId} />} */}
+            )}
+            {isGameStopped && <Scoreboard chatroomId={currentChatroomId} />} */}
         </div>
     )
 }
