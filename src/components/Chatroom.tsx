@@ -120,6 +120,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     }
                     setIsGameStarting(false)
                 })
+
                 return () => {
                     socket.off('gameStarted')
                 }
@@ -157,7 +158,6 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             // Set up new event listeners
             socket.on('chatMessage', (msg) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
-                console.log('msg', msg)
 
                 // Only analyze and attribute score for messages sent by the current user
                 // if (msg.author === user.user_name) {
@@ -253,7 +253,6 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )
             setCurrentChatroomId({ chatroomId })
             // probably create a user in db with ip address or smth
-            console.log('createRoom', finalUsername, chatroomId)
             socket.emit('createRoom', finalUsername, chatroomId)
             setValidatedUsername(true)
             setIsCreator(true)
@@ -292,12 +291,13 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     }
 
     const handleStartGame = () => {
-        socket.emit('startGame', currentChatroomId, trackPreviews)
+        socket.emit('startGame', {
+            chatroomId: currentChatroomId.chatroomId,
+            trackPreviews,
+        })
         setIsGameStarting(true)
     }
-    console.log('user', user)
-    console.log('connecteduser', connectedUsers)
-    console.log('messages', messages)
+
     return (
         <div>
             <h1>Chatroom</h1>

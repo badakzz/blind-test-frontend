@@ -69,7 +69,6 @@ export const logoutUser = createAsyncThunk(
             )
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
-            console.log('err', error)
             return rejectWithValue('Logout failed')
         }
     }

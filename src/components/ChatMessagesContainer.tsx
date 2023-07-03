@@ -21,8 +21,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
     socket,
 }) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    console.log('connectedUsers', connectedUsers)
-    console.log('messages', messages)
     const [message, setMessage] = useState('')
     const sendMessageHandler = () => {
         if (message) {
@@ -40,7 +38,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
                     },
                 }
             )
-            console.log('message', { author: user.username, message })
             socket.emit('chatMessage', {
                 author: user.username,
                 chatroomId: currentChatroom.chatroomId,

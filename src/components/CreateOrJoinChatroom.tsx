@@ -25,7 +25,6 @@ const CreateOrJoinRoom: React.FC<Props> = ({ onCreate, onJoin, user }) => {
         onJoin(username, chatroomId)
     }
 
-    console.log({ childUser: user })
     return (
         <div>
             <label htmlFor="username">Username:</label>
