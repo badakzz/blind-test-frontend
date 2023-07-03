@@ -19,14 +19,16 @@ interface ChatroomProps {
 const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [socket, setSocket] = useState(null)
     const [messages, setMessages] = useState([])
-    const [connectedUsers, setConnectedUsers] = useState<User[]>([])
+    const [connectedUsers, setConnectedUsers] = useState<string[]>([])
     const [validatedUsername, setValidatedUsername] = useState(false)
     const [playlistId, setPlaylistId] = useState(null)
     const [trackPreviews, setTrackPreviews] = useState([])
     const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
     const [gameStarted, setGameStarted] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
-    const [currentChatroomId, setCurrentChatroomId] = useState<string>(null)
+    const [currentChatroomId, setCurrentChatroomId] = useState<{
+        chatroomId: string
+    }>(null)
     const [currentSongName, setCurrentSongName] = useState<string>(null)
     const [currentArtistName, setCurrentArtistName] = useState<string>(null)
     const [isGameStopped, setIsGameStopped] = useState<boolean>(false)
@@ -153,6 +155,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             // Set up new event listeners
             socket.on('chatMessage', (msg) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
+                console.log('msg', msg)
 
                 // Only analyze and attribute score for messages sent by the current user
                 // if (msg.author === user.user_name) {
@@ -184,17 +187,17 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 // }
             })
 
-            socket.on('scoreUpdated', ({ user, correctGuessType }) => {
-                const guessMessage = {
-                    author: 'System',
-                    message: `${user.user_name} has correctly guessed the ${correctGuessType}!`,
-                }
-                socket.emit('chatMessage', guessMessage)
-            })
-            return () => {
-                socket.off('chatMessage')
-                socket.off('scoreUpdated')
-            }
+            //     socket.on('scoreUpdated', ({ user, correctGuessType }) => {
+            //         const guessMessage = {
+            //             author: 'System',
+            //             message: `${user.user_name} has correctly guessed the ${correctGuessType}!`,
+            //         }
+            //         socket.emit('chatMessage', guessMessage)
+            //     })
+            //     return () => {
+            //         socket.off('chatMessage')
+            //         socket.off('scoreUpdated')
+            //     }
         }
     }, [socket, currentSongName, currentArtistName, user])
 
@@ -223,7 +226,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         let finalUsername = username
 
         if (user) {
-            finalUsername = user.user_name
+            finalUsername = user.username
         } else if (!username) {
             finalUsername = `guest${connectedUsers.length + 1}`
         }
@@ -246,9 +249,10 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             alert(
                 `Chatroom created! Share this link with others to join: ${roomUrl}`
             )
-            setCurrentChatroomId(chatroomId)
-
-            socket.emit('createRoom', username)
+            setCurrentChatroomId({ chatroomId })
+            // probably create a user in db with ip address or smth
+            console.log('createRoom', finalUsername, chatroomId)
+            socket.emit('createRoom', finalUsername, chatroomId)
             setValidatedUsername(true)
             setIsCreator(true)
         }
@@ -259,7 +263,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             let finalUsername = username
 
             if (user) {
-                finalUsername = user.user_name
+                finalUsername = user.username
             } else if (!username) {
                 finalUsername = `guest${connectedUsers.length + 1}`
             }
@@ -267,8 +271,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 setValidatedUsername(true)
                 setIsCreator(false) // Set isCreator to false
                 setIsGameStarting(true) // Set isGameStarting to true
-                setCurrentChatroomId(chatroomId)
-                socket.emit('joinRoom', username, chatroomId)
+                setCurrentChatroomId({ chatroomId })
+                socket.emit('joinRoom', finalUsername, chatroomId)
             }
         }
     }
@@ -290,6 +294,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         setIsGameStarting(true)
     }
     console.log('user', user)
+    console.log('connecteduser', connectedUsers)
+    console.log('messages', messages)
     return (
         <div>
             <h1>Chatroom</h1>
@@ -319,7 +325,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     )}
                 </>
             )}
-            {/* {playlistId && !gameStarted && (
+            {playlistId && !gameStarted && (
                 <button
                     onClick={() => {
                         handleStartGame()
@@ -335,9 +341,10 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     user={user}
                     socket={socket}
                     connectedUsers={connectedUsers}
+                    currentChatroom={currentChatroomId}
                 />
             )}
-            {isGameStopped && <Scoreboard chatroomId={currentChatroomId} />} */}
+            {isGameStopped && <Scoreboard chatroom={currentChatroomId} />}
         </div>
     )
 }

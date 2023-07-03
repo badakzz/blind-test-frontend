@@ -1,12 +1,17 @@
 import { Modal, Button } from 'react-bootstrap'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
+import { Chatroom } from '../utils/types'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 interface Props {
-    chatroomId: string
+    chatroom: Chatroom
 }
 
-const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
+const Scoreboard: React.FC<Props> = ({ chatroom }) => {
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+
     const [show, setShow] = useState(true)
     const [scores, setScores] = useState([])
 
@@ -17,7 +22,13 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
         const fetchScores = async () => {
             try {
                 const response = await axios.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/${chatroomId}/scores`
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/${chatroom.chatroomId}/scores`,
+                    {
+                        withCredentials: true,
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                    }
                 )
                 setScores(response.data)
             } catch (error) {
@@ -26,7 +37,7 @@ const Scoreboard: React.FC<Props> = ({ chatroomId }) => {
         }
 
         fetchScores()
-    }, [chatroomId])
+    }, [chatroom.chatroomId])
 
     return (
         <>

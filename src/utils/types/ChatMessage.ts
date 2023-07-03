@@ -1,8 +1,9 @@
 export type ChatMessage = {
-    chat_message_id: number
-    chatroom_id: string
-    user_id: number
+    chatMessageId: number
+    chatroomId: string
+    userId: number
+    author: string
     content: string
-    is_flagged?: boolean
-    reporter_id?: string
+    isFlagged?: boolean
+    reporterId?: string
 }

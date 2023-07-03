@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { User } from '../utils/types'
 
 type Props = {
@@ -8,8 +8,12 @@ type Props = {
 }
 
 const CreateOrJoinRoom: React.FC<Props> = ({ onCreate, onJoin, user }) => {
-    const [username, setUsername] = useState(user ? user?.user_name : '')
+    const [username, setUsername] = useState('')
     const [chatroomId, setChatroomId] = useState('')
+
+    useEffect(() => {
+        user && setUsername(user.username)
+    }, [user])
 
     const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -21,6 +25,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({ onCreate, onJoin, user }) => {
         onJoin(username, chatroomId)
     }
 
+    console.log({ childUser: user })
     return (
         <div>
             <label htmlFor="username">Username:</label>

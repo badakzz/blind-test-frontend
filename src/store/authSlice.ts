@@ -34,14 +34,21 @@ export const loginUser = createAsyncThunk(
                 { withCredentials: true }
             )
             const { token, user } = response.data
+            const formattedUser: User = {
+                userId: user.user_id,
+                username: user.user_name,
+                email: user.email,
+                permission: user.permissions.toString(), // Assuming permission is a string in your User type
+                isActive: user.is_active,
+            }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
             }) // Add expiration for security
             dispatch(authActions.storeToken({ token }))
-            dispatch(authActions.setUser(user))
+            dispatch(authActions.setUser(formattedUser))
 
             // Store user data in localStorage
-            localStorage.setItem('user', JSON.stringify(user))
+            localStorage.setItem('user', JSON.stringify(formattedUser))
             return response.data
         } catch (error) {
             throw rejectWithValue('Invalid email or password')
@@ -55,12 +62,14 @@ export const logoutUser = createAsyncThunk(
         try {
             await axios.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
+                {},
                 {
                     withCredentials: true,
                 }
             )
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
+            console.log('err', error)
             return rejectWithValue('Logout failed')
         }
     }

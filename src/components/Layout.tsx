@@ -56,7 +56,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                     {user?.user ? (
                         <Nav className="me-auto">
                             <NavDropdown
-                                title={user?.user.user_name}
+                                title={user?.user.username}
                                 id="collasible-nav-dropdown"
                             >
                                 <NavDropdown.Item to="#action/3.1">
