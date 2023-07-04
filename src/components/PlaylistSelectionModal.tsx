@@ -1,6 +1,6 @@
-// components/PlaylistSelectionModal.tsx
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { Playlist } from '../utils/types'
 
 interface PlaylistSelectionModalProps {
     show: boolean
@@ -15,9 +15,11 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
 }) => {
     const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [playlistList, setPlaylistList] = useState<any>([])
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        const fetchPlaylists = async () => {
+        const fetchPlaylistList = async () => {
+            setLoading(true)
             const genres = await axios.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/genres`
             )
@@ -32,10 +34,10 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
             const playlistListByGenre = await Promise.all(promises)
 
             const playlistList = playlistListByGenre.reduce(
-                (acc: any, playlists: any) => {
-                    return playlists
+                (acc: any, playlistList: any) => {
+                    return playlistList
                         ? acc.concat(
-                              playlists.data.filter(
+                              playlistList.data.filter(
                                   (item: any) => item !== null
                               )
                           )
@@ -45,16 +47,25 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
             )
 
             // Remove duplicates
-            const uniquePlaylistList = Array.from(
-                new Set(playlistList.map((playlist: any) => playlist.id))
-            ).map((id) => {
-                return playlistList.find((playlist: any) => playlist.id === id)
-            })
+            const uniquePlaylistList = playlistList.reduce(
+                (acc: any, current: any) => {
+                    const x = acc.find(
+                        (item: any) => item.playlist_id === current.playlist_id
+                    )
+                    if (!x) {
+                        return acc.concat([current])
+                    } else {
+                        return acc
+                    }
+                },
+                []
+            )
 
             setPlaylistList(uniquePlaylistList)
+            setLoading(false)
         }
 
-        fetchPlaylists()
+        fetchPlaylistList()
     }, [])
 
     const handlePlaylistChange = (event: any) => {
@@ -72,13 +83,22 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
         <div style={{ display: show ? 'block' : 'none' }}>
             <div>
                 <h2>Select a Playlist</h2>
-                <select onChange={handlePlaylistChange}>
-                    {playlistList.map((playlist: any) => (
-                        <option key={playlist.id} value={playlist.id}>
-                            {playlist.name}
-                        </option>
-                    ))}
-                </select>
+                {loading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <select onChange={handlePlaylistChange}>
+                        {playlistList.map((playlist: Playlist) => {
+                            return (
+                                <option
+                                    key={playlist.playlist_id}
+                                    value={playlist.spotify_playlist_id}
+                                >
+                                    {playlist.name}
+                                </option>
+                            )
+                        })}
+                    </select>
+                )}
                 <button onClick={handleSubmit}>Submit</button>
                 <button onClick={onModalClose}>Close</button>
             </div>

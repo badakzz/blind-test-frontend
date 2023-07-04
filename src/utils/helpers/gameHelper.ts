@@ -7,10 +7,8 @@ export const startGame = async (
     audio
 ) => {
     setGameStarted(true)
-
     // Check if the first track and its previewUrl are not null or undefined
-    console.log('trackPreviews[0]', trackPreviews[0])
-    if (trackPreviews[0] && trackPreviews[0].previewUrl) {
+    if (trackPreviews[0] && trackPreviews[0]) {
         // Play the first track
         const newAudio = startPlayback(
             trackPreviews[0],
@@ -21,7 +19,7 @@ export const startGame = async (
         )
         return newAudio
     } else {
-        console.error('Invalid first track or track.previewUrl is not defined.')
+        console.error('Invalid first track')
         return null
     }
 }
@@ -37,15 +35,13 @@ export const startPlayback = (
         console.log('Playlist stopped')
         return null // don't play the next song if the game is stopped
     }
-    console.log('song', song.artist)
-    console.log('song', song.name)
 
-    if (!song || !song.previewUrl) {
-        console.error('Invalid song or song.previewUrl is not defined.')
+    if (!song || !song) {
+        console.error('Invalid song or song is not defined.')
         return
     }
 
-    audio.src = song.previewUrl
+    audio.src = song
     audio.volume = 0.2
     audio.play().catch((error) => {
         console.error('Failed to play the track:', error)

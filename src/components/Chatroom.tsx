@@ -22,11 +22,12 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [connectedUsers, setConnectedUsers] = useState<string[]>([])
     const [validatedUsername, setValidatedUsername] = useState(false)
     const [playlistId, setPlaylistId] = useState(null)
+    const [previewUrls, setPreviewUrls] = useState([])
     const [trackPreviews, setTrackPreviews] = useState([])
     const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
     const [gameStarted, setGameStarted] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
-    const [currentChatroomId, setCurrentChatroomId] = useState<{
+    const [currentChatroom, setCurrentChatroom] = useState<{
         chatroomId: string
     }>(null)
     const [currentSongName, setCurrentSongName] = useState<string>(null)
@@ -50,7 +51,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     }
                 )
                 const previews = response.data
-                setTrackPreviews((prevState) => [...prevState, ...previews]) // spread the contents of previews
+                const urls = previews.map((preview) => preview.preview_url)
+                setPreviewUrls(urls)
             }
             fetchTrackPreviews()
         }
@@ -74,7 +76,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     //         alert(
     //             `Chatroom created! Share this link with others to join: ${roomUrl}`
     //         )
-    //         setCurrentChatroomId(chatroomId) // Set the current chatroom id
+    //         setCurrentChatroom(chatroomId) // Set the current chatroom id
     //     }
     //     createChatroom()
 
@@ -105,11 +107,23 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     useEffect(() => {
         if (socket && isGameStarting) {
             if (!isCreator) {
-                socket.on('gameStarted', (trackPreviews) => {
-                    setTrackPreviews(trackPreviews)
+                socket.on('gameStarted', () => {
+                    axios.post(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/game/start/`,
+                        {
+                            chatroom_id: currentChatroom.chatroomId,
+                            playlist_id: playlistId,
+                        },
+                        {
+                            withCredentials: true,
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                        }
+                    )
                     const newAudio = startGame(
                         setGameStarted,
-                        trackPreviews,
+                        previewUrls,
                         startPlayback,
                         setCurrentSongIndex,
                         isGameStopped,
@@ -125,10 +139,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     socket.off('gameStarted')
                 }
             } else {
-                setTrackPreviews(trackPreviews)
                 const newAudio = startGame(
                     setGameStarted,
-                    trackPreviews,
+                    previewUrls,
                     startPlayback,
                     setCurrentSongIndex,
                     isGameStopped,
@@ -178,7 +191,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 // if (answer.points > 0) {
                 //     socket.emit(
                 //         "updateScore",
-                //         currentChatroomId,
+                //         currentChatroom,
                 //         user.user_id,
                 //         answer.points,
                 //         answer.correctGuessType,
@@ -251,7 +264,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             alert(
                 `Chatroom created! Share this link with others to join: ${roomUrl}`
             )
-            setCurrentChatroomId({ chatroomId })
+            setCurrentChatroom({ chatroomId })
             // probably create a user in db with ip address or smth
             socket.emit('createRoom', finalUsername, chatroomId)
             setValidatedUsername(true)
@@ -272,7 +285,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 setValidatedUsername(true)
                 setIsCreator(false) // Set isCreator to false
                 setIsGameStarting(true) // Set isGameStarting to true
-                setCurrentChatroomId({ chatroomId })
+                setCurrentChatroom({ chatroomId })
                 socket.emit('joinRoom', finalUsername, chatroomId)
             }
         }
@@ -292,8 +305,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
 
     const handleStartGame = () => {
         socket.emit('startGame', {
-            chatroomId: currentChatroomId.chatroomId,
-            trackPreviews,
+            chatroomId: currentChatroom.chatroomId,
+            trackPreviews: previewUrls,
         })
         setIsGameStarting(true)
     }
@@ -343,10 +356,10 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     user={user}
                     socket={socket}
                     connectedUsers={connectedUsers}
-                    currentChatroom={currentChatroomId}
+                    currentChatroom={currentChatroom}
                 />
             )}
-            {isGameStopped && <Scoreboard chatroom={currentChatroomId} />}
+            {isGameStopped && <Scoreboard chatroom={currentChatroom} />}
         </div>
     )
 }
