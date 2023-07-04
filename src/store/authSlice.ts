@@ -33,6 +33,9 @@ export const loginUser = createAsyncThunk(
                 credentials,
                 { withCredentials: true }
             )
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error('Invalid credentials')
+            }
             const { token, user } = response.data
             const formattedUser: User = {
                 userId: user.user_id,
@@ -51,7 +54,9 @@ export const loginUser = createAsyncThunk(
             localStorage.setItem('user', JSON.stringify(formattedUser))
             return response.data
         } catch (error) {
-            throw rejectWithValue('Invalid email or password')
+            const errorMessage = error.response?.data?.message || error.message
+
+            throw rejectWithValue(errorMessage)
         }
     }
 )
@@ -121,7 +126,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.payload as string
+                state.error = action.error.message
             })
             .addCase(logoutUser.fulfilled, (state, action) => {
                 state.loading = false

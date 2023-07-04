@@ -11,6 +11,7 @@ type Props = {
     connectedUsers: string[]
     currentChatroom: Chatroom
     socket: Socket
+    currentSongPlaying: string
 }
 
 const ChatMessagesContainer: React.FC<Props> = ({
@@ -19,6 +20,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
     user,
     currentChatroom,
     socket,
+    currentSongPlaying,
 }) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const [message, setMessage] = useState('')
@@ -42,7 +44,8 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 author: user.username,
                 chatroomId: currentChatroom.chatroomId,
                 content: message,
-            })
+            } as ChatMessage)
+            socket.emit('')
             setMessage('')
         }
     }

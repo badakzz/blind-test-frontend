@@ -35,7 +35,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isGameStopped, setIsGameStopped] = useState<boolean>(false)
     const [isCreator, setIsCreator] = useState<boolean>(false)
     const [isGameStarting, setIsGameStarting] = useState<boolean>(false)
-
+    const [currentSongPlaying, setCurrentSongPlaying] = useState<string>('')
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const audioRef = useRef(typeof window === 'undefined' ? null : new Audio())
 
@@ -47,11 +47,14 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     {
                         params: {
                             numPreviews: 10,
+                            chatroomId: currentChatroom.chatroomId,
                         },
                     }
                 )
                 const previews = response.data
-                const urls = previews.map((preview) => preview.preview_url)
+                // to change to => preview.preview_url after tests
+                const urls = previews.map((preview) => preview)
+                console.log('urls', urls)
                 setPreviewUrls(urls)
             }
             fetchTrackPreviews()
@@ -107,21 +110,30 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     useEffect(() => {
         if (socket && isGameStarting) {
             if (!isCreator) {
-                socket.on('gameStarted', () => {
-                    axios.post(
-                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/game/start/`,
-                        {
-                            chatroom_id: currentChatroom.chatroomId,
-                            playlist_id: playlistId,
-                        },
-                        {
-                            withCredentials: true,
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                            },
-                        }
+                socket.on('gameStarted', async () => {
+                    console.log('previewUrls', previewUrls)
+                    const { audio: newAudio, currentSongId } = await startGame(
+                        setGameStarted,
+                        previewUrls,
+                        startPlayback,
+                        setCurrentSongIndex,
+                        isGameStopped,
+                        audioRef.current
                     )
-                    const newAudio = startGame(
+                    console.log('client song id', currentSongId)
+                    if (newAudio) {
+                        setCurrentSongIndex(0)
+                        setCurrentSongPlaying(currentSongId) // Update the song id here
+                    }
+                    setIsGameStarting(false)
+                })
+
+                return () => {
+                    socket.off('gameStarted')
+                }
+            } else {
+                socket.on('gameStarted', async () => {
+                    const { audio: newAudio, currentSongId } = await startGame(
                         setGameStarted,
                         previewUrls,
                         startPlayback,
@@ -131,6 +143,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     )
                     if (newAudio) {
                         setCurrentSongIndex(0)
+                        setCurrentSongPlaying(currentSongId) // Update the song id here
                     }
                     setIsGameStarting(false)
                 })
@@ -138,19 +151,6 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 return () => {
                     socket.off('gameStarted')
                 }
-            } else {
-                const newAudio = startGame(
-                    setGameStarted,
-                    previewUrls,
-                    startPlayback,
-                    setCurrentSongIndex,
-                    isGameStopped,
-                    audioRef.current
-                )
-                if (newAudio) {
-                    setCurrentSongIndex(0)
-                }
-                setIsGameStarting(false)
             }
         }
     }, [socket, isGameStarting])
@@ -236,6 +236,37 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             }
         }
     }, [socket])
+
+    useEffect(() => {
+        console.log('currentSongPlaying', currentSongPlaying)
+        if (currentSongPlaying && currentChatroom) {
+            const updateCurrentSongPlaying = async () => {
+                try {
+                    const response = await axios.put(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${currentChatroom.chatroomId}/current_song_playing_id`,
+                        { chatroom_current_song_id: currentSongPlaying },
+                        {
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                            withCredentials: true,
+                        }
+                    )
+                    if (response.status !== 200) {
+                        console.error(
+                            'Failed to update the current song playing'
+                        )
+                    }
+                } catch (error) {
+                    console.error(
+                        'An error occurred while updating the current song playing',
+                        error
+                    )
+                }
+            }
+            updateCurrentSongPlaying()
+        }
+    }, [currentSongPlaying, currentChatroom, csrfToken])
 
     const handleCreateRoom = async (username) => {
         let finalUsername = username
@@ -357,6 +388,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     socket={socket}
                     connectedUsers={connectedUsers}
                     currentChatroom={currentChatroom}
+                    currentSongPlaying={currentSongPlaying}
                 />
             )}
             {isGameStopped && <Scoreboard chatroom={currentChatroom} />}
