@@ -50,7 +50,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
             setMessage("")
         }
     }
-
+    console.log("messages", messages)
     return (
         <>
             <div>
