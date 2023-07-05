@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { io } from 'socket.io-client'
-import { User } from '../utils/types/User'
+import React, { useState, useEffect, useRef } from "react"
+import { io } from "socket.io-client"
+import { User } from "../utils/types/User"
 import {
     ChatMessagesContainer,
     CreateOrJoinChatroom,
     PlaylistSelectionModal,
     Scoreboard,
-} from './'
-import { startGame, startPlayback } from '../utils/helpers'
-import axios from 'axios'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
+} from "./"
+import { startGame, startPlayback } from "../utils/helpers"
+import axios from "axios"
+import { useSelector } from "react-redux"
+import { RootState } from "../store"
 
 interface ChatroomProps {
     user: User | null
@@ -35,10 +35,11 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isGameStopped, setIsGameStopped] = useState<boolean>(false)
     const [isCreator, setIsCreator] = useState<boolean>(false)
     const [isGameStarting, setIsGameStarting] = useState<boolean>(false)
-    const [currentSongPlaying, setCurrentSongPlaying] = useState<string>('')
+    const [currentSongPlaying, setCurrentSongPlaying] = useState<string>("")
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    const audioRef = useRef(typeof window === 'undefined' ? null : new Audio())
+    // const audioRef = useRef(typeof window === "undefined" ? null : new Audio())
 
+    console.log("playlistId", playlistId)
     useEffect(() => {
         if (playlistId) {
             const fetchTrackPreviews = async () => {
@@ -51,43 +52,17 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                         },
                     }
                 )
+                console.log("a")
                 const previews = response.data
+                console.log("previews", previews)
                 // to change to => preview.preview_url after tests
                 const urls = previews.map((preview) => preview)
-                console.log('urls', urls)
+                console.log("urls", urls)
                 setPreviewUrls(urls)
             }
             fetchTrackPreviews()
         }
     }, [playlistId])
-
-    // useEffect(() => {
-    //     const newSocket = io('http://localhost:3001')
-    //     setSocket(newSocket)
-
-    //     newSocket.on('users', (users) => {
-    //         setUsers(users)
-    //     })
-
-    //     const createChatroom = async () => {
-    //         const response = await axios.post(
-    //             `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`
-    //         )
-    //         const chatroomId = response.data.chatroomId
-    //         const currentUrl = window.location.href
-    //         const roomUrl = `${currentUrl}?chatroomId=${chatroomId}`
-    //         alert(
-    //             `Chatroom created! Share this link with others to join: ${roomUrl}`
-    //         )
-    //         setCurrentChatroom(chatroomId) // Set the current chatroom id
-    //     }
-    //     createChatroom()
-
-    //     return () => {
-    //         newSocket.off('users')
-    //         newSocket.disconnect()
-    //     }
-    // }, [])
 
     useEffect(() => {
         const newSocket = io(
@@ -95,65 +70,65 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         )
         setSocket(newSocket)
 
-        newSocket.on('connectedUsers', (users) => {
+        newSocket.on("connectedUsers", (users) => {
             // map over the users array and pull out the username property from each user
             const usernames = users.map((user) => user.username)
             setConnectedUsers(usernames)
         })
 
         return () => {
-            newSocket.off('connectedUsers')
+            newSocket.off("connectedUsers")
             newSocket.disconnect()
         }
     }, [])
 
-    useEffect(() => {
-        if (socket && isGameStarting) {
-            if (!isCreator) {
-                socket.on('gameStarted', async () => {
-                    console.log('previewUrls', previewUrls)
-                    const { audio: newAudio, currentSongId } = await startGame(
-                        setGameStarted,
-                        previewUrls,
-                        startPlayback,
-                        setCurrentSongIndex,
-                        isGameStopped,
-                        audioRef.current
-                    )
-                    console.log('client song id', currentSongId)
-                    if (newAudio) {
-                        setCurrentSongIndex(0)
-                        setCurrentSongPlaying(currentSongId) // Update the song id here
-                    }
-                    setIsGameStarting(false)
-                })
+    // useEffect(() => {
+    //     if (socket && isGameStarting && trackPreviews) {
+    //         if (!isCreator) {
+    //             socket.on("gameStarted", async () => {
+    //                 console.log("previewUrls", previewUrls)
+    //                 const { audio: newAudio, currentSongId } = await startGame(
+    //                     setGameStarted,
+    //                     previewUrls,
+    //                     startPlayback,
+    //                     setCurrentSongIndex,
+    //                     isGameStopped,
+    //                     audioRef.current
+    //                 )
+    //                 console.log("client song id", currentSongId)
+    //                 if (newAudio) {
+    //                     setCurrentSongIndex(0)
+    //                     setCurrentSongPlaying(currentSongId) // Update the song id here
+    //                 }
+    //                 setIsGameStarting(false)
+    //             })
 
-                return () => {
-                    socket.off('gameStarted')
-                }
-            } else {
-                socket.on('gameStarted', async () => {
-                    const { audio: newAudio, currentSongId } = await startGame(
-                        setGameStarted,
-                        previewUrls,
-                        startPlayback,
-                        setCurrentSongIndex,
-                        isGameStopped,
-                        audioRef.current
-                    )
-                    if (newAudio) {
-                        setCurrentSongIndex(0)
-                        setCurrentSongPlaying(currentSongId) // Update the song id here
-                    }
-                    setIsGameStarting(false)
-                })
+    //             return () => {
+    //                 socket.off("gameStarted")
+    //             }
+    //         } else {
+    //             socket.on("gameStarted", async () => {
+    //                 const { audio: newAudio, currentSongId } = await startGame(
+    //                     setGameStarted,
+    //                     previewUrls,
+    //                     startPlayback,
+    //                     setCurrentSongIndex,
+    //                     isGameStopped,
+    //                     audioRef.current
+    //                 )
+    //                 if (newAudio) {
+    //                     setCurrentSongIndex(0)
+    //                     setCurrentSongPlaying(currentSongId) // Update the song id here
+    //                 }
+    //                 setIsGameStarting(false)
+    //             })
 
-                return () => {
-                    socket.off('gameStarted')
-                }
-            }
-        }
-    }, [socket, isGameStarting])
+    //             return () => {
+    //                 socket.off("gameStarted")
+    //             }
+    //         }
+    //     }
+    // }, [socket, isGameStarting, trackPreviews])
 
     useEffect(() => {
         if (trackPreviews && trackPreviews[currentSongIndex]) {
@@ -165,80 +140,39 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     useEffect(() => {
         if (socket) {
             // Clean up old event listeners
-            socket.off('chatMessage')
-            socket.off('scoreUpdated')
+            socket.off("chatMessage")
+            socket.off("scoreUpdated")
 
             // Set up new event listeners
-            socket.on('chatMessage', (msg) => {
+            socket.on("chatMessage", (msg) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
-
-                // Only analyze and attribute score for messages sent by the current user
-                // if (msg.author === user.user_name) {
-                //     const normalizedMGuessWords = normalizeAnswer(
-                //         msg.message
-                //     ).split(" ")
-                //     const normalizedParsedSongNameWords =
-                //         normalizeAnswer(currentSongName).split(" ")
-                //     const normalizedParsedArtistNameWords =
-                //         normalizeAnswer(currentArtistName).split(" ")
-
-                //     const answer = analyzeAnswerAndAttributeScore(
-                //         user.user_id,
-                //         normalizedParsedSongNameWords,
-                //         normalizedMGuessWords,
-                //         normalizedParsedArtistNameWords
-                //     )
-                // if (answer.points > 0) {
-                //     socket.emit(
-                //         "updateScore",
-                //         currentChatroom,
-                //         user.user_id,
-                //         answer.points,
-                //         answer.correctGuessType,
-                //         currentSongName,
-                //         currentArtistName
-                //     )
-                // }
-                // }
             })
-
-            //     socket.on('scoreUpdated', ({ user, correctGuessType }) => {
-            //         const guessMessage = {
-            //             author: 'System',
-            //             message: `${user.user_name} has correctly guessed the ${correctGuessType}!`,
-            //         }
-            //         socket.emit('chatMessage', guessMessage)
-            //     })
-            //     return () => {
-            //         socket.off('chatMessage')
-            //         socket.off('scoreUpdated')
-            //     }
         }
     }, [socket, currentSongName, currentArtistName, user])
 
     useEffect(() => {
         if (socket) {
-            socket.on('gameOver', (finalScores, winnerId) => {
+            socket.on("gameOver", (finalScores, winnerId) => {
                 setIsGameStopped(true)
 
-                if (audioRef.current && audioRef.current instanceof Audio) {
-                    audioRef.current.pause()
-                } else {
-                    console.error(
-                        'Audio object is not defined or not an instance of Audio.'
-                    )
-                }
-                console.log('Final scores:', finalScores)
-                console.log('Winner:', winnerId)
+                // if (audioRef.current && audioRef.current instanceof Audio) {
+                //     audioRef.current.pause()
+                // } else {
+                //     console.error(
+                //         "Audio object is not defined or not an instance of Audio."
+                //     )
+                // }
+                console.log("Final scores:", finalScores)
+                console.log("Winner:", winnerId)
             })
             return () => {
-                socket.off('gameOver')
+                socket.off("gameOver")
             }
         }
     }, [socket])
 
     useEffect(() => {
-        console.log('currentSongPlaying', currentSongPlaying)
+        console.log("currentSongPlaying", currentSongPlaying)
         if (currentSongPlaying && currentChatroom) {
             const updateCurrentSongPlaying = async () => {
                 try {
@@ -247,19 +181,19 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                         { chatroom_current_song_id: currentSongPlaying },
                         {
                             headers: {
-                                'X-CSRF-TOKEN': csrfToken,
+                                "X-CSRF-TOKEN": csrfToken,
                             },
                             withCredentials: true,
                         }
                     )
                     if (response.status !== 200) {
                         console.error(
-                            'Failed to update the current song playing'
+                            "Failed to update the current song playing"
                         )
                     }
                 } catch (error) {
                     console.error(
-                        'An error occurred while updating the current song playing',
+                        "An error occurred while updating the current song playing",
                         error
                     )
                 }
@@ -284,7 +218,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 {
                     withCredentials: true,
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken,
+                        "X-CSRF-TOKEN": csrfToken,
                     },
                 }
             )
@@ -297,7 +231,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )
             setCurrentChatroom({ chatroomId })
             // probably create a user in db with ip address or smth
-            socket.emit('createRoom', finalUsername, chatroomId)
+            socket.emit("createRoom", finalUsername, chatroomId)
             setValidatedUsername(true)
             setIsCreator(true)
         }
@@ -317,7 +251,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 setIsCreator(false) // Set isCreator to false
                 setIsGameStarting(true) // Set isGameStarting to true
                 setCurrentChatroom({ chatroomId })
-                socket.emit('joinRoom', finalUsername, chatroomId)
+                socket.emit("joinRoom", finalUsername, chatroomId)
             }
         }
     }
@@ -335,7 +269,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     }
 
     const handleStartGame = () => {
-        socket.emit('startGame', {
+        socket.emit("startGame", {
             chatroomId: currentChatroom.chatroomId,
             trackPreviews: previewUrls,
         })
@@ -367,7 +301,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                             />
                         </>
                     ) : (
-                        'Waiting for the host to launch the game'
+                        "Waiting for the host to launch the game"
                     )}
                 </>
             )}

@@ -21,10 +21,11 @@ export const startGame = async (
         )
         // if (newAudio) {
         // }
-        return { audio: newAudio, currentSongId }
+        return
+        // { audio: newAudio, currentSongId }
     } else {
         console.error(
-            'Invalid first track or track.preview_url is not defined.'
+            "Invalid first track or track.preview_url is not defined."
         )
         return null
     }
@@ -38,25 +39,25 @@ export const startPlayback = (
     audio
 ) => {
     if (isGameStopped) {
-        console.log('Playlist stopped')
+        console.log("Playlist stopped")
         return null // don't play the next song if the game is stopped
     }
-    console.log('song', song.artist_name)
-    console.log('song', song.song_name)
+    console.log("song", song.artist_name)
+    console.log("song", song.song_name)
 
     if (!song || !song.preview_url) {
-        console.error('Invalid song or song.preview_url is not defined.')
+        console.error("Invalid song or song.preview_url is not defined.")
         return
     }
 
     audio.src = song.preview_url
     audio.volume = 0.2
     audio.play().catch((error) => {
-        console.error('Failed to play the track:', error)
+        console.error("Failed to play the track:", error)
     })
     audio.onerror = (error) => {
         console.error(
-            'An error occurred while trying to play the audio:',
+            "An error occurred while trying to play the audio:",
             error
         )
     }
@@ -84,5 +85,10 @@ export const startPlayback = (
             return nextIndex
         })
     }
-    return { audio, currentSongId: song.song_id } // Return the Audio object and the song id
+
+    return
+    // {
+    //     audio: audio || "default audio value",
+    //     currentSongId: song.song_id || "default songId value",
+    // } // Return the Audio object and the song id
 }
