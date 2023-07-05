@@ -6,6 +6,7 @@ export const startGame = async (
     isGameStopped,
     audio
 ) => {
+    console.log("xd")
     setGameStarted(true)
     // Check if the first track and its previewUrl are not null or undefined
     console.log({ 1: trackPreviews[0] })
@@ -19,10 +20,9 @@ export const startGame = async (
             isGameStopped,
             audio
         )
-        // if (newAudio) {
-        // }
-        return
-        // { audio: newAudio, currentSongId }
+        if (newAudio) {
+        }
+        return { audio: newAudio, currentSongId }
     } else {
         console.error(
             "Invalid first track or track.preview_url is not defined."
@@ -85,10 +85,8 @@ export const startPlayback = (
             return nextIndex
         })
     }
-
-    return
-    // {
-    //     audio: audio || "default audio value",
-    //     currentSongId: song.song_id || "default songId value",
-    // } // Return the Audio object and the song id
+    return {
+        audio: audio || "default audio value",
+        currentSongId: song.song_id || "default songId value",
+    }
 }

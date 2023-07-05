@@ -22,8 +22,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [connectedUsers, setConnectedUsers] = useState<string[]>([])
     const [validatedUsername, setValidatedUsername] = useState(false)
     const [playlistId, setPlaylistId] = useState(null)
-    const [previewUrls, setPreviewUrls] = useState([])
-    const [trackPreviews, setTrackPreviews] = useState([])
+    const [trackPreviewList, setTrackPreviewList] = useState([])
     const [showPlaylistModal, setShowPlaylistModal] = useState<boolean>(false)
     const [gameStarted, setGameStarted] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
@@ -36,29 +35,35 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isCreator, setIsCreator] = useState<boolean>(false)
     const [isGameStarting, setIsGameStarting] = useState<boolean>(false)
     const [currentSongPlaying, setCurrentSongPlaying] = useState<string>("")
-    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    // const audioRef = useRef(typeof window === "undefined" ? null : new Audio())
+    const [isFetchTrackPreviewsComplete, setIsFetchTrackPreviewsComplete] =
+        useState(false)
+    const [fetchTrackPreviewsError, setFetchTrackPreviewsError] = useState(null)
 
-    console.log("playlistId", playlistId)
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+    const audioRef = useRef(typeof window === "undefined" ? null : new Audio())
+
     useEffect(() => {
         if (playlistId) {
             const fetchTrackPreviews = async () => {
-                const response = await axios.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/tracks/${playlistId}`,
-                    {
-                        params: {
-                            numPreviews: 10,
-                            chatroomId: currentChatroom.chatroomId,
-                        },
-                    }
-                )
-                console.log("a")
-                const previews = response.data
-                console.log("previews", previews)
-                // to change to => preview.preview_url after tests
-                const urls = previews.map((preview) => preview)
-                console.log("urls", urls)
-                setPreviewUrls(urls)
+                try {
+                    const response = await axios.get(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/tracks/${playlistId}`,
+                        {
+                            params: {
+                                numPreviews: 10,
+                                chatroomId: currentChatroom.chatroomId,
+                            },
+                        }
+                    )
+                    setIsFetchTrackPreviewsComplete(true)
+                    const previews = response.data
+                    const previewList = previews.map((preview) => preview)
+                    console.log("previewList", previewList)
+                    setTrackPreviewList(previewList)
+                } catch (error) {
+                    console.error(error)
+                    setFetchTrackPreviewsError(error) // Save error to state
+                }
             }
             fetchTrackPreviews()
         }
@@ -81,61 +86,105 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             newSocket.disconnect()
         }
     }, [])
-
-    // useEffect(() => {
-    //     if (socket && isGameStarting && trackPreviews) {
-    //         if (!isCreator) {
-    //             socket.on("gameStarted", async () => {
-    //                 console.log("previewUrls", previewUrls)
-    //                 const { audio: newAudio, currentSongId } = await startGame(
-    //                     setGameStarted,
-    //                     previewUrls,
-    //                     startPlayback,
-    //                     setCurrentSongIndex,
-    //                     isGameStopped,
-    //                     audioRef.current
-    //                 )
-    //                 console.log("client song id", currentSongId)
-    //                 if (newAudio) {
-    //                     setCurrentSongIndex(0)
-    //                     setCurrentSongPlaying(currentSongId) // Update the song id here
-    //                 }
-    //                 setIsGameStarting(false)
-    //             })
-
-    //             return () => {
-    //                 socket.off("gameStarted")
-    //             }
-    //         } else {
-    //             socket.on("gameStarted", async () => {
-    //                 const { audio: newAudio, currentSongId } = await startGame(
-    //                     setGameStarted,
-    //                     previewUrls,
-    //                     startPlayback,
-    //                     setCurrentSongIndex,
-    //                     isGameStopped,
-    //                     audioRef.current
-    //                 )
-    //                 if (newAudio) {
-    //                     setCurrentSongIndex(0)
-    //                     setCurrentSongPlaying(currentSongId) // Update the song id here
-    //                 }
-    //                 setIsGameStarting(false)
-    //             })
-
-    //             return () => {
-    //                 socket.off("gameStarted")
-    //             }
-    //         }
-    //     }
-    // }, [socket, isGameStarting, trackPreviews])
+    console.log("trackPreviews", trackPreviewList)
 
     useEffect(() => {
-        if (trackPreviews && trackPreviews[currentSongIndex]) {
-            setCurrentSongName(trackPreviews[currentSongIndex].name)
-            setCurrentArtistName(trackPreviews[currentSongIndex].artist)
+        if (socket && isGameStarting) {
+            socket.on("gameStarted", async (trackPreviews) => {
+                if (!isCreator && trackPreviewList) {
+                    const result = await startGame(
+                        setGameStarted,
+                        trackPreviewList,
+                        startPlayback,
+                        setCurrentSongIndex,
+                        isGameStopped,
+                        audioRef.current
+                    )
+
+                    if (result) {
+                        const { audio: newAudio, currentSongId } = result
+                        console.log("client song id", currentSongId)
+                        if (newAudio) {
+                            setCurrentSongIndex(0)
+                            setCurrentSongPlaying(currentSongId) // Update the song id here
+                        }
+                    } else {
+                        console.error("startGame returned null or undefined")
+                    }
+                } else if (isCreator) {
+                    // Added condition to check if user is creator
+                    setTrackPreviewList(trackPreviews)
+                    const { audio: newAudio, currentSongId } = await startGame(
+                        setGameStarted,
+                        trackPreviews,
+                        startPlayback,
+                        setCurrentSongIndex,
+                        isGameStopped,
+                        audioRef.current
+                    )
+                    if (newAudio) {
+                        setCurrentSongIndex(0)
+                        setCurrentSongPlaying(currentSongId) // Update the song id here
+                    }
+                    setIsGameStarting(false)
+                }
+            })
+            return () => {
+                socket.off("gameStarted")
+            }
         }
-    }, [trackPreviews, currentSongIndex])
+    })
+
+    // useEffect(() => {
+    //     if (isGameStarting && isFetchTrackPreviewsComplete) {
+    //         socket.on("gameStarted", async Z(trackPreviews) => {
+    //             if (!isCreator) {
+    //                 const result = await startGame(
+    //                     setGameStarted,
+    //                     trackPreviews,
+    //                     startPlayback,
+    //                     setCurrentSongIndex,
+    //                     isGameStopped,
+    //                     audioRef.current
+    //                 )
+
+    //                 if (result) {
+    //                     const { audio: newAudio, currentSongId } = result
+    //                     console.log("client song id", currentSongId)
+    //                     if (newAudio) {
+    //                         setCurrentSongIndex(0)
+    //                         setCurrentSongPlaying(currentSongId) // Update the song id here
+    //                     }
+    //                 } else {
+    //                     console.error("startGame returned null or undefined")
+    //                 }
+
+    //                 setIsGameStarting(false)
+    //             } else {
+    //                 setTrackPreviews(trackPreviews)
+    //                 const newAudio = startGame(
+    //                     setGameStarted,
+    //                     trackPreviews,
+    //                     startPlayback,
+    //                     setCurrentSongIndex,
+    //                     isGameStopped,
+    //                     audioRef.current
+    //                 )
+    //                 if (newAudio) {
+    //                     setCurrentSongIndex(0)
+    //                 }
+    //                 setIsGameStarting(false)
+    //             }
+    //         })
+    //     }
+    // }, [isGameStarting, isFetchTrackPreviewsComplete])
+
+    useEffect(() => {
+        if (trackPreviewList && trackPreviewList[currentSongIndex]) {
+            setCurrentSongName(trackPreviewList[currentSongIndex].name)
+            setCurrentArtistName(trackPreviewList[currentSongIndex].artist)
+        }
+    }, [trackPreviewList, currentSongIndex])
 
     useEffect(() => {
         if (socket) {
@@ -152,18 +201,17 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
 
     useEffect(() => {
         if (socket) {
-            socket.on("gameOver", (finalScores, winnerId) => {
+            socket.on("gameOver", (username) => {
                 setIsGameStopped(true)
 
-                // if (audioRef.current && audioRef.current instanceof Audio) {
-                //     audioRef.current.pause()
-                // } else {
-                //     console.error(
-                //         "Audio object is not defined or not an instance of Audio."
-                //     )
-                // }
-                console.log("Final scores:", finalScores)
-                console.log("Winner:", winnerId)
+                if (audioRef.current && audioRef.current instanceof Audio) {
+                    audioRef.current.pause()
+                } else {
+                    console.error(
+                        "Audio object is not defined or not an instance of Audio."
+                    )
+                }
+                console.log("Winner:", username)
             })
             return () => {
                 socket.off("gameOver")
@@ -271,7 +319,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const handleStartGame = () => {
         socket.emit("startGame", {
             chatroomId: currentChatroom.chatroomId,
-            trackPreviews: previewUrls,
+            trackPreviews: trackPreviewList,
         })
         setIsGameStarting(true)
     }
@@ -326,6 +374,12 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 />
             )}
             {isGameStopped && <Scoreboard chatroom={currentChatroom} />}
+            {fetchTrackPreviewsError && (
+                <div>
+                    Error loading track previews:{" "}
+                    {fetchTrackPreviewsError.message}
+                </div>
+            )}
         </div>
     )
 }
