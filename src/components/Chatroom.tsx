@@ -42,13 +42,21 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         console.log("artist", track.artist_name)
         if (track && track.preview_url) {
             const newAudio = new Audio(track.preview_url)
-            newAudio.play()
+            if (newAudio && newAudio instanceof Audio) {
+                newAudio.play().catch((e) => {
+                    console.error("Error playing audio", e)
+                })
+            }
 
             // When the track ends, play the next one (if there are any left)
             newAudio.onended = () => {
                 const nextIndex = currentSongIndex + 1
                 // Stop after 10 tracks
-                if (nextIndex < 10 && trackPreviewList[nextIndex]) {
+                if (
+                    nextIndex < 10 &&
+                    trackPreviewList[nextIndex] &&
+                    !isGameOver
+                ) {
                     // Wait for 5 seconds before playing the next track
                     setTimeout(() => {
                         playTrack(trackPreviewList[nextIndex])
@@ -212,7 +220,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     }, [socket])
 
     useEffect(() => {
-        if (isGameOver && audio) {
+        if (isGameOver && audio && audio instanceof Audio) {
             audio.pause()
         }
     }, [isGameOver, audio])
