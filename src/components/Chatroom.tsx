@@ -7,13 +7,13 @@ import {
     CreateOrJoinChatroom,
     PlaylistSelectionModal,
     Scoreboard,
+    UsersInRoom,
 } from './'
 import { useSocket } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
 import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
-import { TrackPreviewContext } from '../utils/context/TrackPreviewContext'
 
 interface ChatroomProps {
     user: User | null
@@ -27,8 +27,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [playlistId, setPlaylistId] = useState<string | null>(null)
     const [isWaitingForHost, setIsWaitingForHost] = useState<boolean>(false)
     const [isHost, setIsHost] = useState<boolean>(false)
-
-    const trackPreviewContext = useContext(TrackPreviewContext)
+    const [trackPreviewList, setTrackPreviewList] = useState([])
+    const [isInRoom, setIsInRoom] = useState<boolean>(false)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
@@ -41,8 +41,13 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
 
     const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
 
-    const { trackPreviewList, currentSongPlaying, setCurrentSongPlaying } =
-        usePlaylistManager(playlistId, currentChatroom, csrfToken, socket)
+    const { currentSongPlaying, setCurrentSongPlaying } = usePlaylistManager(
+        playlistId,
+        currentChatroom,
+        csrfToken,
+        trackPreviewList,
+        setTrackPreviewList
+    )
 
     useEffect(() => {
         if (currentSong) {
@@ -63,13 +68,13 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             socket.on('chatMessage', (msg) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
             })
+            socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
+                setTrackPreviewList(trackPreviewList)
+            })
         }
     }, [socket])
 
-    console.log({ trackPreviewList, 2: currentChatroom?.chatroomId })
-
     useEffect(() => {
-        console.log('trackPrev', trackPreviewList)
         if (trackPreviewList.length > 0 && currentChatroom) {
             startGame(trackPreviewList, currentChatroom.chatroomId)
         }
@@ -81,10 +86,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         }
     }, [gameStarted])
 
-    console.log({ connectedUsers })
     return (
         <>
-            {!currentChatroom && (
+            {!isInRoom && (
                 <CreateOrJoinChatroom
                     createRoom={() => {
                         createRoom(user.username, csrfToken)
@@ -96,12 +100,11 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                         setIsHost(false)
                     }}
                     user={user}
-                    setShowModalPlaylistSelection={
-                        setShowModalPlaylistSelection
-                    }
+                    onShow={setShowModalPlaylistSelection}
+                    onRoomEntered={setIsInRoom}
                 />
             )}
-            {currentChatroom && (
+            {currentChatroom && !isWaitingForHost && (
                 <PlaylistSelectionModal
                     currentChatroom={currentChatroom}
                     show={showModalPlaylistSelection}
@@ -109,22 +112,19 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     onPlaylistSelected={setPlaylistId}
                 />
             )}
-            {gameStarted &&
-                currentChatroom &&
-                (isWaitingForHost && !isHost ? (
-                    <p>Waiting for the host to start the game...</p>
-                ) : (
-                    <ChatMessagesContainer
-                        messages={messages}
-                        user={user}
-                        socket={socket}
-                        connectedUsers={connectedUsers}
-                        currentChatroom={currentChatroom}
-                    />
-                ))}
-            {gameStarted && isGameOver && (
-                <Scoreboard chatroom={currentChatroom} />
+            {!currentSong && isWaitingForHost && !isHost && (
+                <p>Waiting for the host to start the game...</p>
             )}
+            {currentSong && (
+                <ChatMessagesContainer
+                    messages={messages}
+                    user={user}
+                    socket={socket}
+                    currentChatroom={currentChatroom}
+                />
+            )}
+            {isInRoom && <UsersInRoom connectedUsers={connectedUsers} />}
+            {isGameOver && <Scoreboard chatroom={currentChatroom} />}
         </>
     )
 }

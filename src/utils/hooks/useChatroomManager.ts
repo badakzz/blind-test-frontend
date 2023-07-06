@@ -24,7 +24,6 @@ export const useChatroomManager = (socket) => {
     }
 
     const joinRoom = async (username, chatroomId) => {
-        console.log('chatroomId', username, chatroomId)
         try {
             const response = await axios.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`

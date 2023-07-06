@@ -1,21 +1,23 @@
-import React, { useEffect, useState } from "react"
-import { User } from "../utils/types"
+import React, { useEffect, useState } from 'react'
+import { User } from '../utils/types'
 
 type Props = {
     user: User | null
     createRoom: (user: User) => void
     joinRoom: (user: User, chatroomId: string) => void
-    setShowModalPlaylistSelection: React.Dispatch<boolean>
+    onShow: React.Dispatch<boolean>
+    onRoomEntered: React.Dispatch<boolean>
 }
 
 const CreateOrJoinRoom: React.FC<Props> = ({
+    user,
     createRoom,
     joinRoom,
-    user,
-    setShowModalPlaylistSelection,
+    onShow,
+    onRoomEntered,
 }) => {
-    const [username, setUsername] = useState("")
-    const [chatroomId, setChatroomId] = useState("")
+    const [username, setUsername] = useState('')
+    const [chatroomId, setChatroomId] = useState('')
 
     useEffect(() => {
         user && setUsername(user.username)
@@ -24,13 +26,15 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         createRoom(user)
-        setShowModalPlaylistSelection(true)
+        onShow(true)
+        onRoomEntered(true)
     }
 
     const handleJoin = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
             joinRoom(user, chatroomId)
+            onRoomEntered(true)
         } catch (e) {
             console.error(e)
         }

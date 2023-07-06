@@ -1,27 +1,25 @@
-import React, { useState } from "react"
-import { User, ChatMessage, Chatroom } from "../utils/types"
-import { Socket } from "socket.io-client"
-import axios from "axios"
-import { useSelector } from "react-redux"
-import { RootState } from "../store"
+import React, { useState } from 'react'
+import { User, ChatMessage, Chatroom } from '../utils/types'
+import { Socket } from 'socket.io-client'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 type Props = {
     messages: ChatMessage[]
     user: User
-    connectedUsers: string[]
     currentChatroom: Chatroom
     socket: Socket
 }
 
 const ChatMessagesContainer: React.FC<Props> = ({
     messages,
-    connectedUsers,
     user,
     currentChatroom,
     socket,
 }) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    const [message, setMessage] = useState("")
+    const [message, setMessage] = useState('')
     const sendMessageHandler = () => {
         if (message) {
             axios.post(
@@ -34,18 +32,18 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 {
                     withCredentials: true,
                     headers: {
-                        "X-CSRF-TOKEN": csrfToken,
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                 }
             )
-            socket.emit("chatMessage", {
+            socket.emit('chatMessage', {
                 author: user.username,
                 chatroomId: currentChatroom.chatroomId,
                 content: message,
                 userId: user.userId,
             } as ChatMessage)
-            socket.emit("")
-            setMessage("")
+            socket.emit('')
+            setMessage('')
         }
     }
     return (
@@ -65,9 +63,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
                     onChange={(e) => setMessage(e.target.value)}
                 />
                 <button onClick={sendMessageHandler}>Send</button>
-            </div>
-            <div>
-                Users online: {connectedUsers.map((user) => user).join(", ")}
             </div>
         </>
     )

@@ -5,9 +5,9 @@ export const usePlaylistManager = (
     playlistId,
     currentChatroom,
     csrfToken,
-    socket
+    trackPreviewList,
+    setTrackPreviewList
 ) => {
-    const [trackPreviewList, setTrackPreviewList] = useState([])
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
 
     useEffect(() => {
@@ -25,7 +25,6 @@ export const usePlaylistManager = (
                     )
                     const previews = response.data
                     const previewList = previews.map((preview) => preview)
-                    console.log('previewList', previewList)
                     setTrackPreviewList(previewList)
                 } catch (error) {
                     console.error(error)
@@ -64,18 +63,6 @@ export const usePlaylistManager = (
             updateCurrentSongPlaying()
         }
     }, [currentSongPlaying, currentChatroom, csrfToken])
-
-    useEffect(() => {
-        if (socket) {
-            socket.on('gameStarted', ({ trackPreviewList }) => {
-                setTrackPreviewList(trackPreviewList) // Update trackPreviewList on 'gameStarted'
-            })
-
-            return () => {
-                socket.off('gameStarted')
-            }
-        }
-    }, [socket])
 
     return { trackPreviewList, currentSongPlaying, setCurrentSongPlaying }
 }

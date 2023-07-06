@@ -1,14 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Routes, Route } from 'react-router-dom'
-import {
-    Home,
-    Login,
-    Signup,
-    Layout,
-    Chatroom,
-    ChatroomWrapper,
-} from './components'
+import { Home, Login, Signup, Layout, Chatroom } from './components'
 import { RootState } from './store'
 import { authActions, AuthState } from './store/authSlice'
 import Cookies from 'js-cookie'
@@ -50,14 +43,9 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route
-                    path="chatroom"
-                    element={<ChatroomWrapper user={user.user} />}
-                >
-                    <Route
-                        path="/chatroom"
-                        element={<Chatroom user={user.user} />}
-                    />
-                </Route>
+                    path="/chatroom"
+                    element={<Chatroom user={user.user} />}
+                />
             </Routes>
         </Layout>
     )

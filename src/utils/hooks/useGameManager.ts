@@ -1,12 +1,9 @@
-import React from 'react'
 import { useState, useEffect } from 'react'
-import { TrackPreviewContext } from '../context/TrackPreviewContext'
 
 export const useGameManager = (socket, isHost) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [currentSong, setCurrentSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
-    const { setTrackPreviewList } = React.useContext(TrackPreviewContext)
 
     const startGame = (trackPreviewList, chatroomId) => {
         if (trackPreviewList && trackPreviewList.length > 0) {
@@ -28,11 +25,9 @@ export const useGameManager = (socket, isHost) => {
 
     useEffect(() => {
         if (socket && !isHost) {
-            console.log('test')
             socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
-                console.log('currentSong', currentSong)
                 setCurrentSong(currentSong)
-                setTrackPreviewList(trackPreviewList)
+                setGameStarted(true)
             })
 
             socket.on('gameOver', () => {
@@ -44,7 +39,7 @@ export const useGameManager = (socket, isHost) => {
                 socket.off('gameOver')
             }
         }
-    }, [socket, isHost]) // Added setTrackPreviewList as dependency
+    }, [socket, isHost])
 
     return { startGame, endGame, gameStarted, currentSong, isGameOver }
 }
