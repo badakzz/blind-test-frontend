@@ -1,6 +1,7 @@
 export { default as Button } from './Button'
 export { default as ChatMessagesContainer } from './ChatMessagesContainer'
 export { default as Chatroom } from './Chatroom'
+export { default as ChatroomWrapper } from './ChatWrapper'
 export { default as CreateOrJoinChatroom } from './CreateOrJoinChatroom'
 export { default as Home } from './Home'
 export { default as Input } from './Input'

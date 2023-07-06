@@ -1,17 +1,21 @@
-import { useState, useEffect } from "react"
+import React from 'react'
+import { useState, useEffect } from 'react'
+import { TrackPreviewContext } from '../context/TrackPreviewContext'
 
-export const useGameManager = (socket) => {
+export const useGameManager = (socket, isHost) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [currentSong, setCurrentSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
+    const { setTrackPreviewList } = React.useContext(TrackPreviewContext)
 
-    const startGame = (trackPreviewList) => {
+    const startGame = (trackPreviewList, chatroomId) => {
         if (trackPreviewList && trackPreviewList.length > 0) {
             const currentSong = trackPreviewList[0]
             setCurrentSong(currentSong)
-            socket.emit("startGame", {
-                currentSong, // Send the whole song object, not just the ID
+            socket.emit('startGame', {
+                currentSong,
                 trackPreviewList,
+                chatroomId,
             })
             setGameStarted(true)
         }
@@ -19,27 +23,28 @@ export const useGameManager = (socket) => {
 
     const endGame = () => {
         setIsGameOver(true)
-        socket.emit("gameOver")
+        socket.emit('gameOver')
     }
 
     useEffect(() => {
-        if (socket) {
-            socket.on("gameStarted", ({ currentSong, trackPreviewList }) => {
-                // Expect a song object, not an ID
-                console.log("currentSong", currentSong)
+        if (socket && !isHost) {
+            console.log('test')
+            socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
+                console.log('currentSong', currentSong)
                 setCurrentSong(currentSong)
+                setTrackPreviewList(trackPreviewList)
             })
 
-            socket.on("gameOver", () => {
+            socket.on('gameOver', () => {
                 setIsGameOver(true)
             })
 
             return () => {
-                socket.off("gameStarted")
-                socket.off("gameOver")
+                socket.off('gameStarted')
+                socket.off('gameOver')
             }
         }
-    }, [socket])
+    }, [socket, isHost]) // Added setTrackPreviewList as dependency
 
     return { startGame, endGame, gameStarted, currentSong, isGameOver }
 }

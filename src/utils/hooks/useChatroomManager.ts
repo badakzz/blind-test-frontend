@@ -1,5 +1,5 @@
-import { useState } from "react"
-import axios from "axios"
+import { useState } from 'react'
+import axios from 'axios'
 
 export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
@@ -11,7 +11,7 @@ export const useChatroomManager = (socket) => {
             {
                 withCredentials: true,
                 headers: {
-                    "X-CSRF-TOKEN": csrfToken,
+                    'X-CSRF-TOKEN': csrfToken,
                 },
             }
         )
@@ -20,22 +20,21 @@ export const useChatroomManager = (socket) => {
             chatroomId: chatroom.chatroom_id,
         }
         setCurrentChatroom(formattedChatroom)
-        socket.emit("createRoom", username, chatroom.chatroom_id)
+        socket.emit('createRoom', username, chatroom.chatroom_id)
     }
 
     const joinRoom = async (username, chatroomId) => {
-        console.log("chatroomId", username, chatroomId)
+        console.log('chatroomId', username, chatroomId)
         try {
             const response = await axios.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`
             )
             const chatroom = response.data
-            console.log("zzz", chatroom)
-            if (chatroom.length > 0) {
-                socket.emit("joinRoom", chatroomId, username)
+            if (chatroom.chatroom_id) {
+                socket.emit('joinRoom', username, chatroomId)
             } else {
                 throw new Error(
-                    "Unable to find the chatroom. Please make sure it has been created already"
+                    'Unable to find the chatroom. Please make sure it has been created already'
                 )
             }
         } catch (error) {
