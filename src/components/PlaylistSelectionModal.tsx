@@ -1,21 +1,24 @@
 import axios from "axios"
 import React, { useEffect, useState } from "react"
-import { Playlist } from "../utils/types"
+import { Chatroom, Playlist } from "../utils/types"
 
 interface PlaylistSelectionModalProps {
+    currentChatroom: Chatroom
     show: boolean
+    onHide: () => void
     onPlaylistSelected: (playlistId: string) => void
-    onModalClose: () => void
 }
 
 const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
+    currentChatroom,
     show,
+    onHide,
     onPlaylistSelected,
-    onModalClose,
 }) => {
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [playlistList, setPlaylistList] = useState<any>([])
     const [loading, setLoading] = useState(false)
+    const [selectedPlaylist, setSelectedPlaylist] = useState(null)
+    console.log("play")
 
     useEffect(() => {
         const fetchPlaylistList = async () => {
@@ -72,15 +75,18 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
     }, [])
 
     const handlePlaylistChange = (event: any) => {
-        setSelectedPlaylistId(event.target.value)
+        setSelectedPlaylist(event.target.value)
     }
 
     const handleSubmit = () => {
-        if (selectedPlaylistId) {
-            onPlaylistSelected(selectedPlaylistId)
-            onModalClose()
+        if (selectedPlaylist) {
+            onPlaylistSelected(selectedPlaylist)
+            onHide()
         }
     }
+
+    const currentUrl = window.location.href
+    const roomUrl = `${currentUrl}?chatroomId=${currentChatroom.chatroomId}`
 
     return (
         <div style={{ display: show ? "block" : "none" }}>
@@ -102,8 +108,12 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
                         })}
                     </select>
                 )}
+                <div>
+                    Chatroom created! Share this link with others to join:{" "}
+                    {roomUrl}
+                </div>
                 <button onClick={handleSubmit}>Submit</button>
-                <button onClick={onModalClose}>Close</button>
+                <button onClick={onHide}>Close</button>
             </div>
         </div>
     )
