@@ -9,3 +9,4 @@
 -   login doesnt updated state of layout
 -   check if chatroomId exists when trying to join room
 -   CGU : checkbox avec conditions d utilisation fake a accepter, submit button greyed si pas coche
+-   add a max for concurrent players in a chatroom
