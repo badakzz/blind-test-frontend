@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 
 export const useGameManager = (socket, isHost) => {
     const [gameStarted, setGameStarted] = useState(false)
@@ -9,7 +9,7 @@ export const useGameManager = (socket, isHost) => {
         if (trackPreviewList && trackPreviewList.length > 0) {
             const currentSong = trackPreviewList[0]
             setCurrentSong(currentSong)
-            socket.emit('startGame', {
+            socket.emit("startGame", {
                 currentSong,
                 trackPreviewList,
                 chatroomId,
@@ -20,23 +20,23 @@ export const useGameManager = (socket, isHost) => {
 
     const endGame = () => {
         setIsGameOver(true)
-        socket.emit('gameOver')
+        socket.emit("gameOver")
     }
 
     useEffect(() => {
         if (socket && !isHost) {
-            socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
+            socket.on("gameStarted", ({ currentSong, trackPreviewList }) => {
                 setCurrentSong(currentSong)
                 setGameStarted(true)
             })
 
-            socket.on('gameOver', () => {
+            socket.on("gameOver", () => {
                 setIsGameOver(true)
             })
 
             return () => {
-                socket.off('gameStarted')
-                socket.off('gameOver')
+                socket.off("gameStarted")
+                socket.off("gameOver")
             }
         }
     }, [socket, isHost])

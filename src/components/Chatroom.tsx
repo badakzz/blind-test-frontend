@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
-import { User } from '../utils/types/User'
+import React, { useContext, useEffect, useState } from "react"
+import { useSelector } from "react-redux"
+import { RootState } from "../store"
+import { User } from "../utils/types/User"
 import {
     ChatMessagesContainer,
     CreateOrJoinChatroom,
     PlaylistSelectionModal,
     Scoreboard,
     UsersInRoom,
-} from './'
-import { useSocket } from '../utils/hooks'
-import { useAudioManager } from '../utils/hooks'
-import { useGameManager } from '../utils/hooks'
-import { useChatroomManager } from '../utils/hooks'
-import { usePlaylistManager } from '../utils/hooks'
+} from "./"
+import { useSocket } from "../utils/hooks"
+import { useAudioManager } from "../utils/hooks"
+import { useGameManager } from "../utils/hooks"
+import { useChatroomManager } from "../utils/hooks"
+import { usePlaylistManager } from "../utils/hooks"
 
 interface ChatroomProps {
     user: User | null
@@ -52,6 +52,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     useEffect(() => {
         if (currentSong) {
             const songId = playTrack(currentSong)
+            console.log("returned id from playtrack", songId)
             if (songId) {
                 setCurrentSongPlaying(songId)
             }
@@ -61,18 +62,33 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     useEffect(() => {
         if (socket) {
             // Clean up old event listeners
-            socket.off('chatMessage')
-            socket.off('scoreUpdated')
+            socket.off("chatMessage")
+            socket.off("scoreUpdated")
 
             // Set up new event listeners
-            socket.on('chatMessage', (msg) => {
+            socket.on("chatMessage", (msg) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
             })
-            socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
+            socket.on("gameStarted", ({ currentSong, trackPreviewList }) => {
                 setTrackPreviewList(trackPreviewList)
             })
         }
     }, [socket])
+
+    useEffect(() => {
+        if (currentSongPlaying && currentChatroom && socket) {
+            // Emit event to server with current song
+            console.log(
+                "currentSongPlaying event sent",
+                currentChatroom.chatroomId,
+                currentSongPlaying
+            )
+            socket.emit("currentSongPlaying", {
+                chatroomId: currentChatroom.chatroomId,
+                currentSongPlaying: currentSongPlaying,
+            })
+        }
+    }, [currentSongPlaying, currentChatroom, socket])
 
     useEffect(() => {
         if (trackPreviewList.length > 0 && currentChatroom) {
