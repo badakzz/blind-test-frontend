@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { User } from '../utils/types'
-import Cookies from 'js-cookie'
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import axios from "axios"
+import { User } from "../utils/types"
+import Cookies from "js-cookie"
 
 export interface AuthState {
     token: string | null
@@ -22,7 +22,7 @@ const initialState: AuthState = {
 const serverPort = process.env.REACT_APP_SERVER_PORT
 
 export const loginUser = createAsyncThunk(
-    'auth/loginUser',
+    "auth/loginUser",
     async (
         credentials: { email: string; password: string },
         { dispatch, rejectWithValue }
@@ -34,12 +34,12 @@ export const loginUser = createAsyncThunk(
                 { withCredentials: true }
             )
             if (response.status < 200 || response.status >= 300) {
-                throw new Error('Invalid credentials')
+                throw new Error("Invalid credentials")
             }
             const { token, user } = response.data
             const formattedUser: User = {
                 userId: user.user_id,
-                username: user.user_name,
+                username: user.username,
                 email: user.email,
                 permission: user.permissions.toString(), // Assuming permission is a string in your User type
                 isActive: user.is_active,
@@ -51,7 +51,7 @@ export const loginUser = createAsyncThunk(
             dispatch(authActions.setUser(formattedUser))
 
             // Store user data in localStorage
-            localStorage.setItem('user', JSON.stringify(formattedUser))
+            localStorage.setItem("user", JSON.stringify(formattedUser))
             return response.data
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message
@@ -62,7 +62,7 @@ export const loginUser = createAsyncThunk(
 )
 
 export const logoutUser = createAsyncThunk(
-    'auth/logoutUser',
+    "auth/logoutUser",
     async (_, { rejectWithValue }) => {
         try {
             await axios.post(
@@ -74,15 +74,15 @@ export const logoutUser = createAsyncThunk(
             )
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
-            return rejectWithValue('Logout failed')
+            return rejectWithValue("Logout failed")
         }
     }
 )
 
 export const signupUser = createAsyncThunk(
-    'auth/signupUser',
+    "auth/signupUser",
     async (
-        userData: { user_name: string; email: string; password: string },
+        userData: { username: string; email: string; password: string },
         { rejectWithValue }
     ) => {
         try {
@@ -93,13 +93,13 @@ export const signupUser = createAsyncThunk(
             )
             return response.data
         } catch (error) {
-            return rejectWithValue('Signup failed')
+            return rejectWithValue("Signup failed")
         }
     }
 )
 
 const authSlice = createSlice({
-    name: 'auth',
+    name: "auth",
     initialState,
     reducers: {
         storeToken(state, action) {
@@ -149,5 +149,5 @@ export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
 function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
+    throw new Error("Function not implemented.")
 }

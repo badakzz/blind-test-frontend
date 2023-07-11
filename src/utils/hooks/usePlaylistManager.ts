@@ -15,7 +15,7 @@ export const usePlaylistManager = (
             const fetchTrackPreviews = async () => {
                 try {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/tracks/${playlistId}`,
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/songs/playlist/${playlistId}`,
                         {
                             params: {
                                 numPreviews: 10,

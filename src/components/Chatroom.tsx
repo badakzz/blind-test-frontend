@@ -29,7 +29,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isHost, setIsHost] = useState<boolean>(false)
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
-
+    console.log("playlistId", playlistId)
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const { socket, connectedUsers } = useSocket()

@@ -48,7 +48,7 @@ const Scoreboard: React.FC<Props> = ({ chatroom }) => {
                 <Modal.Body>
                     {scores.map((score, index) => (
                         <p key={index}>
-                            {score.user_name}: {score.points}
+                            {score.username}: {score.points}
                         </p>
                     ))}
                 </Modal.Body>
