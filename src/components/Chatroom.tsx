@@ -49,15 +49,36 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         setTrackPreviewList
     )
 
-    useEffect(() => {
-        if (currentSong) {
-            const songId = playTrack(currentSong)
-            console.log("returned id from playtrack", songId)
+    const playNextTrack = (currentTrackIndex) => {
+        if (currentTrackIndex < trackPreviewList.length - 1) {
+            const nextTrack = trackPreviewList[currentTrackIndex + 1]
+            const songId = playTrack(nextTrack, () =>
+                playNextTrack(currentTrackIndex + 1)
+            )
             if (songId) {
                 setCurrentSongPlaying(songId)
             }
         }
+    }
+
+    useEffect(() => {
+        if (currentSong) {
+            const currentTrackIndex = trackPreviewList.findIndex(
+                (track) => track.song_id === currentSong.song_id
+            )
+            playNextTrack(currentTrackIndex)
+        }
     }, [currentSong])
+
+    // useEffect(() => {
+    //     if (currentSong) {
+    //         const songId = playTrack(currentSong)
+    //         console.log("returned id from playtrack", songId)
+    //         if (songId) {
+    //             setCurrentSongPlaying(songId)
+    //         }
+    //     }
+    // }, [currentSong])
 
     useEffect(() => {
         if (socket) {
