@@ -29,6 +29,10 @@ export const useChatroomManager = (socket) => {
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`
             )
             const chatroom = response.data
+            const formattedChatroom = {
+                chatroomId: chatroom.chatroom_id,
+            }
+            setCurrentChatroom(formattedChatroom)
             if (chatroom.chatroom_id) {
                 socket.emit('joinRoom', username, chatroomId)
             } else {

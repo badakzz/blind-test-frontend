@@ -42,7 +42,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 content: message,
                 userId: user.userId,
             } as ChatMessage)
-            socket.emit('')
+            // socket.emit('')
             setMessage('')
         }
     }

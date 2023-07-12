@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
 export const useGameManager = (socket, isHost) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [currentSong, setCurrentSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
 
-    const startGame = (trackPreviewList, chatroomId) => {
-        console.log("yo")
-        if (trackPreviewList && trackPreviewList.length > 0) {
+    const startGame = (trackPreviewList, chatroomId, isHost) => {
+        console.log('yo')
+        if (trackPreviewList && trackPreviewList.length > 0 && isHost) {
             const currentSong = trackPreviewList[0]
             setCurrentSong(currentSong)
-            socket.emit("startGame", {
+            socket.emit('startGame', {
                 currentSong,
                 trackPreviewList,
                 chatroomId,
@@ -19,28 +19,28 @@ export const useGameManager = (socket, isHost) => {
         }
     }
 
-    const endGame = () => {
-        setIsGameOver(true)
-        socket.emit("gameOver")
-    }
-
     useEffect(() => {
-        if (socket && !isHost) {
-            socket.on("gameStarted", ({ currentSong, trackPreviewList }) => {
-                setCurrentSong(currentSong)
-                setGameStarted(true)
-            })
-
-            socket.on("gameOver", () => {
+        if (socket) {
+            if (!isHost) {
+                socket.on(
+                    'gameStarted',
+                    ({ currentSong, trackPreviewList }) => {
+                        setCurrentSong(currentSong)
+                        setGameStarted(true)
+                    }
+                )
+            }
+            socket.on('gameOver', () => {
+                console.log('gameOver')
                 setIsGameOver(true)
             })
 
             return () => {
-                socket.off("gameStarted")
-                socket.off("gameOver")
+                socket.off('gameStarted')
+                socket.off('gameOver')
             }
         }
     }, [socket, isHost])
 
-    return { startGame, endGame, gameStarted, currentSong, isGameOver }
+    return { startGame, gameStarted, currentSong, isGameOver }
 }
