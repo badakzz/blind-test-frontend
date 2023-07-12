@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { signupUser } from '../store/authSlice'
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { signupUser } from "../store/authSlice"
 
 const Signup: React.FC = () => {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
+    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -39,13 +39,13 @@ const Signup: React.FC = () => {
         e.preventDefault()
         try {
             const action = await dispatch(
-                signupUser({ user_name: username, email, password }) as any
+                signupUser({ username: username, email, password }) as any
             )
             if (signupUser.rejected.match(action)) {
                 throw new Error(action.payload as string)
             }
 
-            navigate('/')
+            navigate("/")
         } catch (error) {
             setError(`Error occurred during signup: ${error.message}`)
             console.error(error)
@@ -92,5 +92,5 @@ const Signup: React.FC = () => {
 
 export default Signup
 function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
+    throw new Error("Function not implemented.")
 }
