@@ -1,31 +1,31 @@
-import { Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { RootState } from '../store'
-import axios from 'axios'
+import { Button } from "react-bootstrap"
+import { Link } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { RootState } from "../store"
+import axios from "axios"
 
 const Home: React.FC = () => {
     const jwtToken = useSelector((state: RootState) => state.auth.token)
-    const csrfToken = useSelector((state: RootState) => state.auth.csrfToken)
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
-    const putScoreBoard = async (scoreboard: any) => {
+    const putScore = async (score: any) => {
         await axios.put(
-            `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scoreboards`,
-            scoreboard,
+            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scores`,
+            score,
             {
                 withCredentials: true,
                 headers: {
                     //@ts-ignore
                     Authorization: `Bearer ${jwtToken}`,
-                    'X-CSRF-TOKEN': csrfToken,
+                    "X-CSRF-TOKEN": csrfToken,
                 },
             }
         )
     }
 
     const test = () => {
-        putScoreBoard({
-            chatroom_id: 'liunu2qx0.8ac6pz8ylwh',
+        putScore({
+            chatroom_id: "liunu2qx0.8ac6pz8ylwh",
             user_id: 1,
             points: 1,
         })

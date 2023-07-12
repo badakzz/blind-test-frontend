@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { User } from '../utils/types'
-import Cookies from 'js-cookie'
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import axios from "axios"
+import { User } from "../utils/types"
+import Cookies from "js-cookie"
 
 export interface AuthState {
     token: string | null
@@ -9,7 +9,6 @@ export interface AuthState {
     loading: boolean
     error: string | null
     user: User | null
-    csrfToken: string
 }
 
 const initialState: AuthState = {
@@ -18,87 +17,89 @@ const initialState: AuthState = {
     loading: false,
     error: null,
     user: null,
-    csrfToken: null,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
 
 export const loginUser = createAsyncThunk(
-    'auth/loginUser',
+    "auth/loginUser",
     async (
         credentials: { email: string; password: string },
         { dispatch, rejectWithValue }
     ) => {
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/login`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
                 { withCredentials: true }
             )
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error("Invalid credentials")
+            }
             const { token, user } = response.data
+            const formattedUser: User = {
+                userId: user.user_id,
+                username: user.username,
+                email: user.email,
+                permission: user.permissions.toString(), // Assuming permission is a string in your User type
+                isActive: user.is_active,
+            }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
             }) // Add expiration for security
             dispatch(authActions.storeToken({ token }))
-            dispatch(authActions.setUser(user))
+            dispatch(authActions.setUser(formattedUser))
 
             // Store user data in localStorage
-            localStorage.setItem('user', JSON.stringify(user))
-            if (response.status === 200) {
-                const csrfResponse = await axios.get(
-                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
-                    { withCredentials: true }
-                )
-                return {
-                    user: response.data,
-                    csrfToken: csrfResponse.data.csrfToken,
-                }
-            }
+            localStorage.setItem("user", JSON.stringify(formattedUser))
             return response.data
         } catch (error) {
-            throw rejectWithValue('Invalid email or password')
+            const errorMessage = error.response?.data?.message || error.message
+
+            throw rejectWithValue(errorMessage)
         }
     }
 )
 
 export const logoutUser = createAsyncThunk(
-    'auth/logoutUser',
+    "auth/logoutUser",
     async (_, { rejectWithValue }) => {
         try {
             await axios.post(
-                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/logout`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
+                {},
                 {
                     withCredentials: true,
                 }
             )
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
-            return rejectWithValue('Logout failed')
+            return rejectWithValue("Logout failed")
         }
     }
 )
 
 export const signupUser = createAsyncThunk(
-    'auth/signupUser',
+    "auth/signupUser",
     async (
-        userData: { user_name: string; email: string; password: string },
+        userData: { username: string; email: string; password: string },
         { rejectWithValue }
     ) => {
         try {
             const response = await axios.post(
-                `${process.env.REACT_APP_DOMAIN}:${serverPort}/api/auth/signup`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/signup`,
                 userData,
                 { withCredentials: true }
             )
             return response.data
         } catch (error) {
-            return rejectWithValue('Signup failed')
+            return rejectWithValue("Signup failed")
         }
     }
 )
 
 const authSlice = createSlice({
-    name: 'auth',
+    name: "auth",
     initialState,
     reducers: {
         storeToken(state, action) {
@@ -122,11 +123,10 @@ const authSlice = createSlice({
                 state.token = action.payload.user.token // store only the JWT token string
                 state.isLoggedIn = true
                 state.user = action.payload.user
-                state.csrfToken = action.payload.csrfToken
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.payload as string
+                state.error = action.error.message
             })
             .addCase(logoutUser.fulfilled, (state, action) => {
                 state.loading = false
@@ -149,5 +149,5 @@ export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
 function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
+    throw new Error("Function not implemented.")
 }

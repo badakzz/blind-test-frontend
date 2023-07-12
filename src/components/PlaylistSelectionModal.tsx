@@ -1,79 +1,93 @@
-// components/PlaylistSelectionModal.tsx
-import React, { useEffect, useState } from 'react'
-import { getAvailableGenres, getPlaylistsByGenre } from '../spotify'
+import axios from "axios"
+import React, { useEffect, useState } from "react"
+import { Chatroom, Playlist } from "../utils/types"
 
 interface PlaylistSelectionModalProps {
+    currentChatroom: Chatroom
     show: boolean
+    onHide: () => void
     onPlaylistSelected: (playlistId: string) => void
-    onModalClose: () => void
 }
 
 const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
+    currentChatroom,
     show,
+    onHide,
     onPlaylistSelected,
-    onModalClose,
 }) => {
-    const [selectedPlaylistId, setSelectedPlaylistId] = useState(null)
     const [playlistList, setPlaylistList] = useState<any>([])
+    const [loading, setLoading] = useState(false)
+    const [selectedPlaylist, setSelectedPlaylist] = useState(null)
 
     useEffect(() => {
-        const fetchPlaylists = async () => {
-            const genreIdList = await getAvailableGenres().then((genres: any) =>
-                genres.map((item: any) => item.id)
-            )
-            const promises = genreIdList.map((genre: any) =>
-                getPlaylistsByGenre(genre)
-            )
-            const playlistListByGenre = await Promise.all(promises)
+        const fetchPlaylistList = async () => {
+            setLoading(true)
 
-            const playlistList = playlistListByGenre.reduce(
-                (acc: any, playlists: any) => {
-                    return playlists
-                        ? acc.concat(
-                              playlists.filter((item: any) => item !== null)
-                          )
-                        : acc
+            const playlists = await axios.get(
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists`
+            )
+
+            const uniquePlaylistList = playlists.data.reduce(
+                (acc: any, current: any) => {
+                    const x = acc.find(
+                        (item: any) => item.playlist_id === current.playlist_id
+                    )
+                    if (!x) {
+                        return acc.concat([current])
+                    } else {
+                        return acc
+                    }
                 },
                 []
             )
 
-            // Remove duplicates
-            const uniquePlaylistList = Array.from(
-                new Set(playlistList.map((playlist: any) => playlist.id))
-            ).map((id) => {
-                return playlistList.find((playlist: any) => playlist.id === id)
-            })
-
             setPlaylistList(uniquePlaylistList)
+            setLoading(false)
         }
 
-        fetchPlaylists()
+        fetchPlaylistList()
     }, [])
 
     const handlePlaylistChange = (event: any) => {
-        setSelectedPlaylistId(event.target.value)
+        setSelectedPlaylist(event.target.value)
     }
 
     const handleSubmit = () => {
-        if (selectedPlaylistId) {
-            onPlaylistSelected(selectedPlaylistId)
-            onModalClose()
+        if (selectedPlaylist) {
+            onPlaylistSelected(selectedPlaylist)
+            onHide()
         }
     }
 
+    const currentUrl = window.location.href
+    const roomUrl = `${currentUrl}?chatroomId=${currentChatroom.chatroomId}`
+
     return (
-        <div style={{ display: show ? 'block' : 'none' }}>
+        <div style={{ display: show ? "block" : "none" }}>
             <div>
                 <h2>Select a Playlist</h2>
-                <select onChange={handlePlaylistChange}>
-                    {playlistList.map((playlist: any) => (
-                        <option key={playlist.id} value={playlist.id}>
-                            {playlist.name}
-                        </option>
-                    ))}
-                </select>
+                {loading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <select onChange={handlePlaylistChange}>
+                        {playlistList.map((playlist: Playlist) => {
+                            return (
+                                <option
+                                    key={playlist.playlist_id}
+                                    value={playlist.spotify_playlist_id}
+                                >
+                                    {playlist.name}
+                                </option>
+                            )
+                        })}
+                    </select>
+                )}
+                <div>
+                    Chatroom created! Share this link with others to join:{" "}
+                    {roomUrl}
+                </div>
                 <button onClick={handleSubmit}>Submit</button>
-                <button onClick={onModalClose}>Close</button>
+                <button onClick={onHide}>Close</button>
             </div>
         </div>
     )
