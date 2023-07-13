@@ -5,20 +5,13 @@ import { Home, Login, Signup, Layout, Chatroom } from './components'
 import { RootState } from './store'
 import { authActions, AuthState } from './store/authSlice'
 import Cookies from 'js-cookie'
-import { csrfActions, getCSRFToken } from './store/csrfSlice'
+import { getCSRFToken } from './store/csrfSlice'
 
 const App: React.FC = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
         dispatch(getCSRFToken() as any)
-    }, [dispatch])
-
-    useEffect(() => {
-        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
-        }
     }, [dispatch])
 
     useEffect(() => {
@@ -36,6 +29,7 @@ const App: React.FC = () => {
         }
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
+
     return (
         <Layout>
             <Routes>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser } from '../store/authSlice'
 import { RootState } from '../store'
@@ -7,12 +7,13 @@ import { useNavigate } from 'react-router-dom'
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
     const dispatch = useDispatch()
+    const navigate = useNavigate()
+
     const { isLoggedIn, loading, error } = useSelector(
         (state: RootState) => state.auth
     )
-
-    const navigate = useNavigate()
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -20,10 +21,13 @@ const Login: React.FC = () => {
         await dispatch(loginUser(credentials) as any)
         setEmail('')
         setPassword('')
+    }
+
+    useEffect(() => {
         if (isLoggedIn) {
             navigate('/')
         }
-    }
+    }, [isLoggedIn, navigate])
 
     return (
         <div>

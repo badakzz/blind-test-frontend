@@ -14,6 +14,7 @@ import { useAudioManager } from '../utils/hooks'
 import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
+import { useNavigate } from 'react-router-dom'
 
 interface ChatroomProps {
     user: User | null
@@ -29,8 +30,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isHost, setIsHost] = useState<boolean>(false)
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
-    console.log('playlistId', playlistId)
+
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+    const navigate = useNavigate()
 
     const { socket, connectedUsers } = useSocket()
 
@@ -50,6 +52,12 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         trackPreviewList,
         setTrackPreviewList
     )
+
+    useEffect(() => {
+        if (!user) {
+            return navigate('/')
+        }
+    }, [user])
 
     const playNextTrack = (currentTrackIndex) => {
         if (currentTrackIndex < trackPreviewList.length - 1) {
