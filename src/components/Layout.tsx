@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
@@ -19,12 +19,14 @@ const Layout: React.FC<Props> = ({ children }) => {
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser() as any)
-            localStorage.removeItem('user')
-            navigate('/')
         } catch (error) {
             console.error(error)
         }
     }
+
+    useEffect(() => {
+        if (!user) navigate('/')
+    })
 
     const imagePath = `../../public/logo.png`
 

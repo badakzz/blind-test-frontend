@@ -1,31 +1,42 @@
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../../api'
+import { useNavigate } from 'react-router-dom'
 
 export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
+    const navigate = useNavigate()
 
     const createRoom = async (username, csrfToken) => {
-        const response = await axios.post(
-            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`,
-            {},
-            {
-                withCredentials: true,
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                },
+        try {
+            const response = await api.post(
+                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`,
+                {},
+                {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                }
+            )
+
+            const chatroom = response.data
+            const formattedChatroom = {
+                chatroomId: chatroom.chatroom_id,
             }
-        )
-        const chatroom = response.data
-        const formattedChatroom = {
-            chatroomId: chatroom.chatroom_id,
+            setCurrentChatroom(formattedChatroom)
+            socket.emit('createRoom', username, chatroom.chatroom_id)
+        } catch (error) {
+            console.error(error)
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('user')
+                navigate('/login')
+            }
         }
-        setCurrentChatroom(formattedChatroom)
-        socket.emit('createRoom', username, chatroom.chatroom_id)
     }
 
     const joinRoom = async (username, chatroomId) => {
         try {
-            const response = await axios.get(
+            const response = await api.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`
             )
             const chatroom = response.data
@@ -42,8 +53,11 @@ export const useChatroomManager = (socket) => {
             }
         } catch (error) {
             console.error(error)
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('user')
+                navigate('/login')
+            }
         }
     }
-
     return { createRoom, joinRoom, currentChatroom }
 }

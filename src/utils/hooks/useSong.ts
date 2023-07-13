@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
 export const useSong = (socket) => {
     const [song, setSong] = useState(null)
 
     useEffect(() => {
-        socket.on("newSong", (song) => {
+        socket.on('newSong', (song) => {
             setSong(song)
         })
 
-        socket.on("gameOver", () => {
+        socket.on('gameOver', () => {
             if (song) {
                 setSong({
                     ...song,
@@ -17,14 +17,14 @@ export const useSong = (socket) => {
             }
         })
 
-        socket.on("updateSong", (updatedSong) => {
+        socket.on('updateSong', (updatedSong) => {
             setSong(updatedSong)
         })
 
         return () => {
-            socket.off("newSong")
-            socket.off("gameOver")
-            socket.off("updateSong")
+            socket.off('newSong')
+            socket.off('gameOver')
+            socket.off('updateSong')
         }
     }, [socket, song])
 

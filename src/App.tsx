@@ -5,7 +5,7 @@ import { Home, Login, Signup, Layout, Chatroom } from './components'
 import { RootState } from './store'
 import { authActions, AuthState } from './store/authSlice'
 import Cookies from 'js-cookie'
-import { csrfActions, getCSRFToken } from './store/csrfSlice'
+import { getCSRFToken } from './store/csrfSlice'
 
 const App: React.FC = () => {
     const dispatch = useDispatch()
@@ -15,27 +15,24 @@ const App: React.FC = () => {
     }, [dispatch])
 
     useEffect(() => {
-        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
+        let user
+        try {
+            user = JSON.parse(
+                Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME) || '{}'
+            )
+        } catch (e) {
+            console.error('Parsing user cookie failed', e)
         }
-    }, [dispatch])
-
-    useEffect(() => {
+        console.log(user)
         const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
-        }
-
-        // Load user data from localStorage
-        let user = localStorage.getItem('user')
         if (user) {
-            user = JSON.parse(user)
             dispatch(authActions.setUser(user))
             dispatch(authActions.setLoggedIn(true))
+            dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
+
     return (
         <Layout>
             <Routes>
