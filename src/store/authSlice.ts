@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import axios from "axios"
-import { User } from "../utils/types"
-import Cookies from "js-cookie"
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import axios from 'axios'
+import { User } from '../utils/types'
+import Cookies from 'js-cookie'
 
 export interface AuthState {
     token: string | null
@@ -22,7 +22,7 @@ const initialState: AuthState = {
 const serverPort = process.env.REACT_APP_SERVER_PORT
 
 export const loginUser = createAsyncThunk(
-    "auth/loginUser",
+    'auth/loginUser',
     async (
         credentials: { email: string; password: string },
         { dispatch, rejectWithValue }
@@ -34,7 +34,7 @@ export const loginUser = createAsyncThunk(
                 { withCredentials: true }
             )
             if (response.status < 200 || response.status >= 300) {
-                throw new Error("Invalid credentials")
+                throw new Error('Invalid credentials')
             }
             const { token, user } = response.data
             const formattedUser: User = {
@@ -44,14 +44,28 @@ export const loginUser = createAsyncThunk(
                 permission: user.permissions.toString(), // Assuming permission is a string in your User type
                 isActive: user.is_active,
             }
+            console.log('user', user)
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
+                httpOnly: true,
+                secure: true,
+                sameSite: 'strict',
             }) // Add expiration for security
+            Cookies.set(
+                process.env.REACT_APP_AUTH_COOKIE_NAME,
+                JSON.stringify(user),
+                {
+                    expires: 7,
+                    secure: true,
+                    sameSite: 'strict',
+                }
+            )
+            console.log(
+                'process.env.REACT_APP_AUTH_COOKIE_NAME',
+                process.env.REACT_APP_AUTH_COOKIE_NAME
+            )
             dispatch(authActions.storeToken({ token }))
             dispatch(authActions.setUser(formattedUser))
-
-            // Store user data in localStorage
-            localStorage.setItem("user", JSON.stringify(formattedUser))
             return response.data
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message
@@ -62,25 +76,28 @@ export const loginUser = createAsyncThunk(
 )
 
 export const logoutUser = createAsyncThunk(
-    "auth/logoutUser",
+    'auth/logoutUser',
     async (_, { rejectWithValue }) => {
         try {
+            const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME) // Get token from cookie
             await axios.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
                 {},
                 {
                     withCredentials: true,
+                    headers: { Authorization: `Bearer ${token}` }, // Send token in Authorization header
                 }
             )
+            Cookies.remove(process.env.REACT_APP_JWT_COOKIE_NAME)
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
-            return rejectWithValue("Logout failed")
+            return rejectWithValue('Logout failed')
         }
     }
 )
 
 export const signupUser = createAsyncThunk(
-    "auth/signupUser",
+    'auth/signupUser',
     async (
         userData: { username: string; email: string; password: string },
         { rejectWithValue }
@@ -93,13 +110,13 @@ export const signupUser = createAsyncThunk(
             )
             return response.data
         } catch (error) {
-            return rejectWithValue("Signup failed")
+            return rejectWithValue('Signup failed')
         }
     }
 )
 
 const authSlice = createSlice({
-    name: "auth",
+    name: 'auth',
     initialState,
     reducers: {
         storeToken(state, action) {
@@ -149,5 +166,5 @@ export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
 function dispatch(arg0: any) {
-    throw new Error("Function not implemented.")
+    throw new Error('Function not implemented.')
 }

@@ -19,7 +19,6 @@ const Layout: React.FC<Props> = ({ children }) => {
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser() as any)
-            // localStorage.removeItem('user')
         } catch (error) {
             console.error(error)
         }

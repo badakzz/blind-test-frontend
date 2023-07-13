@@ -15,17 +15,20 @@ const App: React.FC = () => {
     }, [dispatch])
 
     useEffect(() => {
-        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
+        let user
+        try {
+            user = JSON.parse(
+                Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME) || '{}'
+            )
+        } catch (e) {
+            console.error('Parsing user cookie failed', e)
         }
-
-        // Load user data from localStorage
-        let user = localStorage.getItem('user')
+        console.log(user)
+        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
         if (user) {
-            user = JSON.parse(user)
             dispatch(authActions.setUser(user))
             dispatch(authActions.setLoggedIn(true))
+            dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
