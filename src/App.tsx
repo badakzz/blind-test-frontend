@@ -18,12 +18,11 @@ const App: React.FC = () => {
         let user
         try {
             user = JSON.parse(
-                Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME) || '{}'
+                Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME)
             )
         } catch (e) {
             console.error('Parsing user cookie failed', e)
         }
-        console.log(user)
         const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
         if (user) {
             dispatch(authActions.setUser(user))
@@ -32,6 +31,7 @@ const App: React.FC = () => {
         }
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
+    console.log('app user', user)
 
     return (
         <Layout>

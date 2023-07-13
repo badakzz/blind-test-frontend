@@ -8,6 +8,7 @@ import {
     PlaylistSelectionModal,
     Scoreboard,
     UsersInRoom,
+    CountdownBar,
 } from './'
 import { useSocket } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
@@ -41,7 +42,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         isHost
     )
 
-    const { audio, playTrack } = useAudioManager(isGameOver)
+    const { audio, playTrack, isAudioPlaying, setIsAudioPlaying } =
+        useAudioManager(isGameOver)
 
     const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
 
@@ -52,9 +54,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         trackPreviewList,
         setTrackPreviewList
     )
-
+    console.log('user', user)
     useEffect(() => {
-        if (!user) {
+        if (!user && !user.userId) {
             return navigate('/')
         }
     }, [user])
@@ -126,7 +128,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             startGame(trackPreviewList, currentChatroom.chatroomId, isHost)
         }
     }, [trackPreviewList, currentChatroom])
-
+    console.log('xx', currentSong)
     useEffect(() => {
         if (gameStarted) {
             setIsWaitingForHost(false)
@@ -161,6 +163,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )}
             {!currentSong && isWaitingForHost && !isHost && (
                 <p>Waiting for the host to start the game...</p>
+            )}
+            {currentSong && isAudioPlaying && (
+                <CountdownBar duration={30} isPlaying={isAudioPlaying} />
             )}
             {currentSong && (
                 <ChatMessagesContainer

@@ -15,7 +15,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     const dispatch = useDispatch()
     const user = useSelector((state: RootState) => state.auth) as AuthState
     const navigate = useNavigate()
-
+    console.log('layout user', user)
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser() as any)

@@ -9,6 +9,7 @@ export interface AuthState {
     loading: boolean
     error: string | null
     user: User | null
+    csrfToken: string
 }
 
 const initialState: AuthState = {
@@ -17,6 +18,7 @@ const initialState: AuthState = {
     loading: false,
     error: null,
     user: null,
+    csrfToken: null,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
@@ -44,7 +46,6 @@ export const loginUser = createAsyncThunk(
                 permission: user.permissions.toString(), // Assuming permission is a string in your User type
                 isActive: user.is_active,
             }
-            console.log('user', user)
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
                 httpOnly: true,
@@ -53,19 +54,25 @@ export const loginUser = createAsyncThunk(
             }) // Add expiration for security
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
-                JSON.stringify(user),
+                JSON.stringify(formattedUser),
                 {
                     expires: 7,
                     secure: true,
                     sameSite: 'strict',
                 }
             )
-            console.log(
-                'process.env.REACT_APP_AUTH_COOKIE_NAME',
-                process.env.REACT_APP_AUTH_COOKIE_NAME
-            )
             dispatch(authActions.storeToken({ token }))
             dispatch(authActions.setUser(formattedUser))
+            if (response.status === 200) {
+                const csrfResponse = await axios.get(
+                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
+                    { withCredentials: true }
+                )
+                return {
+                    user: formattedUser,
+                    csrfToken: csrfResponse.data.csrfToken,
+                }
+            }
             return response.data
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message
@@ -79,16 +86,17 @@ export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
     async (_, { rejectWithValue }) => {
         try {
-            const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME) // Get token from cookie
-            await axios.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
-                {},
-                {
-                    withCredentials: true,
-                    headers: { Authorization: `Bearer ${token}` }, // Send token in Authorization header
-                }
-            )
+            // const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME) // Get token from cookie
+            // await axios.post(
+            //     `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
+            //     {},
+            //     {
+            //         withCredentials: true,
+            //         headers: { Authorization: `Bearer ${token}` }, // Send token in Authorization header
+            //     }
+            // )
             Cookies.remove(process.env.REACT_APP_JWT_COOKIE_NAME)
+            Cookies.remove(process.env.REACT_APP_AUTH_COOKIE_NAME)
             return null // Return null or any other appropriate value upon successful logout
         } catch (error) {
             return rejectWithValue('Logout failed')
@@ -140,6 +148,7 @@ const authSlice = createSlice({
                 state.token = action.payload.user.token // store only the JWT token string
                 state.isLoggedIn = true
                 state.user = action.payload.user
+                state.csrfToken = action.payload.csrfToken
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false

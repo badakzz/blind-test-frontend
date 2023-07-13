@@ -1,6 +1,7 @@
 export { default as Button } from './Button'
 export { default as ChatMessagesContainer } from './ChatMessagesContainer'
 export { default as Chatroom } from './Chatroom'
+export { default as CountdownBar } from './CountdownBar'
 export { default as CreateOrJoinChatroom } from './CreateOrJoinChatroom'
 export { default as UsersInRoom } from './UsersInRoom'
 export { default as Home } from './Home'
