@@ -1,28 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React, { CSSProperties, useEffect, useState } from 'react'
+import { Socket } from 'socket.io-client'
 import '../styles/CountdownBar.css'
 
 interface CountdownBarProps {
     duration: number
-    isPlaying: boolean
+    socket: Socket
 }
 
-const CountdownBar: React.FC<CountdownBarProps> = ({ duration, isPlaying }) => {
+const CountdownBar: React.FC<CountdownBarProps> = ({ duration, socket }) => {
     const [remainingTime, setRemainingTime] = useState(duration)
 
     useEffect(() => {
-        if (!isPlaying) {
-            setRemainingTime(duration)
-        } else {
-            if (remainingTime <= 0) {
-                setRemainingTime(duration) // reset the remaining time when the countdown ends
+        setRemainingTime(duration) // reset the remaining time whenever duration changes
+        const timerId = setInterval(() => {
+            if (remainingTime > 0) {
+                setRemainingTime((prevTime) => prevTime - 1)
             } else {
-                const timerId = setTimeout(() => {
-                    setRemainingTime(remainingTime - 1)
-                }, 1000)
-                return () => clearTimeout(timerId)
+                clearInterval(timerId)
             }
+        }, 1000)
+        return () => clearInterval(timerId)
+    }, [duration])
+
+    useEffect(() => {
+        if (socket) {
+            socket.off('delayNextTrack')
+            socket.on('delayNextTrack', () => {
+                setRemainingTime(duration) // reset the remaining time to the full song duration
+            })
         }
-    }, [remainingTime, isPlaying, duration])
+    }, [socket, duration])
 
     const percentage = (remainingTime / duration) * 100
 
@@ -30,7 +37,10 @@ const CountdownBar: React.FC<CountdownBarProps> = ({ duration, isPlaying }) => {
         <div className="countdown-bar-container">
             <div
                 className="countdown-bar"
-                style={{ width: `${percentage}%` }}
+                style={{
+                    width: `${percentage}%`,
+                    backgroundColor: 'green',
+                }}
             />
         </div>
     )

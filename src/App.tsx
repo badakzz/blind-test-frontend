@@ -31,7 +31,6 @@ const App: React.FC = () => {
         }
     }, [dispatch])
     const user = useSelector((state: RootState) => state.auth) as AuthState
-    console.log('app user', user)
 
     return (
         <Layout>

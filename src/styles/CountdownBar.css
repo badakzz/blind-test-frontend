@@ -6,6 +6,5 @@
 
 .countdown-bar {
     height: 100%;
-    background-color: #4caf50;
     transition: width 1s linear;
 }

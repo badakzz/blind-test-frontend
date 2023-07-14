@@ -6,7 +6,6 @@ export const useGameManager = (socket, isHost) => {
     const [isGameOver, setIsGameOver] = useState(false)
 
     const startGame = (trackPreviewList, chatroomId, isHost) => {
-        console.log('yo')
         if (trackPreviewList && trackPreviewList.length > 0 && isHost) {
             const currentSong = trackPreviewList[0]
             setCurrentSong(currentSong)
@@ -31,7 +30,6 @@ export const useGameManager = (socket, isHost) => {
                 )
             }
             socket.on('gameOver', () => {
-                console.log('gameOver')
                 setIsGameOver(true)
             })
 
