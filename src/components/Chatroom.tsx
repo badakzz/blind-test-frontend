@@ -207,6 +207,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             {currentSong && (
                 <CountdownBar
                     duration={isAudioPlaying ? 30 : 5} // adjust duration based on whether audio is playing
+                    color={isAudioPlaying ? 'green' : 'orange'}
                     socket={socket}
                 />
             )}

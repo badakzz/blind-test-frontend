@@ -23,9 +23,12 @@ export const useAudioManager = (isGameOver) => {
             return null
         }
     }
+
     useEffect(() => {
         if (isGameOver && audio && audio instanceof Audio) {
             audio.pause()
+            audio.src = '' // Clear the audio source
+            setAudio(null)
             setIsAudioPlaying(false)
         }
     }, [isGameOver, audio])
