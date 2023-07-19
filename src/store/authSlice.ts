@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
 import { User } from '../utils/types'
 import Cookies from 'js-cookie'
+import api from '../api'
 
 export interface AuthState {
     token: string | null
@@ -30,7 +30,7 @@ export const loginUser = createAsyncThunk(
         { dispatch, rejectWithValue }
     ) => {
         try {
-            const response = await axios.post(
+            const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
                 { withCredentials: true }
@@ -64,7 +64,7 @@ export const loginUser = createAsyncThunk(
             dispatch(authActions.storeToken({ token }))
             dispatch(authActions.setUser(formattedUser))
             if (response.status === 200) {
-                const csrfResponse = await axios.get(
+                const csrfResponse = await api.get(
                     `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
                     { withCredentials: true }
                 )
@@ -111,7 +111,7 @@ export const signupUser = createAsyncThunk(
         { rejectWithValue }
     ) => {
         try {
-            const response = await axios.post(
+            const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/signup`,
                 userData,
                 { withCredentials: true }

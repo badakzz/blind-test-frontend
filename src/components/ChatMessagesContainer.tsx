@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { User, ChatMessage, Chatroom } from '../utils/types'
 import { Socket } from 'socket.io-client'
-import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
+import api from '../api'
 
 type Props = {
     messages: ChatMessage[]
@@ -22,7 +22,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
     const [message, setMessage] = useState('')
     const sendMessageHandler = () => {
         if (message) {
-            axios.post(
+            api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chat_messages`,
                 {
                     chatroom_id: currentChatroom.chatroomId,

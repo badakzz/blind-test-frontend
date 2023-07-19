@@ -1,18 +1,31 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import { Home, Login, Signup, Layout, Chatroom } from './components'
 import { RootState } from './store'
 import { authActions, AuthState } from './store/authSlice'
 import Cookies from 'js-cookie'
 import { getCSRFToken } from './store/csrfSlice'
+import { redirectQueue } from './api'
 
 const App: React.FC = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     useEffect(() => {
         dispatch(getCSRFToken() as any)
     }, [dispatch])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            if (redirectQueue.length > 0) {
+                const path = redirectQueue.shift()
+                navigate(path)
+            }
+        }, 1000)
+
+        return () => clearInterval(intervalId)
+    }, [navigate])
 
     useEffect(() => {
         let user

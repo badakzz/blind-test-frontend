@@ -9,6 +9,7 @@ import {
     Scoreboard,
     UsersInRoom,
     CountdownBar,
+    TimeUpMessage,
 } from './'
 import { useSocket } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
@@ -16,6 +17,9 @@ import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { Song } from '../utils/types'
+import api from '../api'
 
 interface ChatroomProps {
     user: User | null
@@ -31,8 +35,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [isHost, setIsHost] = useState<boolean>(false)
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
-    const [responseFound, setResponseFound] = useState(false)
-    const [found, setFound] = useState(false)
+    const [songCredentials, setSongCredentials] = useState<Song | null>(null)
+    const [isTimeUp, setIsTimeUp] = useState(false)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const navigate = useNavigate()
@@ -44,10 +48,10 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         isHost
     )
 
-    const { audio, playTrack, isAudioPlaying, setIsAudioPlaying } =
-        useAudioManager(isGameOver)
-
     const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
+
+    const { audio, playTrack, isAudioPlaying, setIsAudioPlaying } =
+        useAudioManager(isGameOver, setIsTimeUp, socket, currentChatroom)
 
     const { currentSongPlaying, setCurrentSongPlaying } = usePlaylistManager(
         playlistId,
@@ -136,18 +140,23 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     if (audio && audio instanceof Audio) {
                         audio.pause()
                         setIsAudioPlaying(false)
-                        socket.emit('syncTimeOut', currentChatroom.chatroomId)
+                        socket.emit('audioEnded', currentChatroom.chatroomId)
                     }
                 }
             })
 
-            socket.on('syncTimeOut', () => {
+            socket.on('syncTimeOut', async () => {
                 console.log('Received syncTimeOut event')
                 if (currentSong) {
                     const currentTrackIndex = trackPreviewList.findIndex(
                         (track) => track.song_id === currentSong.song_id
                     )
                     playNextTrack(currentTrackIndex + 1)
+                    console.log('fetching id', currentSong.song_id)
+                    const response = await api.get(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/songs/credentials/${currentSong.song_id}`
+                    )
+                    setSongCredentials(response.data)
                 }
             })
         }
@@ -174,6 +183,14 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             setIsWaitingForHost(false)
         }
     }, [gameStarted])
+
+    useEffect(() => {
+        if (songCredentials) {
+            setIsTimeUp(false)
+        }
+    }, [songCredentials])
+
+    console.log('songCredentials', songCredentials)
 
     return (
         <>
@@ -204,12 +221,23 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             {!currentSong && isWaitingForHost && !isHost && (
                 <p>Waiting for the host to start the game...</p>
             )}
-            {currentSong && (
+            {currentSong && !isTimeUp && (
                 <CountdownBar
                     duration={isAudioPlaying ? 30 : 5} // adjust duration based on whether audio is playing
                     color={isAudioPlaying ? 'green' : 'orange'}
                     socket={socket}
                 />
+            )}
+            {currentSong && isTimeUp && (
+                <>
+                    {console.log('conditions met')}
+                    <TimeUpMessage song={songCredentials} />
+                    <CountdownBar
+                        duration={5} // adjust duration based on whether audio is playing
+                        color={'orange'}
+                        socket={socket}
+                    />
+                </>
             )}
             {currentSong && (
                 <ChatMessagesContainer

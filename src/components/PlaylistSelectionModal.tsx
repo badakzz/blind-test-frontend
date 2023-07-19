@@ -1,6 +1,7 @@
-import axios from "axios"
-import React, { useEffect, useState } from "react"
-import { Chatroom, Playlist } from "../utils/types"
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import api from '../api'
+import { Chatroom, Playlist } from '../utils/types'
 
 interface PlaylistSelectionModalProps {
     currentChatroom: Chatroom
@@ -23,7 +24,7 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
         const fetchPlaylistList = async () => {
             setLoading(true)
 
-            const playlists = await axios.get(
+            const playlists = await api.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists`
             )
 
@@ -63,7 +64,7 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
     const roomUrl = `${currentUrl}?chatroomId=${currentChatroom.chatroomId}`
 
     return (
-        <div style={{ display: show ? "block" : "none" }}>
+        <div style={{ display: show ? 'block' : 'none' }}>
             <div>
                 <h2>Select a Playlist</h2>
                 {loading ? (
@@ -83,7 +84,7 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
                     </select>
                 )}
                 <div>
-                    Chatroom created! Share this link with others to join:{" "}
+                    Chatroom created! Share this link with others to join:{' '}
                     {roomUrl}
                 </div>
                 <button onClick={handleSubmit}>Submit</button>
