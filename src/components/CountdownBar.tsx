@@ -39,6 +39,12 @@ const CountdownBar: React.FC<CountdownBarProps> = ({
             socket.on('delayNextTrack', () => {
                 setRemainingTime(duration) // reset the remaining time to the full song duration
             })
+
+            // Listen for the 'artistAndSongNamesFound' event
+            socket.off('artistAndSongNamesFound')
+            socket.on('artistAndSongNamesFound', () => {
+                setRemainingTime(duration) // reset the remaining time to the full song duration
+            })
         }
     }, [socket, duration])
 
