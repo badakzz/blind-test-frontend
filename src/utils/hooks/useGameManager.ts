@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react'
 
 export const useGameManager = (socket, isHost) => {
     const [gameStarted, setGameStarted] = useState(false)
-    const [currentSong, setCurrentSong] = useState(null)
+    const [firstSong, setCurrentSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
 
     const startGame = (trackPreviewList, chatroomId, isHost) => {
         if (trackPreviewList && trackPreviewList.length > 0 && isHost) {
-            const currentSong = trackPreviewList[0]
-            setCurrentSong(currentSong)
+            const firstSong = trackPreviewList[0]
+            setCurrentSong(firstSong)
             socket.emit('startGame', {
-                currentSong,
+                firstSong,
                 trackPreviewList,
                 chatroomId,
             })
@@ -21,13 +21,10 @@ export const useGameManager = (socket, isHost) => {
     useEffect(() => {
         if (socket) {
             if (!isHost) {
-                socket.on(
-                    'gameStarted',
-                    ({ currentSong, trackPreviewList }) => {
-                        setCurrentSong(currentSong)
-                        setGameStarted(true)
-                    }
-                )
+                socket.on('gameStarted', ({ firstSong, trackPreviewList }) => {
+                    setCurrentSong(firstSong)
+                    setGameStarted(true)
+                })
             }
             socket.on('gameOver', () => {
                 setIsGameOver(true)
@@ -40,5 +37,5 @@ export const useGameManager = (socket, isHost) => {
         }
     }, [socket, isHost])
 
-    return { startGame, gameStarted, currentSong, isGameOver }
+    return { startGame, gameStarted, firstSong, isGameOver }
 }

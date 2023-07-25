@@ -43,7 +43,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
 
     const { socket, connectedUsers } = useSocket()
 
-    const { gameStarted, currentSong, isGameOver, startGame } = useGameManager(
+    const { gameStarted, firstSong, isGameOver, startGame } = useGameManager(
         socket,
         isHost
     )
@@ -98,26 +98,26 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         }
     }
 
-    console.log('currentSong', currentSong)
+    console.log('firstSong', firstSong)
     useEffect(() => {
-        if (currentSong) {
+        if (firstSong) {
             const currentTrackIndex = trackPreviewList.findIndex(
-                (track) => track.song_id === currentSong.song_id
+                (track) => track.song_id === firstSong.song_id
             )
             console.log('currentTrackIndex', currentTrackIndex)
             playNextTrack(currentTrackIndex)
         }
-    }, [currentSong])
+    }, [firstSong])
 
     // useEffect(() => {
-    //     if (currentSong) {
-    //         const songId = playTrack(currentSong)
+    //     if (firstSong) {
+    //         const songId = playTrack(firstSong)
     //         console.log("returned id from playtrack", songId)
     //         if (songId) {
     //             setCurrentSongPlaying(songId)
     //         }
     //     }
-    // }, [currentSong])
+    // }, [firstSong])
     useEffect(() => {
         if (socket) {
             // Clean up old event listeners
@@ -130,7 +130,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 setMessages((currentMsg) => [...currentMsg, msg])
             })
 
-            socket.on('gameStarted', ({ currentSong, trackPreviewList }) => {
+            socket.on('gameStarted', ({ firstSong, trackPreviewList }) => {
                 setTrackPreviewList(trackPreviewList)
             })
         }
@@ -152,7 +152,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                 }
             })
         }
-    }, [socket, currentChatroom, currentSong])
+    }, [socket, currentChatroom, firstSong])
 
     useEffect(() => {
         if (socket) {
@@ -219,17 +219,17 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     onPlaylistSelected={setPlaylistId}
                 />
             )}
-            {!currentSong && isWaitingForHost && !isHost && (
+            {!firstSong && isWaitingForHost && !isHost && (
                 <p>Waiting for the host to start the game...</p>
             )}
-            {currentSong && !isTimeUp && (
+            {firstSong && !isTimeUp && (
                 <CountdownBar
                     duration={isAudioPlaying ? 30 : 5} // adjust duration based on whether audio is playing
                     color={isAudioPlaying ? 'green' : 'orange'}
                     socket={socket}
                 />
             )}
-            {currentSong && isTimeUp && (
+            {firstSong && isTimeUp && (
                 <>
                     {console.log('conditions met')}
                     <TimeUpMessage song={currentSongCredentials} />
@@ -240,7 +240,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
                     />
                 </>
             )}
-            {currentSong && (
+            {firstSong && (
                 <ChatMessagesContainer
                     messages={messages}
                     user={user}
