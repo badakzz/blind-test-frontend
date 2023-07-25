@@ -28,7 +28,7 @@ export const useAudioManager = (
             )
             if (response.status === 200) {
                 setCurrentSongCredentials(response.data)
-                console.log('aaa', response.data)
+                console.log('response was', response.data)
             } else {
                 console.error('Error fetching song credentials', response)
             }
@@ -44,27 +44,18 @@ export const useAudioManager = (
     }, [socket, currentChatroom, currentSongCredentials])
 
     const playTrack = (track, onEnded) => {
-        console.log('track', track)
+        console.log('playTrack called with track:', track)
         if (track && track.preview_url) {
-            // Only change the 'src' instead of creating a new audio object
             audioRef.current.src = track.preview_url
-
-            setCurrentSongCredentials({ ...track, songId: track.song_id }) // Store song details including id
-
+            setCurrentSongCredentials({ ...track, songId: track.song_id })
             audioRef.current.play().catch((e) => {
-                console.log('Error playing audio', e)
+                console.error('Error playing audio', e)
             })
-
-            console.log('song', track.song_name)
-            console.log('artist', track.artist_name)
-
             setIsAudioPlaying(true)
-
             audioRef.current.onended = () => {
+                console.log('Track ended:', track.song_id)
                 onEnded()
             }
-
-            console.log('track', track.song_id)
             return track.song_id
         } else {
             console.log('Invalid track or track.preview_url is not defined.')
