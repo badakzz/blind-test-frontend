@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import axios from "axios"
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 export const usePlaylistManager = (
     playlistId,
@@ -8,8 +8,7 @@ export const usePlaylistManager = (
     trackPreviewList,
     setTrackPreviewList
 ) => {
-    const [currentSongPlaying, setCurrentSongPlaying] = useState("")
-
+    const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     useEffect(() => {
         if (playlistId) {
             const fetchTrackPreviews = async () => {
@@ -31,38 +30,9 @@ export const usePlaylistManager = (
                 }
             }
             fetchTrackPreviews()
+            console.log('call')
         }
     }, [playlistId])
-
-    // useEffect(() => {
-    //     if (currentSongPlaying && currentChatroom) {
-    //         const updateCurrentSongPlaying = async () => {
-    //             try {
-    //                 const response = await axios.put(
-    //                     `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${currentChatroom.chatroomId}/current_song_playing_id`,
-    //                     { chatroom_current_song_id: currentSongPlaying },
-    //                     {
-    //                         headers: {
-    //                             "X-CSRF-TOKEN": csrfToken,
-    //                         },
-    //                         withCredentials: true,
-    //                     }
-    //                 )
-    //                 if (response.status !== 200) {
-    //                     console.error(
-    //                         "Failed to update the current song playing"
-    //                     )
-    //                 }
-    //             } catch (error) {
-    //                 console.error(
-    //                     "An error occurred while updating the current song playing",
-    //                     error
-    //                 )
-    //             }
-    //         }
-    //         updateCurrentSongPlaying()
-    //     }
-    // }, [currentSongPlaying, currentChatroom, csrfToken])
 
     return { trackPreviewList, currentSongPlaying, setCurrentSongPlaying }
 }

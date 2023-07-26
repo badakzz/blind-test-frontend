@@ -1,37 +1,64 @@
 import { useState, useEffect } from 'react'
 
-export const useGameManager = (socket, isHost) => {
+export const useGameManager = (
+    socket,
+    setTrackPreviewList,
+    isHost,
+    setShowModalPlaylistSelection,
+    setIsWaitingForHost
+) => {
     const [gameStarted, setGameStarted] = useState(false)
-    const [currentSong, setCurrentSong] = useState(null)
+    const [firstSong, setFirstSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
 
     const startGame = (trackPreviewList, chatroomId, isHost) => {
-        console.log('yo')
         if (trackPreviewList && trackPreviewList.length > 0 && isHost) {
-            const currentSong = trackPreviewList[0]
-            setCurrentSong(currentSong)
+            const firstSong = trackPreviewList[0]
+            setFirstSong(firstSong)
             socket.emit('startGame', {
-                currentSong,
-                trackPreviewList,
                 chatroomId,
+                firstSong,
+                trackPreviewList,
             })
             setGameStarted(true)
         }
     }
 
+    const resetGame = (chatroomId) => {
+        setGameStarted(false)
+        setIsGameOver(false)
+        setFirstSong(null)
+        setShowModalPlaylistSelection(true)
+        setTrackPreviewList(null)
+        socket.emit('resetGame', { chatroomId })
+    }
+
+    useEffect(() => {
+        if (socket && !isHost) {
+            socket.on('gameReset', () => {
+                setGameStarted(false)
+                setIsGameOver(false)
+                setFirstSong(null)
+                setIsWaitingForHost(true)
+                setTrackPreviewList(null)
+            })
+            return () => {
+                socket.off('gameReset')
+            }
+        }
+    }, [socket, isHost])
+
     useEffect(() => {
         if (socket) {
             if (!isHost) {
-                socket.on(
-                    'gameStarted',
-                    ({ currentSong, trackPreviewList }) => {
-                        setCurrentSong(currentSong)
-                        setGameStarted(true)
-                    }
-                )
+                socket.on('gameStarted', ({ firstSong, trackPreviewList }) => {
+                    console.log('gamestart', firstSong, trackPreviewList)
+                    setFirstSong(firstSong)
+                    setTrackPreviewList(trackPreviewList)
+                    setGameStarted(true)
+                })
             }
             socket.on('gameOver', () => {
-                console.log('gameOver')
                 setIsGameOver(true)
             })
 
@@ -42,5 +69,5 @@ export const useGameManager = (socket, isHost) => {
         }
     }, [socket, isHost])
 
-    return { startGame, gameStarted, currentSong, isGameOver }
+    return { startGame, resetGame, gameStarted, firstSong, isGameOver }
 }

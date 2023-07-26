@@ -1,31 +1,86 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from 'react'
+import api from '../../api'
 
-export const useAudioManager = (isGameOver) => {
-    const [audio, setAudio] = useState(null)
+export const useAudioManager = (
+    isGameOver,
+    setIsTimeUp,
+    socket,
+    currentChatroom
+) => {
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false)
+    const [currentSongCredentials, setCurrentSongCredentials] = useState(null)
+    const audioRef = useRef(new Audio()) // Initialize with an empty Audio object
+
+    const fetchSongCredentials = async (songId) => {
+        return await api.get(
+            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/songs/credentials/${songId}`
+        )
+    }
+
+    useEffect(() => {
+        const handleAudioEnd = async () => {
+            setIsTimeUp(true)
+            socket.emit('audioEnded', currentChatroom.chatroomId)
+
+            // Fetch song credentials once the song has ended
+            const response = await fetchSongCredentials(
+                currentSongCredentials.songId
+            )
+            if (response.status === 200) {
+                setCurrentSongCredentials(response.data)
+                console.log('response was', response.data)
+            } else {
+                console.error('Error fetching song credentials', response)
+            }
+        }
+
+        // Set up 'onended' event listener
+        audioRef.current.onended = handleAudioEnd
+
+        // Clean up
+        return () => {
+            audioRef.current.onended = null
+        }
+    }, [socket, currentChatroom, currentSongCredentials])
 
     const playTrack = (track, onEnded) => {
+        console.log('artist', track.artist_name)
+        console.log('song', track.song_name)
         if (track && track.preview_url) {
-            const newAudio = new Audio(track.preview_url)
-            newAudio.onended = onEnded // Call the callback when the audio ends.
-            if (newAudio && newAudio instanceof Audio) {
-                console.log("song", track.song_name)
-                console.log("artist", track.artist_name)
-                newAudio.play().catch((e) => {
-                    console.log("Error playing audio", e)
+            audioRef.current.src = track.preview_url
+            audioRef.current.load() // Load the new source
+            setCurrentSongCredentials({ ...track, songId: track.song_id })
+            audioRef.current.oncanplay = () => {
+                // Wait for audio to load before playing
+                audioRef.current.play().catch((e) => {
+                    console.error('Error playing audio', e)
                 })
             }
-            setAudio(newAudio)
+            setIsAudioPlaying(true)
+            audioRef.current.onended = () => {
+                console.log('Track ended:', track.song_id)
+                onEnded()
+            }
             return track.song_id
         } else {
-            console.log("Invalid track or track.preview_url is not defined.")
+            console.log('Invalid track or track.preview_url is not defined.')
             return null
         }
     }
-    useEffect(() => {
-        if (isGameOver && audio && audio instanceof Audio) {
-            audio.pause()
-        }
-    }, [isGameOver, audio])
 
-    return { audio, playTrack }
+    useEffect(() => {
+        if (isGameOver && audioRef.current) {
+            audioRef.current.pause()
+            audioRef.current.src = '' // Clear the audio source
+            setIsAudioPlaying(false)
+        }
+    }, [isGameOver])
+
+    return {
+        audio: audioRef.current,
+        playTrack,
+        isAudioPlaying,
+        setIsAudioPlaying,
+        currentSongCredentials,
+    }
 }

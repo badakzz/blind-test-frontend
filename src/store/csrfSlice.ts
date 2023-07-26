@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import api from '../api'
 
 interface CSRFState {
     loading: boolean
@@ -19,7 +19,7 @@ export const getCSRFToken = createAsyncThunk(
     'csrf/getCSRFToken',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get(
+            const response = await api.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
                 { withCredentials: true }
             )
