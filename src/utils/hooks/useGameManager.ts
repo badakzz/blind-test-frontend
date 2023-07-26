@@ -1,7 +1,11 @@
-import { first } from 'lodash'
 import { useState, useEffect } from 'react'
 
-export const useGameManager = (socket, setTrackPreviewList, isHost) => {
+export const useGameManager = (
+    socket,
+    setTrackPreviewList,
+    isHost,
+    setShowModalPlaylistSelection
+) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [firstSong, setFirstSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
@@ -18,6 +22,27 @@ export const useGameManager = (socket, setTrackPreviewList, isHost) => {
             setGameStarted(true)
         }
     }
+
+    const resetGame = (chatroomId) => {
+        setGameStarted(false)
+        setIsGameOver(false)
+        setFirstSong(null)
+        setShowModalPlaylistSelection(true) // Add this line
+        // socket.emit('resetGame', { chatroomId })
+    }
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('gameReset', () => {
+                setGameStarted(false)
+                setIsGameOver(false)
+                setFirstSong(null)
+            })
+            return () => {
+                socket.off('gameReset')
+            }
+        }
+    }, [socket])
 
     useEffect(() => {
         if (socket) {
@@ -40,5 +65,5 @@ export const useGameManager = (socket, setTrackPreviewList, isHost) => {
         }
     }, [socket, isHost])
 
-    return { startGame, gameStarted, firstSong, isGameOver }
+    return { startGame, resetGame, gameStarted, firstSong, isGameOver }
 }

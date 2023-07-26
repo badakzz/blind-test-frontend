@@ -44,13 +44,18 @@ export const useAudioManager = (
     }, [socket, currentChatroom, currentSongCredentials])
 
     const playTrack = (track, onEnded) => {
-        console.log('playTrack called with track:', track)
+        console.log('artist', track.artist_name)
+        console.log('song', track.song_name)
         if (track && track.preview_url) {
             audioRef.current.src = track.preview_url
+            audioRef.current.load() // Load the new source
             setCurrentSongCredentials({ ...track, songId: track.song_id })
-            audioRef.current.play().catch((e) => {
-                console.error('Error playing audio', e)
-            })
+            audioRef.current.oncanplay = () => {
+                // Wait for audio to load before playing
+                audioRef.current.play().catch((e) => {
+                    console.error('Error playing audio', e)
+                })
+            }
             setIsAudioPlaying(true)
             audioRef.current.onended = () => {
                 console.log('Track ended:', track.song_id)

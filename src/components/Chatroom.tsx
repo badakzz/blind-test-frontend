@@ -43,11 +43,15 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
 
     const { socket, connectedUsers } = useSocket()
 
-    const { gameStarted, firstSong, isGameOver, startGame } = useGameManager(
-        socket,
-        setTrackPreviewList,
-        isHost
-    )
+    const { gameStarted, firstSong, isGameOver, startGame, resetGame } =
+        useGameManager(
+            socket,
+            setTrackPreviewList,
+            isHost,
+            setShowModalPlaylistSelection
+        )
+
+    console.log(firstSong, gameStarted, isGameOver)
 
     const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
 
@@ -73,33 +77,22 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
         }
     }, [user])
 
-    // const playNextTrack = (currentTrackIndex) => {
-    //     if (currentTrackIndex < trackPreviewList.length - 1) {
-    //         const nextTrack = trackPreviewList[currentTrackIndex + 1]
-    //         const songId = playTrack(nextTrack, () => {
-    //             playNextTrack(currentTrackIndex + 1)
-    //             setFound(false)
-    //         })
-    //         if (songId) {
-    //             setCurrentSongPlaying(songId)
-    //         }
-    //     }
-    // }
     const playNextTrack = () => {
         console.log('playNextTrack called with index:', currentSongIndex)
-        if (currentSongIndex < trackPreviewList.length - 1) {
-            setCurrentSongIndex((prevIndex) => prevIndex + 1)
-            const nextTrack = trackPreviewList[currentSongIndex]
-            setIsAudioPlaying(true)
-            const songId = playTrack(nextTrack, () => {
-                playNextTrack()
-            })
-            if (songId) {
-                setCurrentSongPlaying(songId)
+        setCurrentSongIndex((prevIndex) => {
+            if (prevIndex < trackPreviewList.length - 1) {
+                const nextTrack = trackPreviewList[prevIndex + 1]
+                setIsAudioPlaying(true)
+                const songId = playTrack(nextTrack, playNextTrack)
+                if (songId) {
+                    setCurrentSongPlaying(songId)
+                }
+                return prevIndex + 1
+            } else {
+                console.log('No more tracks to play')
+                return prevIndex
             }
-        } else {
-            console.log('No more tracks to play')
-        }
+        })
     }
 
     useEffect(() => {
@@ -110,9 +103,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )
             console.log('currentTrackIndex', index)
             setCurrentSongIndex(index)
-            const songId = playTrack(firstSong, () => {
-                playNextTrack()
-            })
+            const songId = playTrack(firstSong, playNextTrack)
             if (songId) {
                 setCurrentSongPlaying(songId)
             }
@@ -253,6 +244,7 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )}
             {isInRoom && <UsersInRoom connectedUsers={connectedUsers} />}
             {isGameOver && <Scoreboard chatroom={currentChatroom} />}
+            {isGameOver && <button onClick={resetGame}>Play Again</button>}
         </>
     )
 }
