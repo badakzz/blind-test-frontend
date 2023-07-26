@@ -1,5 +1,5 @@
-import React, { CSSProperties, FunctionComponent } from "react"
-import { Form, FormControlProps } from "react-bootstrap"
+import { CSSProperties, FunctionComponent } from 'react'
+import { Form, FormControlProps } from 'react-bootstrap'
 
 type Props = {
     label?: string
@@ -8,7 +8,7 @@ type Props = {
     formControlProps: FormControlProps
     canHaveError?: boolean
     error?: string
-    size?: "sm"
+    size?: 'sm'
     hasFormErrors?: () => void
 } & any
 
@@ -39,13 +39,13 @@ const Input: FunctionComponent<Props> = ({
                 name={name}
                 style={{
                     ...(formControlProps?.style || {}),
-                    ...(size === "sm" ? styles.smFormControl : {}),
+                    ...(size === 'sm' ? styles.smFormControl : {}),
                 }}
             />
             {canHaveError && (
                 <div
                     style={
-                        size === "sm"
+                        size === 'sm'
                             ? styles.smErrorContainer
                             : styles.errorContainer
                     }
@@ -54,7 +54,7 @@ const Input: FunctionComponent<Props> = ({
                     {!!error && (
                         <div
                             className="text-danger"
-                            style={size === "sm" ? styles.smErrorLabel : {}}
+                            style={size === 'sm' ? styles.smErrorLabel : {}}
                         >
                             {error}
                         </div>
@@ -67,7 +67,7 @@ const Input: FunctionComponent<Props> = ({
 
 const styles: { [key: string]: CSSProperties } = {
     star: {
-        color: "var(--bs-red)",
+        color: 'var(--bs-red)',
     },
     errorContainer: {
         minHeight: 24,

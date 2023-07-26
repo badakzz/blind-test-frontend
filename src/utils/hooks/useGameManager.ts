@@ -52,7 +52,6 @@ export const useGameManager = (
         if (socket) {
             if (!isHost) {
                 socket.on('gameStarted', ({ firstSong, trackPreviewList }) => {
-                    console.log('gamestart', firstSong, trackPreviewList)
                     setFirstSong(firstSong)
                     setTrackPreviewList(trackPreviewList)
                     setGameStarted(true)

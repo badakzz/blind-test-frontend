@@ -30,7 +30,6 @@ export const usePlaylistManager = (
                 }
             }
             fetchTrackPreviews()
-            console.log('call')
         }
     }, [playlistId])
 

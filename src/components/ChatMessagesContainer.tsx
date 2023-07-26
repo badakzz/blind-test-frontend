@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, FormEvent } from 'react'
 import { User, ChatMessage, Chatroom } from '../utils/types'
 import { Socket } from 'socket.io-client'
 import { useSelector } from 'react-redux'
@@ -20,7 +20,8 @@ const ChatMessagesContainer: React.FC<Props> = ({
 }) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const [message, setMessage] = useState('')
-    const sendMessageHandler = () => {
+    const sendMessageHandler = (e: FormEvent) => {
+        e.preventDefault()
         if (message) {
             api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chat_messages`,
@@ -42,7 +43,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 content: message,
                 userId: user.userId,
             } as ChatMessage)
-            // socket.emit('')
             setMessage('')
         }
     }
@@ -56,14 +56,14 @@ const ChatMessagesContainer: React.FC<Props> = ({
                     </div>
                 ))}
             </div>
-            <div>
+            <form onSubmit={sendMessageHandler}>
                 <input
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                 />
-                <button onClick={sendMessageHandler}>Send</button>
-            </div>
+                <button type="submit">Send</button>
+            </form>
         </>
     )
 }

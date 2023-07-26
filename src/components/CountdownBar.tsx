@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Socket } from 'socket.io-client'
 import '../styles/CountdownBar.css'
 

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import api from '../api'
 import { Chatroom, Playlist } from '../utils/types'
@@ -67,6 +66,10 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
     const currentUrl = window.location.href
     const roomUrl = `${currentUrl}?chatroomId=${currentChatroom.chatroomId}`
 
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(currentChatroom.chatroomId)
+    }
+
     return (
         <div style={{ display: show ? 'block' : 'none' }}>
             <div>
@@ -95,6 +98,7 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
                     Chatroom created! Share this link with others to join:{' '}
                     {roomUrl}
                 </div>
+                <button onClick={copyToClipboard}>Copy room id</button>
                 <button
                     onClick={handleSubmit}
                     disabled={selectedPlaylist === ''}

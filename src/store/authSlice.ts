@@ -43,7 +43,7 @@ export const loginUser = createAsyncThunk(
                 userId: user.user_id,
                 username: user.username,
                 email: user.email,
-                permission: user.permissions.toString(), // Assuming permission is a string in your User type
+                permission: user.permissions.toString(),
                 isActive: user.is_active,
             }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
@@ -86,18 +86,9 @@ export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
     async (_, { rejectWithValue }) => {
         try {
-            // const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME) // Get token from cookie
-            // await axios.post(
-            //     `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/logout`,
-            //     {},
-            //     {
-            //         withCredentials: true,
-            //         headers: { Authorization: `Bearer ${token}` }, // Send token in Authorization header
-            //     }
-            // )
             Cookies.remove(process.env.REACT_APP_JWT_COOKIE_NAME)
             Cookies.remove(process.env.REACT_APP_AUTH_COOKIE_NAME)
-            return null // Return null or any other appropriate value upon successful logout
+            return null
         } catch (error) {
             return rejectWithValue('Logout failed')
         }
