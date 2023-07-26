@@ -18,7 +18,7 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
     const [loading, setLoading] = useState(false)
-    const [selectedPlaylist, setSelectedPlaylist] = useState(null)
+    const [selectedPlaylist, setSelectedPlaylist] = useState('')
 
     useEffect(() => {
         const fetchPlaylistList = async () => {
@@ -49,6 +49,10 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
         fetchPlaylistList()
     }, [])
 
+    useEffect(() => {
+        setSelectedPlaylist('')
+    }, [show])
+
     const handlePlaylistChange = (event: any) => {
         setSelectedPlaylist(event.target.value)
     }
@@ -70,24 +74,33 @@ const PlaylistSelectionModal: React.FC<PlaylistSelectionModalProps> = ({
                 {loading ? (
                     <div>Loading...</div>
                 ) : (
-                    <select onChange={handlePlaylistChange}>
-                        {playlistList.map((playlist: Playlist) => {
-                            return (
-                                <option
-                                    key={playlist.playlist_id}
-                                    value={playlist.spotify_playlist_id}
-                                >
-                                    {playlist.name}
-                                </option>
-                            )
-                        })}
+                    <select
+                        value={selectedPlaylist}
+                        onChange={handlePlaylistChange}
+                    >
+                        <option disabled value="">
+                            Select a playlist...
+                        </option>
+                        {playlistList.map((playlist: Playlist) => (
+                            <option
+                                key={playlist.playlist_id}
+                                value={playlist.spotify_playlist_id}
+                            >
+                                {playlist.name}
+                            </option>
+                        ))}
                     </select>
                 )}
                 <div>
                     Chatroom created! Share this link with others to join:{' '}
                     {roomUrl}
                 </div>
-                <button onClick={handleSubmit}>Submit</button>
+                <button
+                    onClick={handleSubmit}
+                    disabled={selectedPlaylist === ''}
+                >
+                    Submit
+                </button>
                 <button onClick={onHide}>Close</button>
             </div>
         </div>

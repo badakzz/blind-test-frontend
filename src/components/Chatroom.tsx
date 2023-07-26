@@ -48,7 +48,8 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             socket,
             setTrackPreviewList,
             isHost,
-            setShowModalPlaylistSelection
+            setShowModalPlaylistSelection,
+            setIsWaitingForHost
         )
 
     console.log(firstSong, gameStarted, isGameOver)
@@ -176,8 +177,17 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     }, [currentSongPlaying, currentChatroom, socket])
 
     useEffect(() => {
-        if (trackPreviewList.length > 0 && currentChatroom) {
-            console.log(trackPreviewList, currentChatroom.chatroomId, isHost)
+        if (
+            trackPreviewList &&
+            trackPreviewList.length > 0 &&
+            currentChatroom
+        ) {
+            console.log(
+                trackPreviewList,
+                currentChatroom.chatroomId,
+                isHost,
+                trackPreviewList
+            )
             startGame(trackPreviewList, currentChatroom.chatroomId, isHost)
         }
     }, [trackPreviewList, currentChatroom])
@@ -244,7 +254,11 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
             )}
             {isInRoom && <UsersInRoom connectedUsers={connectedUsers} />}
             {isGameOver && <Scoreboard chatroom={currentChatroom} />}
-            {isGameOver && <button onClick={resetGame}>Play Again</button>}
+            {isGameOver && isHost && (
+                <button onClick={() => resetGame(currentChatroom.chatroomId)}>
+                    Play Again
+                </button>
+            )}
         </>
     )
 }

@@ -9,7 +9,6 @@ export const usePlaylistManager = (
     setTrackPreviewList
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
-
     useEffect(() => {
         if (playlistId) {
             const fetchTrackPreviews = async () => {
@@ -31,6 +30,7 @@ export const usePlaylistManager = (
                 }
             }
             fetchTrackPreviews()
+            console.log('call')
         }
     }, [playlistId])
 

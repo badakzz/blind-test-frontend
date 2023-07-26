@@ -4,7 +4,8 @@ export const useGameManager = (
     socket,
     setTrackPreviewList,
     isHost,
-    setShowModalPlaylistSelection
+    setShowModalPlaylistSelection,
+    setIsWaitingForHost
 ) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [firstSong, setFirstSong] = useState(null)
@@ -27,22 +28,25 @@ export const useGameManager = (
         setGameStarted(false)
         setIsGameOver(false)
         setFirstSong(null)
-        setShowModalPlaylistSelection(true) // Add this line
-        // socket.emit('resetGame', { chatroomId })
+        setShowModalPlaylistSelection(true)
+        setTrackPreviewList(null)
+        socket.emit('resetGame', { chatroomId })
     }
 
     useEffect(() => {
-        if (socket) {
+        if (socket && !isHost) {
             socket.on('gameReset', () => {
                 setGameStarted(false)
                 setIsGameOver(false)
                 setFirstSong(null)
+                setIsWaitingForHost(true)
+                setTrackPreviewList(null)
             })
             return () => {
                 socket.off('gameReset')
             }
         }
-    }, [socket])
+    }, [socket, isHost])
 
     useEffect(() => {
         if (socket) {
