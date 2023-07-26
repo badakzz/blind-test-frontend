@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import api from '../api'
 import { Chatroom, Playlist } from '../utils/types'

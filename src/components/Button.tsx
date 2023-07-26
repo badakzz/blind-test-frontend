@@ -1,5 +1,5 @@
-import React, { ForwardRefExoticComponent, FunctionComponent } from "react"
-import { Button as RBButton, ButtonProps, Spinner } from "react-bootstrap"
+import React, { ForwardRefExoticComponent, FunctionComponent } from 'react'
+import { Button as RBButton, ButtonProps, Spinner } from 'react-bootstrap'
 
 export type Props = {
     isLoading?: boolean
@@ -11,9 +11,8 @@ const Button: ForwardRefExoticComponent<Props> = React.forwardRef(
     ({ isLoading, LeftIcon, RightIcon, children, ...restOfProps }, ref) => (
         <RBButton
             {...restOfProps}
-            // ref={ref}
             className={`${
-                restOfProps?.className || ""
+                restOfProps?.className || ''
             } d-flex align-items-center justify-content-center`}
         >
             {isLoading && <Spinner animation="border" size="sm" />}
@@ -28,7 +27,6 @@ const Button: ForwardRefExoticComponent<Props> = React.forwardRef(
     )
 )
 
-// Fix react/display-name
-Button.displayName = "Button"
+Button.displayName = 'Button'
 
 export default Button

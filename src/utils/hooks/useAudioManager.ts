@@ -1,12 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import api from '../../api'
 
-export const useAudioManager = (
-    isGameOver,
-    setIsTimeUp,
-    socket,
-    currentChatroom
-) => {
+export const useAudioManager = (isGameOver, socket, currentChatroom) => {
     const [isAudioPlaying, setIsAudioPlaying] = useState(false)
     const [currentSongCredentials, setCurrentSongCredentials] = useState(null)
     const audioRef = useRef(new Audio()) // Initialize with an empty Audio object
@@ -19,51 +14,69 @@ export const useAudioManager = (
 
     useEffect(() => {
         const handleAudioEnd = async () => {
-            setIsTimeUp(true)
+            setIsAudioPlaying(false)
             socket.emit('audioEnded', currentChatroom.chatroomId)
 
-            // Fetch song credentials once the song has ended
             const response = await fetchSongCredentials(
                 currentSongCredentials.songId
             )
             if (response.status === 200) {
                 setCurrentSongCredentials(response.data)
-                console.log('response was', response.data)
             } else {
                 console.error('Error fetching song credentials', response)
             }
         }
 
-        // Set up 'onended' event listener
         audioRef.current.onended = handleAudioEnd
 
-        // Clean up
         return () => {
             audioRef.current.onended = null
         }
     }, [socket, currentChatroom, currentSongCredentials])
+
+    useEffect(() => {
+        if (socket) {
+            socket.off('artistAndSongNamesFound')
+
+            socket.on('artistAndSongNamesFound', async () => {
+                if (currentChatroom && currentChatroom.chatroomId) {
+                    if (audioRef.current && audioRef.current instanceof Audio) {
+                        audioRef.current.pause()
+                        setIsAudioPlaying(false)
+                        socket.emit('audioEnded', currentChatroom.chatroomId)
+                    }
+                }
+                const response = await fetchSongCredentials(
+                    currentSongCredentials.songId
+                )
+                if (response.status === 200) {
+                    setCurrentSongCredentials(response.data)
+                    socket.emit('songCredentialsUpdated', response.data)
+                } else {
+                    console.error('Error fetching song credentials', response)
+                }
+            })
+        }
+    }, [socket, currentSongCredentials])
 
     const playTrack = (track, onEnded) => {
         console.log('artist', track.artist_name)
         console.log('song', track.song_name)
         if (track && track.preview_url) {
             audioRef.current.src = track.preview_url
-            audioRef.current.load() // Load the new source
+            audioRef.current.load()
             setCurrentSongCredentials({ ...track, songId: track.song_id })
             audioRef.current.oncanplay = () => {
-                // Wait for audio to load before playing
                 audioRef.current.play().catch((e) => {
                     console.error('Error playing audio', e)
                 })
             }
             setIsAudioPlaying(true)
             audioRef.current.onended = () => {
-                console.log('Track ended:', track.song_id)
                 onEnded()
             }
             return track.song_id
         } else {
-            console.log('Invalid track or track.preview_url is not defined.')
             return null
         }
     }
@@ -71,7 +84,7 @@ export const useAudioManager = (
     useEffect(() => {
         if (isGameOver && audioRef.current) {
             audioRef.current.pause()
-            audioRef.current.src = '' // Clear the audio source
+            audioRef.current.src = ''
             setIsAudioPlaying(false)
         }
     }, [isGameOver])
