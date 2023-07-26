@@ -42,9 +42,7 @@ const Scoreboard: React.FC<Props> = ({ chatroom }) => {
     return (
         <>
             <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Game End Scores</Modal.Title>
-                </Modal.Header>
+                <Modal.Title>Scores</Modal.Title>
                 <Modal.Body>
                     {scores.map((score, index) => (
                         <p key={index}>

@@ -39,6 +39,7 @@ export const useAudioManager = (isGameOver, socket, currentChatroom) => {
             socket.off('artistAndSongNamesFound')
 
             socket.on('artistAndSongNamesFound', async () => {
+                console.log('both')
                 if (currentChatroom && currentChatroom.chatroomId) {
                     if (audioRef.current && audioRef.current instanceof Audio) {
                         audioRef.current.pause()
