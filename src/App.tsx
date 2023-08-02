@@ -28,12 +28,13 @@ const App: React.FC = () => {
 
     useEffect(() => {
         let user
-        try {
-            user = JSON.parse(
-                Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME)
-            )
-        } catch (e) {
-            console.error('Parsing user cookie failed', e)
+        const userCookie = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME)
+        if (userCookie) {
+            try {
+                user = JSON.parse(userCookie)
+            } catch (e) {
+                console.error('Parsing user cookie failed', e)
+            }
         }
         const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
         if (user) {

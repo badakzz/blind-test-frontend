@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { CSSProperties, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser } from '../store/authSlice'
 import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
+import { Button, Container, Form } from 'react-bootstrap'
+import { isEmailValid } from '../utils/helpers'
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [emailError, setEmailError] = useState('')
+    const [passwordError, setPasswordError] = useState('')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -23,41 +27,82 @@ const Login: React.FC = () => {
         setPassword('')
     }
 
+    const handleEmailBlur = () => {
+        if (!isEmailValid(email)) {
+            setEmailError('Please enter a valid email')
+        } else {
+            setEmailError('')
+        }
+    }
+
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/')
         }
     }, [isLoggedIn, navigate])
 
+    console.log({
+        loading,
+        error,
+        emailError: emailError ? Object.values(emailError).some(Boolean) : true,
+        emailEmpty: !email,
+        passwordEmpty: !password,
+    })
+
     return (
-        <div>
-            <h2>Login</h2>
-            {error && <p>{error}</p>}
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Email:</label>
-                    <input
+        <Container
+            className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 grey-container"
+            style={styles.container}
+        >
+            <h4>Login</h4>
+            <Form onSubmit={handleLogin}>
+                <Form.Group>
+                    <Form.Label>Email:</Form.Label>
+                    <Form.Control
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onBlur={handleEmailBlur}
                         required
                     />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
+                    {emailError && <div className="text-red">{emailError}</div>}
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>Password:</Form.Label>
+                    <Form.Control
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="form-input"
                     />
+                    {passwordError && (
+                        <div className="text-red">{passwordError}</div>
+                    )}
+                </Form.Group>
+                <div className="d-flex justify-content-center">
+                    <Button
+                        className="green-button fw-bold my-5"
+                        type="submit"
+                        disabled={
+                            loading || error || emailError
+                                ? Object.values(emailError).some(Boolean)
+                                : false || !email || !password
+                        }
+                    >
+                        Login
+                    </Button>
                 </div>
-                <button type="submit" disabled={loading}>
-                    Login
-                </button>
-            </form>
-        </div>
+            </Form>
+            {error && <div className="text-red">{error}</div>}
+        </Container>
     )
+}
+
+const styles: { [key: string]: CSSProperties } = {
+    container: {
+        minHeight: '20rem',
+    },
 }
 
 export default Login

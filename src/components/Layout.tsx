@@ -38,8 +38,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                 className="align-items-center justify-content-center text-center custom-navbar"
             >
                 <Navbar.Brand
-                    as={Link}
-                    to="/"
+                    onClick={() => navigate('/')}
                     className="d-flex align-items-center justify-content-between text-black mx-5 px-3 py-0 gap-5"
                 >
                     <Image
@@ -56,51 +55,47 @@ const Layout: React.FC<Props> = ({ children }) => {
                     id="responsive-navbar-nav"
                     className="d-flex mx-5 justify-content-between"
                 >
-                    <Nav.Link
-                        as={Link}
-                        to="/chatroom"
-                        className="flex-grow text-black hover-green custom-spacing-icon"
-                    >
-                        {user?.user ? (
+                    {user?.user ? (
+                        <Nav.Item
+                            onClick={() => navigate('/chatroom')}
+                            className="flex-grow text-black custom-spacing-icon"
+                        >
                             <div className="d-flex align-items-center gap-3">
                                 <FaPlayCircle />
                                 Play
                             </div>
-                        ) : (
-                            <Nav.Item>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/signup"
-                                    className="ml-1 text-black hover-green"
-                                >
-                                    Signup
-                                </Nav.Link>
-                            </Nav.Item>
-                        )}
-                    </Nav.Link>
+                        </Nav.Item>
+                    ) : (
+                        <Nav.Item
+                            onClick={() => navigate('/signup')}
+                            className="flex-grow ml-1 text-black"
+                        >
+                            Signup
+                        </Nav.Item>
+                    )}
                     {user?.user ? (
                         <Nav className="flex-grow me-auto text-black mr-5 ">
                             <NavDropdown
                                 title={user?.user.username}
                                 id="collasible-nav-dropdown"
-                                className="text-black hover-green"
+                                className="text-black"
                             >
                                 <NavDropdown.Item
                                     to="#action/3.1"
-                                    className="text-black hover-green"
+                                    className="text-black"
                                 >
                                     Settings
                                 </NavDropdown.Item>
                                 <NavDropdown.Item
                                     onClick={handleLogout}
-                                    className="text-black hover-green"
+                                    className="text-black"
                                 >
                                     Logout
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item
                                     to="#action/3.3"
-                                    className="text-black hover-green"
+                                    className="text-black"
                                 >
                                     Upgrade plan
                                 </NavDropdown.Item>
@@ -108,35 +103,28 @@ const Layout: React.FC<Props> = ({ children }) => {
                         </Nav>
                     ) : (
                         <Nav className="flex-grow text-black mr-5">
-                            <Nav.Item>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/login"
-                                    className="ml-1 text-black hover-green"
-                                >
-                                    Login
-                                </Nav.Link>
+                            <Nav.Item
+                                onClick={() => navigate('/login')}
+                                className="ml-1 text-black"
+                            >
+                                Login
                             </Nav.Item>
                         </Nav>
                     )}
-                    <Nav.Link
-                        as={Link}
-                        to="/roadmap"
-                        className="flex-grow ml-1 text-black hover-green"
+                    <Nav.Item
+                        onClick={() => navigate('/roadmap')}
+                        className="flex-grow ml-1 text-black"
                     >
                         Roadmap
-                    </Nav.Link>
+                    </Nav.Item>
                 </Navbar.Collapse>
                 {user.user ? (
-                    <Nav.Link
-                        onClick={handleLogout}
-                        className="text-black hover-green"
-                    >
+                    <Nav.Item onClick={handleLogout} className="text-black">
                         <div className="d-flex align-items-center gap-3 mx-5">
                             <FaSignOutAlt className="mr-2" />
                             Logout
                         </div>
-                    </Nav.Link>
+                    </Nav.Item>
                 ) : (
                     <div className="d-flex gap-3 mx-5">
                         <></>
