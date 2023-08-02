@@ -17,12 +17,9 @@ import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
 import { useNavigate } from 'react-router-dom'
+import { AuthState } from '../store/authSlice'
 
-interface ChatroomProps {
-    user: User | null
-}
-
-const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
+const Chatroom: React.FC = () => {
     const [messages, setMessages] = useState([])
     const [showModalPlaylistSelection, setShowModalPlaylistSelection] =
         useState(false)
@@ -33,6 +30,9 @@ const Chatroom: React.FC<ChatroomProps> = ({ user }) => {
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
+
+    const authUser = useSelector((state: RootState) => state.auth) as AuthState
+    const user = authUser.user
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const navigate = useNavigate()

@@ -8,11 +8,6 @@ body {
     color: #000000;
 }
 
-.hover-green:hover,
-.hover-green:focus {
-    color: #1db954;
-}
-
 .custom-spacing {
     margin-right: 30px !important;
 }
@@ -27,4 +22,52 @@ body {
     padding-bottom: 0 !important;
     background-color: white !important;
     border-bottom: 1px solid #333333;
+}
+
+.welcome-container {
+    background-color: #E5E5E5;
+    /* margin: 5rem; */
+    /* padding: 10rem; */
+    flex-wrap: wrap;
+    min-height: 30rem;
+    /* gap: 1rem; */
+}
+
+.support-us-container {
+    background-color: #1db954;
+    /* margin: 5rem;
+    padding: 10rem; */
+    flex-wrap: wrap;
+    min-height: 30rem;
+    color: white;
+}
+
+.green-button {
+    background-color: #1db954 !important;
+    border: 0.2rem solid #333333 !important;
+    min-width: 10rem;
+    border-radius: 10rem !important;
+    margin-left: 5rem !important;
+}
+
+.green-button:hover {
+    background-color: white !important;
+    color: #000000 !important;
+}
+
+.yellow-button {
+    background-color: #FFEF9C !important;
+    border: 0.2rem solid #333333 !important;
+    min-width: 10rem;
+    border-radius: 10rem !important;
+    color: black !important;
+}
+
+.yellow-button:hover {
+    background-color: white !important;
+    color: #000000 !important;
+}
+
+.flex-grow {
+    flex: 1;
 }

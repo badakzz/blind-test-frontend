@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Navbar, Container, Nav, NavDropdown, Image } from 'react-bootstrap'
+import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -40,7 +40,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                 <Navbar.Brand
                     as={Link}
                     to="/"
-                    className="d-flex align-items-center text-black mr-5 py-0"
+                    className="d-flex align-items-center justify-content-between text-black mx-5 px-3 py-0 gap-5"
                 >
                     <Image
                         src={logo}
@@ -51,19 +51,35 @@ const Layout: React.FC<Props> = ({ children }) => {
                     />
                     <span className="d-none d-lg-inline-block">Blind Test</span>
                 </Navbar.Brand>
-
-                <Nav.Link
-                    as={Link}
-                    to="/"
-                    className="text-black mr-5 hover-green custom-spacing-icon"
-                >
-                    <FaPlayCircle className="mr-3" />
-                    Play
-                </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
+                <Navbar.Collapse
+                    id="responsive-navbar-nav"
+                    className="d-flex mx-5 justify-content-between"
+                >
+                    <Nav.Link
+                        as={Link}
+                        to="/chatroom"
+                        className="flex-grow text-black hover-green custom-spacing-icon"
+                    >
+                        {user?.user ? (
+                            <div className="d-flex align-items-center gap-3">
+                                <FaPlayCircle />
+                                Play
+                            </div>
+                        ) : (
+                            <Nav.Item>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/signup"
+                                    className="ml-1 text-black hover-green"
+                                >
+                                    Signup
+                                </Nav.Link>
+                            </Nav.Item>
+                        )}
+                    </Nav.Link>
                     {user?.user ? (
-                        <Nav className="me-auto text-black">
+                        <Nav className="flex-grow me-auto text-black mr-5 ">
                             <NavDropdown
                                 title={user?.user.username}
                                 id="collasible-nav-dropdown"
@@ -91,7 +107,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </NavDropdown>
                         </Nav>
                     ) : (
-                        <Nav className="text-black mr-5">
+                        <Nav className="flex-grow text-black mr-5">
                             <Nav.Item>
                                 <Nav.Link
                                     as={Link}
@@ -103,20 +119,30 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </Nav.Item>
                         </Nav>
                     )}
-                    {user.user && (
-                        <Nav className="text-black">
-                            <Nav.Item>
-                                <Nav.Link
-                                    onClick={handleLogout}
-                                    className="ml-1 text-black hover-green"
-                                >
-                                    <FaSignOutAlt className="mr-2" />
-                                    Logout
-                                </Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    )}
+                    <Nav.Link
+                        as={Link}
+                        to="/roadmap"
+                        className="flex-grow ml-1 text-black hover-green"
+                    >
+                        Roadmap
+                    </Nav.Link>
                 </Navbar.Collapse>
+                {user.user ? (
+                    <Nav.Link
+                        onClick={handleLogout}
+                        className="text-black hover-green"
+                    >
+                        <div className="d-flex align-items-center gap-3 mx-5">
+                            <FaSignOutAlt className="mr-2" />
+                            Logout
+                        </div>
+                    </Nav.Link>
+                ) : (
+                    <div className="d-flex gap-3 mx-5">
+                        <></>
+                        <></>
+                    </div>
+                )}
             </Navbar>
             {children}
         </>

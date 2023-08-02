@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import { Home, Login, Signup, Layout, Chatroom } from './components'
-import { RootState } from './store'
-import { authActions, AuthState } from './store/authSlice'
+import { authActions } from './store/authSlice'
 import Cookies from 'js-cookie'
 import { getCSRFToken } from './store/csrfSlice'
 import { redirectQueue } from './api'
@@ -43,7 +42,6 @@ const App: React.FC = () => {
             dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])
-    const user = useSelector((state: RootState) => state.auth) as AuthState
 
     return (
         <Layout>
@@ -51,10 +49,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route
-                    path="/chatroom"
-                    element={<Chatroom user={user.user} />}
-                />
+                <Route path="/chatroom" element={<Chatroom />} />
             </Routes>
         </Layout>
     )
