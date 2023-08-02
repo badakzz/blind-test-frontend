@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react'
-import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
+import { Navbar, Container, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
 import { logoutUser } from '../store/authSlice'
 import { AuthState } from '../store/authSlice'
+import logo from '../logo.png'
+import '../App.css'
 
 type Props = {
     children?: React.ReactNode
@@ -28,58 +30,73 @@ const Layout: React.FC<Props> = ({ children }) => {
         if (!user) navigate('/')
     })
 
-    const imagePath = `../../public/logo.png`
-
     return (
         <>
             <Navbar
                 collapseOnSelect
                 expand="lg"
-                bg="light"
-                variant="light"
-                className="align-items-center justify-content-center text-center"
+                className="align-items-center justify-content-center text-center custom-navbar"
             >
-                <Navbar.Brand as={Link} to="/">
+                <Navbar.Brand
+                    as={Link}
+                    to="/"
+                    className="d-flex align-items-center text-black mr-5 py-0"
+                >
                     <Image
-                        src={imagePath}
+                        src={logo}
                         width="80"
-                        height="50"
+                        height="80"
                         className="d-inline-block align-top mr-2"
                         alt="Logo"
                     />
-                    Blind Test
+                    <span className="d-none d-lg-inline-block">Blind Test</span>
                 </Navbar.Brand>
-                <Nav.Link as={Link} to="/">
-                    <FaPlayCircle className="mr-2" />
+
+                <Nav.Link
+                    as={Link}
+                    to="/"
+                    className="text-black mr-5 hover-green custom-spacing-icon"
+                >
+                    <FaPlayCircle className="mr-3" />
                     Play
                 </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     {user?.user ? (
-                        <Nav className="me-auto">
+                        <Nav className="me-auto text-black">
                             <NavDropdown
                                 title={user?.user.username}
                                 id="collasible-nav-dropdown"
+                                className="text-black hover-green"
                             >
-                                <NavDropdown.Item to="#action/3.1">
+                                <NavDropdown.Item
+                                    to="#action/3.1"
+                                    className="text-black hover-green"
+                                >
                                     Settings
                                 </NavDropdown.Item>
-                                <NavDropdown.Item onClick={handleLogout}>
+                                <NavDropdown.Item
+                                    onClick={handleLogout}
+                                    className="text-black hover-green"
+                                >
                                     Logout
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item to="#action/3.3">
+                                <NavDropdown.Item
+                                    to="#action/3.3"
+                                    className="text-black hover-green"
+                                >
                                     Upgrade plan
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     ) : (
-                        <Nav>
+                        <Nav className="text-black mr-5">
                             <Nav.Item>
                                 <Nav.Link
                                     as={Link}
                                     to="/login"
-                                    className="ml-1"
+                                    className="ml-1 text-black hover-green"
                                 >
                                     Login
                                 </Nav.Link>
@@ -87,13 +104,13 @@ const Layout: React.FC<Props> = ({ children }) => {
                         </Nav>
                     )}
                     {user.user && (
-                        <Nav>
-                            <FaSignOutAlt />
+                        <Nav className="text-black">
                             <Nav.Item>
                                 <Nav.Link
                                     onClick={handleLogout}
-                                    className="ml-1"
+                                    className="ml-1 text-black hover-green"
                                 >
+                                    <FaSignOutAlt className="mr-2" />
                                     Logout
                                 </Nav.Link>
                             </Nav.Item>

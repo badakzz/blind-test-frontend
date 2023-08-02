@@ -1,38 +1,30 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Carlito&display=swap');
+
+body {
+    font-family: 'Carlito', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.text-black {
+    color: #000000;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.hover-green:hover,
+.hover-green:focus {
+    color: #1db954;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.custom-spacing {
+    margin-right: 30px !important;
 }
 
-.App-link {
-  color: #61dafb;
+.custom-spacing-icon {
+    margin-left: 30px !important;
+    margin-right: 30px !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.custom-navbar {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: white !important;
+    border-bottom: 1px solid #333333;
 }
