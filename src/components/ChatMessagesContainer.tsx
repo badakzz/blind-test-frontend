@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, CSSProperties } from 'react'
 import { User, ChatMessage, Chatroom } from '../utils/types'
 import { Socket } from 'socket.io-client'
 import { useSelector } from 'react-redux'
@@ -56,8 +56,16 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 <div className="col-9 message-container m-5">
                     {messages.map((msg, i) => (
                         <div className="m-3" key={i}>
-                            <span>{msg.author}: </span>
-                            <span>{msg.content}</span>
+                            <span style={styles.author}>{msg.author}: </span>
+                            <span
+                                style={
+                                    msg.author === 'SYSTEM'
+                                        ? styles.systemMessage
+                                        : styles.userMessage
+                                }
+                            >
+                                {msg.content}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -82,6 +90,19 @@ const ChatMessagesContainer: React.FC<Props> = ({
             </Form>
         </div>
     )
+}
+
+const styles: { [key: string]: CSSProperties } = {
+    author: {
+        fontWeight: 'bold',
+    },
+    systemMessage: {
+        color: 'grey',
+        fontStyle: 'italic',
+    },
+    userMessage: {
+        color: 'grey',
+    },
 }
 
 export default ChatMessagesContainer

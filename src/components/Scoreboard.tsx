@@ -7,9 +7,17 @@ import api from '../api'
 
 interface Props {
     chatroom: Chatroom
+    isGameOver: boolean
+    isHost: boolean
+    resetGame: (chatroomId: string) => void
 }
 
-const Scoreboard: React.FC<Props> = ({ chatroom }) => {
+const Scoreboard: React.FC<Props> = ({
+    chatroom,
+    isGameOver,
+    isHost,
+    resetGame,
+}) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const [show, setShow] = useState(true)
@@ -41,19 +49,38 @@ const Scoreboard: React.FC<Props> = ({ chatroom }) => {
 
     return (
         <>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Title>Scores</Modal.Title>
-                <Modal.Body>
+            <Modal
+                show={show}
+                onHide={handleClose}
+                size="lg"
+                animation={true}
+                centered
+            >
+                <Modal.Header style={styles}>
+                    <Modal.Title>Scores</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={styles}>
                     {scores.map((score, index) => (
                         <p key={index}>
                             {score.username}: {score.points}
                         </p>
                     ))}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                <Modal.Footer style={styles}>
+                    <Button
+                        className="green-button-sm-inverted"
+                        onClick={handleClose}
+                    >
                         Close
                     </Button>
+                    {isGameOver && isHost && (
+                        <Button
+                            className="green-button-sm-inverted"
+                            onClick={() => resetGame(chatroom.chatroomId)}
+                        >
+                            Play Again
+                        </Button>
+                    )}
                 </Modal.Footer>
             </Modal>
         </>
@@ -61,3 +88,9 @@ const Scoreboard: React.FC<Props> = ({ chatroom }) => {
 }
 
 export default Scoreboard
+
+const styles = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+}

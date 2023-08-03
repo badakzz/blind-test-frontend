@@ -6,7 +6,6 @@ import {
     CreateOrJoinChatroom,
     PlaylistPicker,
     Scoreboard,
-    UsersInRoom,
     CountdownBar,
     TimeUpMessage,
 } from './'
@@ -29,7 +28,7 @@ const Chatroom: React.FC = () => {
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
 
-    console.log('showPlaylistPicker', showPlaylistPicker)
+    console.log('currentSongIndex', currentSongIndex)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -191,10 +190,7 @@ const Chatroom: React.FC = () => {
                     show={showPlaylistPicker}
                     onHide={handleHidePlaylistPicker}
                     onPlaylistSelected={setPlaylistId}
-                    isGameOver={isGameOver}
-                    isHost={isHost}
                     isInRoom={isInRoom}
-                    resetGame={resetGame}
                     connectedUsers={connectedUsers}
                 />
             )}
@@ -203,12 +199,14 @@ const Chatroom: React.FC = () => {
             )}
             {firstSong && !isGameOver && (
                 <>
-                    {!isAudioPlaying && (
+                    {!isAudioPlaying ? (
                         <TimeUpMessage song={currentSongCredentials} />
+                    ) : (
+                        <div className="mt-5"></div>
                     )}
                     <CountdownBar
                         duration={isAudioPlaying ? 30 : 5}
-                        color={isAudioPlaying ? 'green' : 'orange'}
+                        color={isAudioPlaying ? '#1db954' : '#FFEF9C'}
                         socket={socket}
                     />
                 </>
@@ -222,7 +220,14 @@ const Chatroom: React.FC = () => {
                     connectedUsers={connectedUsers}
                 />
             )}
-            {isGameOver && <Scoreboard chatroom={currentChatroom} />}
+            {isGameOver && (
+                <Scoreboard
+                    chatroom={currentChatroom}
+                    isGameOver={isGameOver}
+                    resetGame={resetGame}
+                    isHost={isHost}
+                />
+            )}
         </>
     )
 }

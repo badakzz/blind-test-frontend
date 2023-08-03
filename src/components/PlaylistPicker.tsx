@@ -12,10 +12,7 @@ interface PlaylistPickerProps {
     show: boolean
     onHide: () => void
     onPlaylistSelected: (playlistId: string) => void
-    isGameOver: boolean
-    isHost: boolean
     isInRoom: boolean
-    resetGame: (chatroomId: string) => void
     connectedUsers: string[]
 }
 
@@ -24,10 +21,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     show,
     onHide,
     onPlaylistSelected,
-    isGameOver,
-    isHost,
     isInRoom,
-    resetGame,
     connectedUsers,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
@@ -137,15 +131,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     >
                         Submit
                     </Button>
-                    {isGameOver && isHost && (
-                        <Button
-                            onClick={() =>
-                                resetGame(currentChatroom.chatroomId)
-                            }
-                        >
-                            Play Again
-                        </Button>
-                    )}
                     {isInRoom && (
                         <UsersInRoom
                             className="users-connected-container"

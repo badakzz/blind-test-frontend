@@ -53,7 +53,7 @@ body {
 }
 
 .green-button:hover {
-    background-color: white !important;
+    background-color: #E5E5E5 !important;
     color: #000000 !important;
 }
 
@@ -61,6 +61,23 @@ body {
     background-color: #1db954 !important;
     border: 0.1rem solid #333333 !important;
     border-radius: 0.3rem !important;
+}
+
+.green-button-sm:hover {
+    background-color: #E5E5E5 !important;
+    color: #000000 !important;
+}
+
+.green-button-sm-inverted {
+    background-color: #E5E5E5 !important;
+    color: #000000 !important;
+    border: 0.1rem solid #333333 !important;
+    border-radius: 0.3rem !important;
+}
+
+.green-button-sm-inverted:hover {
+    background-color: #1db954 !important;
+    color: #EEEEEE !important;
 }
 
 .yellow-button {
@@ -108,17 +125,25 @@ body {
 }
 
 .users-connected-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     border: 0.1rem solid white;
     background-color: #FFEF9C;
     border-radius: 1rem;
-    padding: 3rem;
-    text-align: center;
+    min-width: 15%;
+    min-height: 15rem;
+    padding: 1rem;
+    max-width: 60%;
+    text-align: left;
+    overflow: auto;
 }
 
 .users-connected-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    align-items: flex-start;
     width: 100%;
     margin-top: 5rem;
 }
@@ -144,6 +169,10 @@ body {
 @media (max-width: 999px) {
     .users-connected-wrapper {
         align-items: center;
+    }
+    .users-connected-container {
+        min-width: 60%;
+        min-height: 10rem;
     }
 }
 

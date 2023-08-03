@@ -61,7 +61,7 @@ const CountdownBar: React.FC<CountdownBarProps> = ({
     const percentage = (remainingTime / duration) * 100
 
     return (
-        <div className="countdown-bar-container">
+        <div className="countdown-bar-container mt-2 mb-5">
             <div
                 className="countdown-bar"
                 style={{
