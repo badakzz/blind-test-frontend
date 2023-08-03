@@ -33,6 +33,11 @@ body {
     flex-wrap: wrap;
 }
 
+.yellow-container {
+    background-color: #FFEF9C;
+    flex-wrap: wrap;
+}
+
 .green-container {
     background-color: #1db954;
     flex-wrap: wrap;
@@ -182,4 +187,34 @@ body {
     height: 30rem;
     width: 80%;
     padding: 0 !important;
+}
+
+.checkout-form {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    background-color: #E5E5E5;
+}
+
+.stripe-input {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.stripe-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #32325d;
+    color: #fff;
+    cursor: pointer;
+}
+
+.stripe-button:disabled {
+    background-color: #aaa;
 }

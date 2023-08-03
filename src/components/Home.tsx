@@ -6,18 +6,19 @@ import { RootState } from '../store'
 import { AuthState } from '../store/authSlice'
 
 const Home: React.FC = () => {
-    const user = useSelector((state: RootState) => state.auth) as AuthState
+    const authUser = useSelector((state: RootState) => state.auth) as AuthState
+    const user = authUser.user
     const navigate = useNavigate()
 
     const handlePlayButton = () => {
-        if (user.user) return navigate('/chatroom')
+        if (user) return navigate('/chatroom')
         else return navigate('/login')
     }
 
     const handleGetPremiumButton = () => {
-        return navigate('/chatroom')
+        return navigate('/getpremium')
     }
-
+    console.log('user', user)
     return (
         <div className="d-flex flex-column flex-md-row align-items-center">
             <Container
@@ -30,7 +31,7 @@ const Home: React.FC = () => {
                             Play Blind-Test with your friends using Spotify
                             playlist!
                         </h4>
-                        {user?.user ? (
+                        {user ? (
                             <p>
                                 Welcome to our Blind-Test game! In order to
                                 play, click on the play button to create a game,
@@ -71,23 +72,39 @@ const Home: React.FC = () => {
             >
                 <div className="d-flex flex-row align-items-center justify-content-between custom-vertical-align">
                     <div>
-                        <h4 className="d-flex md-5 justify-content-center mb-3">
-                            Support us!
-                        </h4>
-                        <p>
-                            Bored of using the same playlists over and over
-                            again? For 5€, unlock the premium membership for
-                            life, and start browsing to Spotify, select and play
-                            with any playlist you want!
-                        </p>
-                        <div className="d-flex justify-content-center ">
-                            <Button
-                                onClick={handleGetPremiumButton}
-                                className="yellow-button my-3 fw-bold"
-                            >
-                                Get premium
-                            </Button>
-                        </div>
+                        {user?.permissions !== 2 ? (
+                            <>
+                                <h4 className="d-flex md-5 justify-content-center mb-3">
+                                    Support us!
+                                </h4>
+                                <p>
+                                    Bored of using the same playlists over and
+                                    over again? For 5€, unlock the premium
+                                    membership for life, and start browsing to
+                                    Spotify, select and play with any playlist
+                                    you want!
+                                </p>
+                                <div className="d-flex justify-content-center ">
+                                    <Button
+                                        onClick={handleGetPremiumButton}
+                                        className="yellow-button my-3 fw-bold"
+                                    >
+                                        Get premium
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="d-flex flex-column md-5 mb-3">
+                                <h4 className="d-flex justify-content-center align-items-center">
+                                    Thank you for supporting us!
+                                </h4>
+                                <p className="d-flex flex-column justify-content-between text-justify">
+                                    You will now have access to the all the
+                                    Spotify playlists you want in your games,
+                                    enjoy!
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </Container>

@@ -39,16 +39,17 @@ export const loginUser = createAsyncThunk(
                 throw new Error('Invalid credentials')
             }
             const { token, user } = response.data
+            console.log({ token, user })
             const formattedUser: User = {
                 userId: user.user_id,
                 username: user.username,
                 email: user.email,
-                permission: user.permissions.toString(),
+                permissions: user.permissions,
                 isActive: user.is_active,
             }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
-                httpOnly: true,
+                // httpOnly: true, for production only
                 secure: true,
                 sameSite: 'strict',
             }) // Add expiration for security
@@ -69,6 +70,7 @@ export const loginUser = createAsyncThunk(
                     { withCredentials: true }
                 )
                 return {
+                    token,
                     user: formattedUser,
                     csrfToken: csrfResponse.data.csrfToken,
                 }
@@ -119,9 +121,11 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         storeToken(state, action) {
+            console.log('state.token', state.token)
             state.token = action.payload.token
         },
         setUser(state, action) {
+            console.log('setuser', state, action)
             state.user = action.payload
         },
         setLoggedIn(state, action) {
@@ -136,7 +140,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false
-                state.token = action.payload.user.token // store only the JWT token string
+                state.token = action.payload.token
                 state.isLoggedIn = true
                 state.user = action.payload.user
                 state.csrfToken = action.payload.csrfToken
