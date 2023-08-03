@@ -219,6 +219,7 @@ const Chatroom: React.FC = () => {
                     user={user}
                     socket={socket}
                     currentChatroom={currentChatroom}
+                    connectedUsers={connectedUsers}
                 />
             )}
             {isGameOver && <Scoreboard chatroom={currentChatroom} />}

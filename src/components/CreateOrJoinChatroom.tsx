@@ -50,7 +50,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({
             <Form>
                 <Form.Group>
                     <Form.Label htmlFor="username">Username:</Form.Label>
-                    <div className="d-flex flex-md-row flex-sm-column gap-5 mb-5">
+                    <div className="d-flex flex-column flex-md-row gap-5 mb-5">
                         <Form.Control
                             className="form-input-sm"
                             type="text"
@@ -69,7 +69,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({
                     <Form.Label htmlFor="chatroomId">
                         Chatroom ID (leave blank to create a new room):
                     </Form.Label>
-                    <div className="d-flex flex-md-row flex-sm-column gap-5 mb-5">
+                    <div className="d-flex flex-column flex-md-row gap-5 mb-5">
                         <Form.Control
                             className="form-input-sm"
                             type="text"

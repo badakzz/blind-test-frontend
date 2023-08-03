@@ -4,12 +4,15 @@ import { Socket } from 'socket.io-client'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import api from '../api'
+import { Button, Form } from 'react-bootstrap'
+import UsersInRoom from './UsersInRoom'
 
 type Props = {
     messages: ChatMessage[]
     user: User
     currentChatroom: Chatroom
     socket: Socket
+    connectedUsers: string[]
 }
 
 const ChatMessagesContainer: React.FC<Props> = ({
@@ -17,6 +20,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
     user,
     currentChatroom,
     socket,
+    connectedUsers,
 }) => {
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const [message, setMessage] = useState('')
@@ -47,24 +51,36 @@ const ChatMessagesContainer: React.FC<Props> = ({
         }
     }
     return (
-        <>
-            <div>
-                {messages.map((msg, i) => (
-                    <div key={i}>
-                        <span>{msg.author}: </span>
-                        <span>{msg.content}</span>
-                    </div>
-                ))}
-            </div>
-            <form onSubmit={sendMessageHandler}>
-                <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+        <div className="d-flex flex-column">
+            <div className="d-flex flex-row align-items-start">
+                <div className="col-9 message-container m-5">
+                    {messages.map((msg, i) => (
+                        <div className="m-3" key={i}>
+                            <span>{msg.author}: </span>
+                            <span>{msg.content}</span>
+                        </div>
+                    ))}
+                </div>
+                <UsersInRoom
+                    className="users-connected-container"
+                    upperClassName="m-5 users-connected-wrapper-no-margin"
+                    subClassName="text-align-center"
+                    connectedUsers={connectedUsers}
                 />
-                <button type="submit">Send</button>
-            </form>
-        </>
+            </div>
+            <Form onSubmit={sendMessageHandler}>
+                <div className="d-flex flex-row mx-5 mt-3">
+                    <Form.Control
+                        type="text"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <Button className="green-button-sm mx-1" type="submit">
+                        Send
+                    </Button>
+                </div>
+            </Form>
+        </div>
     )
 }
 

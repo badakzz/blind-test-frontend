@@ -57,6 +57,12 @@ body {
     color: #000000 !important;
 }
 
+.green-button-sm {
+    background-color: #1db954 !important;
+    border: 0.1rem solid #333333 !important;
+    border-radius: 0.3rem !important;
+}
+
 .yellow-button {
     background-color: #FFEF9C !important;
     border: 0.2rem solid #333333 !important;
@@ -93,9 +99,58 @@ body {
     min-width: 40rem;
 }
 
+/* for smaller screens */
 @media (max-width: 1000px) {
     .form-input-sm {
         min-width: 0;
         width: 100%;
     }
+}
+
+.users-connected-container {
+    border: 0.1rem solid white;
+    background-color: #FFEF9C;
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+}
+
+.users-connected-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+    margin-top: 5rem;
+}
+
+.users-connected-wrapper-no-margin {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+}
+
+/* For larger screens */
+@media (min-width: 1000px) {
+    .users-connected-wrapper {
+        justify-content: flex-start;
+    }
+    .playlist-select {
+        width: 100%
+    }
+}
+
+/* For smaller screens */
+@media (max-width: 999px) {
+    .users-connected-wrapper {
+        align-items: center;
+    }
+}
+
+.message-container {
+    border: 0.1rem solid #E5E5E5;
+    border-radius: 0.3rem;
+    height: 30rem;
+    width: 80%;
+    padding: 0 !important;
 }

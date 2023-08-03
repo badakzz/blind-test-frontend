@@ -4,6 +4,8 @@ import { Form } from 'react-bootstrap'
 import api from '../api'
 import { Chatroom, Playlist } from '../utils/types'
 import UsersInRoom from './UsersInRoom'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 interface PlaylistPickerProps {
     currentChatroom: Chatroom
@@ -81,6 +83,11 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(currentChatroom.chatroomId)
+        toast('Room ID copied to clipboard!', {
+            autoClose: 2000,
+            hideProgressBar: true,
+            position: 'bottom-center',
+        })
     }
 
     return (
@@ -95,7 +102,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                         <div>Loading...</div>
                     ) : (
                         <Form.Select
-                            className="mb-3"
+                            className="mb-3 playlist-select"
                             value={selectedPlaylist}
                             onChange={handlePlaylistChange}
                         >
@@ -112,9 +119,11 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                             ))}
                         </Form.Select>
                     )}
-                    Chatroom created! Share this <a href={roomUrl}>link</a> with
-                    others to join or click on the button below to copy the room
-                    id to you clipboard.
+                    <p className="mb-5">
+                        Chatroom created! Share this <a href={roomUrl}>link</a>{' '}
+                        with others to join or click on the button below to copy
+                        the room id to you clipboard.
+                    </p>
                     <Button
                         className="green-button my-3"
                         onClick={copyToClipboard}
@@ -129,22 +138,25 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                         Submit
                     </Button>
                     {isGameOver && isHost && (
-                        <button
+                        <Button
                             onClick={() =>
                                 resetGame(currentChatroom.chatroomId)
                             }
                         >
                             Play Again
-                        </button>
+                        </Button>
                     )}
                     {isInRoom && (
                         <UsersInRoom
-                            className="d-flex align-items-start justify-content-start w-100"
+                            className="users-connected-container"
+                            upperClassName="users-connected-wrapper"
+                            subClassName="text-align-center"
                             connectedUsers={connectedUsers}
                         />
                     )}
                 </Container>
             )}
+            <ToastContainer />
         </>
     )
 }
