@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { User } from '../utils/types/User'
 import {
     ChatMessagesContainer,
     CreateOrJoinChatroom,
-    PlaylistSelectionModal,
+    PlaylistPicker,
     Scoreboard,
     UsersInRoom,
     CountdownBar,
@@ -21,15 +20,16 @@ import { AuthState } from '../store/authSlice'
 
 const Chatroom: React.FC = () => {
     const [messages, setMessages] = useState([])
-    const [showModalPlaylistSelection, setShowModalPlaylistSelection] =
-        useState(false)
-    const handleHideModal = () => setShowModalPlaylistSelection(false)
+    const [showPlaylistPicker, setShowPlaylistPicker] = useState(false)
+    const handleHidePlaylistPicker = () => setShowPlaylistPicker(false)
     const [playlistId, setPlaylistId] = useState<string | null>(null)
     const [isWaitingForHost, setIsWaitingForHost] = useState<boolean>(false)
     const [isHost, setIsHost] = useState<boolean>(false)
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
+
+    console.log('showPlaylistPicker', showPlaylistPicker)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -44,7 +44,7 @@ const Chatroom: React.FC = () => {
             socket,
             setTrackPreviewList,
             isHost,
-            setShowModalPlaylistSelection,
+            setShowPlaylistPicker,
             setIsWaitingForHost
         )
 
@@ -181,16 +181,21 @@ const Chatroom: React.FC = () => {
                         setIsHost(false)
                     }}
                     user={user}
-                    onShow={setShowModalPlaylistSelection}
+                    onShow={setShowPlaylistPicker}
                     onRoomEntered={setIsInRoom}
                 />
             )}
             {currentChatroom && !isWaitingForHost && (
-                <PlaylistSelectionModal
+                <PlaylistPicker
                     currentChatroom={currentChatroom}
-                    show={showModalPlaylistSelection}
-                    onHide={handleHideModal}
+                    show={showPlaylistPicker}
+                    onHide={handleHidePlaylistPicker}
                     onPlaylistSelected={setPlaylistId}
+                    isGameOver={isGameOver}
+                    isHost={isHost}
+                    isInRoom={isInRoom}
+                    resetGame={resetGame}
+                    connectedUsers={connectedUsers}
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
@@ -217,12 +222,6 @@ const Chatroom: React.FC = () => {
                 />
             )}
             {isGameOver && <Scoreboard chatroom={currentChatroom} />}
-            {isGameOver && isHost && (
-                <button onClick={() => resetGame(currentChatroom.chatroomId)}>
-                    Play Again
-                </button>
-            )}
-            {isInRoom && <UsersInRoom connectedUsers={connectedUsers} />}
         </>
     )
 }

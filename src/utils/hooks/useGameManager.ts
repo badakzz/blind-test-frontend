@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react'
+import { Socket } from 'socket.io-client'
 
 export const useGameManager = (
-    socket,
-    setTrackPreviewList,
-    isHost,
-    setShowModalPlaylistSelection,
-    setIsWaitingForHost
+    socket: Socket,
+    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
+    isHost: boolean,
+    setShowPlaylistPicker: React.Dispatch<React.SetStateAction<any>>,
+    setIsWaitingForHost: React.Dispatch<React.SetStateAction<any>>
 ) => {
     const [gameStarted, setGameStarted] = useState(false)
     const [firstSong, setFirstSong] = useState(null)
     const [isGameOver, setIsGameOver] = useState(false)
 
-    const startGame = (trackPreviewList, chatroomId, isHost) => {
+    const startGame = (
+        trackPreviewList: any[],
+        chatroomId: string,
+        isHost: boolean
+    ) => {
         if (trackPreviewList && trackPreviewList.length > 0 && isHost) {
             const firstSong = trackPreviewList[0]
             setFirstSong(firstSong)
@@ -24,11 +29,11 @@ export const useGameManager = (
         }
     }
 
-    const resetGame = (chatroomId) => {
+    const resetGame = (chatroomId: string) => {
         setGameStarted(false)
         setIsGameOver(false)
         setFirstSong(null)
-        setShowModalPlaylistSelection(true)
+        setShowPlaylistPicker(true)
         setTrackPreviewList(null)
         socket.emit('resetGame', { chatroomId })
     }

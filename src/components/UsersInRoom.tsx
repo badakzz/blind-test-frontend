@@ -2,11 +2,14 @@ import React from 'react'
 
 type Props = {
     connectedUsers: string[]
+    [key: string]: any
 }
 
-const UsersInRoom: React.FC<Props> = ({ connectedUsers }) => {
+const UsersInRoom: React.FC<Props> = ({ connectedUsers, ...restOfProps }) => {
     return (
-        <div>Users online: {connectedUsers.map((user) => user).join(', ')}</div>
+        <div {...restOfProps}>
+            Users online: {connectedUsers.map((user) => user).join(', ')}
+        </div>
     )
 }
 
