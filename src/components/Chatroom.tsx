@@ -16,6 +16,7 @@ import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
 import { useNavigate } from 'react-router-dom'
 import { AuthState } from '../store/authSlice'
+import api from '../api'
 
 const Chatroom: React.FC = () => {
     const [messages, setMessages] = useState([])
@@ -27,8 +28,6 @@ const Chatroom: React.FC = () => {
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
-
-    console.log('currentSongIndex', currentSongIndex)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user

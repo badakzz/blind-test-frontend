@@ -1,7 +1,14 @@
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { Provider, useDispatch } from 'react-redux'
 import { Routes, Route, useNavigate } from 'react-router-dom'
-import { Home, Login, Signup, Layout, Chatroom } from './components'
+import {
+    Home,
+    Login,
+    Signup,
+    Layout,
+    Chatroom,
+    StripePaymentPage,
+} from './components'
 import { authActions } from './store/authSlice'
 import Cookies from 'js-cookie'
 import { getCSRFToken } from './store/csrfSlice'
@@ -36,10 +43,15 @@ const App: React.FC = () => {
                 console.error('Parsing user cookie failed', e)
             }
         }
+        console.log('appuser', user)
         const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
+        console.log('apptoken', token)
         if (user) {
             dispatch(authActions.setUser(user))
             dispatch(authActions.setLoggedIn(true))
+        }
+        if (token) {
+            console.log('dispatch token')
             dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])
@@ -51,6 +63,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/chatroom" element={<Chatroom />} />
+                <Route path="/getpremium" element={<StripePaymentPage />} />
             </Routes>
         </Layout>
     )

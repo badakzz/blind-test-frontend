@@ -3,6 +3,6 @@ export type User = {
     username: string
     password?: string
     email: string
-    permission?: string
+    permissions?: number
     isActive: boolean
 }

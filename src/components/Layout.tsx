@@ -94,7 +94,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item
-                                    to="#action/3.3"
+                                    onClick={() => navigate('/getpremium')}
                                     className="text-black"
                                 >
                                     Upgrade plan

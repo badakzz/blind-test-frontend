@@ -41,14 +41,6 @@ const Login: React.FC = () => {
         }
     }, [isLoggedIn, navigate])
 
-    console.log({
-        loading,
-        error,
-        emailError: emailError ? Object.values(emailError).some(Boolean) : true,
-        emailEmpty: !email,
-        passwordEmpty: !password,
-    })
-
     return (
         <Container
             className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 grey-container"
