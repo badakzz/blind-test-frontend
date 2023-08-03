@@ -11,7 +11,7 @@ const TimeUpMessage: React.FC<TimeUpMessageProps> = ({ song }) => {
     }
 
     return (
-        <div>
+        <div className="text-center mt-4">
             Time's up! The answer was {song.songName} by {song.artistName}.
         </div>
     )

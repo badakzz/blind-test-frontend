@@ -1,38 +1,185 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Carlito&display=swap');
+
+body {
+    font-family: 'Carlito', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.text-black {
+    color: #000000;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.text-red {
+    color: red;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.custom-spacing {
+    margin-right: 30px !important;
 }
 
-.App-link {
-  color: #61dafb;
+.custom-spacing-icon {
+    margin-left: 30px !important;
+    margin-right: 30px !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.custom-navbar {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: white !important;
+    border-bottom: 1px solid #333333;
+}
+
+.grey-container {
+    background-color: #E5E5E5;
+    flex-wrap: wrap;
+}
+
+.green-container {
+    background-color: #1db954;
+    flex-wrap: wrap;
+    min-height: 30rem;
+    color: white;
+}
+
+.green-button {
+    background-color: #1db954 !important;
+    border: 0.2rem solid #333333 !important;
+    min-width: 10rem;
+    border-radius: 10rem !important;
+}
+
+.green-button:disabled {
+        background-color: grey !important;
+        cursor: not-allowed !important;
+}
+
+.green-button:hover {
+    background-color: #E5E5E5 !important;
+    color: #000000 !important;
+}
+
+.green-button-sm {
+    background-color: #1db954 !important;
+    border: 0.1rem solid #333333 !important;
+    border-radius: 0.3rem !important;
+}
+
+.green-button-sm:hover {
+    background-color: #E5E5E5 !important;
+    color: #000000 !important;
+}
+
+.green-button-sm-inverted {
+    background-color: #E5E5E5 !important;
+    color: #000000 !important;
+    border: 0.1rem solid #333333 !important;
+    border-radius: 0.3rem !important;
+}
+
+.green-button-sm-inverted:hover {
+    background-color: #1db954 !important;
+    color: #EEEEEE !important;
+}
+
+.yellow-button {
+    background-color: #FFEF9C !important;
+    border: 0.2rem solid #333333 !important;
+    min-width: 10rem;
+    border-radius: 10rem !important;
+    color: black !important;
+}
+
+.yellow-button:hover {
+    background-color: white !important;
+    color: #000000 !important;
+}
+
+.flex-grow {
+    flex: 1;
+}
+
+/* .dropdown-item {
+    background-color: red !important;
+} */
+
+.form-input {
+    min-width: 65rem;
+}
+
+@media (max-width: 1200px) {
+    .form-input {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+.form-input-sm {
+    min-width: 40rem;
+}
+
+/* for smaller screens */
+@media (max-width: 1000px) {
+    .form-input-sm {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+.users-connected-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border: 0.1rem solid white;
+    background-color: #FFEF9C;
+    border-radius: 1rem;
+    min-width: 15%;
+    min-height: 15rem;
+    padding: 1rem;
+    max-width: 60%;
+    text-align: left;
+    overflow: auto;
+}
+
+.users-connected-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 5rem;
+}
+
+.users-connected-wrapper-no-margin {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 100%;
+}
+
+/* For larger screens */
+@media (min-width: 1000px) {
+    .users-connected-wrapper {
+        justify-content: flex-start;
+    }
+    .playlist-select {
+        width: 100%
+    }
+}
+
+/* For smaller screens */
+@media (max-width: 999px) {
+    .users-connected-wrapper {
+        align-items: center;
+    }
+    .users-connected-container {
+        min-width: 60%;
+        min-height: 10rem;
+    }
+}
+
+.message-container {
+    border: 0.1rem solid #E5E5E5;
+    border-radius: 0.3rem;
+    height: 30rem;
+    width: 80%;
+    padding: 0 !important;
 }

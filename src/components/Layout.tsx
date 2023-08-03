@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
 import { logoutUser } from '../store/authSlice'
 import { AuthState } from '../store/authSlice'
+import logo from '../logo.png'
+import '../App.css'
 
 type Props = {
     children?: React.ReactNode
@@ -28,78 +30,107 @@ const Layout: React.FC<Props> = ({ children }) => {
         if (!user) navigate('/')
     })
 
-    const imagePath = `../../public/logo.png`
-
     return (
         <>
             <Navbar
                 collapseOnSelect
                 expand="lg"
-                bg="light"
-                variant="light"
-                className="align-items-center justify-content-center text-center"
+                className="align-items-center justify-content-center text-center custom-navbar"
             >
-                <Navbar.Brand as={Link} to="/">
+                <Navbar.Brand
+                    onClick={() => navigate('/')}
+                    className="d-flex align-items-center justify-content-between text-black mx-5 px-3 py-0 gap-5"
+                >
                     <Image
-                        src={imagePath}
+                        src={logo}
                         width="80"
-                        height="50"
+                        height="80"
                         className="d-inline-block align-top mr-2"
                         alt="Logo"
                     />
-                    Blind Test
+                    <span className="d-none d-lg-inline-block">Blind Test</span>
                 </Navbar.Brand>
-                <Nav.Link as={Link} to="/">
-                    <FaPlayCircle className="mr-2" />
-                    Play
-                </Nav.Link>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
+                <Navbar.Collapse
+                    id="responsive-navbar-nav"
+                    className="d-flex mx-5 justify-content-between"
+                >
                     {user?.user ? (
-                        <Nav className="me-auto">
+                        <Nav.Item
+                            onClick={() => navigate('/chatroom')}
+                            className="flex-grow text-black custom-spacing-icon"
+                        >
+                            <div className="d-flex align-items-center gap-3">
+                                <FaPlayCircle />
+                                Play
+                            </div>
+                        </Nav.Item>
+                    ) : (
+                        <Nav.Item
+                            onClick={() => navigate('/signup')}
+                            className="flex-grow ml-1 text-black"
+                        >
+                            Signup
+                        </Nav.Item>
+                    )}
+                    {user?.user ? (
+                        <Nav className="flex-grow me-auto text-black mr-5 ">
                             <NavDropdown
                                 title={user?.user.username}
                                 id="collasible-nav-dropdown"
+                                className="text-black"
                             >
-                                <NavDropdown.Item to="#action/3.1">
+                                <NavDropdown.Item
+                                    to="#action/3.1"
+                                    className="text-black"
+                                >
                                     Settings
                                 </NavDropdown.Item>
-                                <NavDropdown.Item onClick={handleLogout}>
+                                <NavDropdown.Item
+                                    onClick={handleLogout}
+                                    className="text-black"
+                                >
                                     Logout
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item to="#action/3.3">
+                                <NavDropdown.Item
+                                    to="#action/3.3"
+                                    className="text-black"
+                                >
                                     Upgrade plan
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     ) : (
-                        <Nav>
-                            <Nav.Item>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/login"
-                                    className="ml-1"
-                                >
-                                    Login
-                                </Nav.Link>
+                        <Nav className="flex-grow text-black mr-5">
+                            <Nav.Item
+                                onClick={() => navigate('/login')}
+                                className="ml-1 text-black"
+                            >
+                                Login
                             </Nav.Item>
                         </Nav>
                     )}
-                    {user.user && (
-                        <Nav>
-                            <FaSignOutAlt />
-                            <Nav.Item>
-                                <Nav.Link
-                                    onClick={handleLogout}
-                                    className="ml-1"
-                                >
-                                    Logout
-                                </Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    )}
+                    <Nav.Item
+                        onClick={() => navigate('/roadmap')}
+                        className="flex-grow ml-1 text-black"
+                    >
+                        Roadmap
+                    </Nav.Item>
                 </Navbar.Collapse>
+                {user.user ? (
+                    <Nav.Item onClick={handleLogout} className="text-black">
+                        <div className="d-flex align-items-center gap-3 mx-5">
+                            <FaSignOutAlt className="mr-2" />
+                            Logout
+                        </div>
+                    </Nav.Item>
+                ) : (
+                    <div className="d-flex gap-3 mx-5">
+                        <></>
+                        <></>
+                    </div>
+                )}
             </Navbar>
             {children}
         </>

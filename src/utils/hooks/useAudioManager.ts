@@ -4,7 +4,7 @@ import api from '../../api'
 export const useAudioManager = (isGameOver, socket, currentChatroom) => {
     const [isAudioPlaying, setIsAudioPlaying] = useState(false)
     const [currentSongCredentials, setCurrentSongCredentials] = useState(null)
-    const audioRef = useRef(new Audio()) // Initialize with an empty Audio object
+    const audioRef = useRef(new Audio())
 
     const fetchSongCredentials = async (songId) => {
         return await api.get(
@@ -39,7 +39,6 @@ export const useAudioManager = (isGameOver, socket, currentChatroom) => {
             socket.off('artistAndSongNamesFound')
 
             socket.on('artistAndSongNamesFound', async () => {
-                console.log('both')
                 if (currentChatroom && currentChatroom.chatroomId) {
                     if (audioRef.current && audioRef.current instanceof Audio) {
                         audioRef.current.pause()
@@ -75,6 +74,7 @@ export const useAudioManager = (isGameOver, socket, currentChatroom) => {
             setIsAudioPlaying(true)
             audioRef.current.onended = () => {
                 onEnded()
+                setIsAudioPlaying(false)
             }
             return track.song_id
         } else {
