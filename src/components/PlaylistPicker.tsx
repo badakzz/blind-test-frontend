@@ -151,26 +151,29 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     <h4 className="mb-3">Select a Playlist</h4>
                     {user?.permissions === 2 ? (
                         <>
-                            <Button
-                                className="mb-3"
-                                onClick={() => {
-                                    setSelectButtonClicked(true)
-                                    setIsSearchSelection(false)
-                                }}
-                            >
-                                Select default playlist
-                            </Button>
-                            <Button
-                                className="mb-3"
-                                onClick={() => {
-                                    setSelectButtonClicked(true)
-                                    setIsSearchSelection(true)
-                                }}
-                            >
-                                Search for any playlist
-                            </Button>
+                            <div className="d-flex flex-row gap-3">
+                                <Button
+                                    className="green-button mb-3"
+                                    onClick={() => {
+                                        setSelectButtonClicked(true)
+                                        setIsSearchSelection(false)
+                                    }}
+                                >
+                                    Select default playlist
+                                </Button>
+                                <Button
+                                    className="green-button mb-3"
+                                    onClick={() => {
+                                        setSelectButtonClicked(true)
+                                        setIsSearchSelection(true)
+                                    }}
+                                >
+                                    Search for any playlist
+                                </Button>
+                            </div>
                             {isSearchSelection ? (
                                 <ReactSelect
+                                    placeholder="Search for any playlist..."
                                     className="mb-3 playlist-select"
                                     options={
                                         options.length > 0
@@ -194,6 +197,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                             ) : (
                                 selectButtonClicked && (
                                     <ReactSelect
+                                        placeholder="Select a default playlist..."
                                         className="mb-3 playlist-select"
                                         options={defaultOptions}
                                         value={defaultOptions.find(
@@ -208,6 +212,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                         </>
                     ) : (
                         <ReactSelect
+                            placeholder="Select a default playlist..."
                             className="mb-3 playlist-select"
                             options={defaultOptions}
                             value={defaultOptions.find(

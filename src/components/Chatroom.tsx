@@ -57,13 +57,14 @@ const Chatroom: React.FC = () => {
         currentSongCredentials,
     } = useAudioManager(isGameOver, socket, currentChatroom)
 
-    const { currentSongPlaying, setCurrentSongPlaying } = usePlaylistManager(
-        playlistId,
-        currentChatroom,
-        trackPreviewList,
-        setTrackPreviewList,
-        isSearchSelection
-    )
+    const { currentSongPlaying, setCurrentSongPlaying, fetchError } =
+        usePlaylistManager(
+            playlistId,
+            currentChatroom,
+            trackPreviewList,
+            setTrackPreviewList,
+            isSearchSelection
+        )
 
     console.log('trackPreviewList', trackPreviewList)
 
@@ -232,6 +233,7 @@ const Chatroom: React.FC = () => {
                     isHost={isHost}
                 />
             )}
+            {fetchError && <div className="text-red">{fetchError}</div>}
         </>
     )
 }

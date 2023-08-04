@@ -13,6 +13,7 @@ export const usePlaylistManager = (
     isSearchSelection: boolean
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
+    const [fetchError, setFetchError] = useState(null)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
 
@@ -29,30 +30,42 @@ export const usePlaylistManager = (
                             },
                         }
                     )
+                    setFetchError(null)
                     const previews = response.data
                     console.log('previews', previews)
                     const previewList = previews.map((preview) => preview)
                     setTrackPreviewList(previewList)
                 } catch (error) {
+                    setFetchError(error.response?.data?.error || error.message)
                     console.error(error)
                 }
             }
             fetchTrackPreviews()
         } else if (playlistId && isSearchSelection) {
             const fetchPlaylistSongs = async () => {
-                const response = await axios.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/${playlistId}/tracks`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${authUser.token}`,
-                        },
-                    }
-                )
-                setTrackPreviewList(response.data)
+                try {
+                    const response = await axios.get(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/${playlistId}/tracks`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${authUser.token}`,
+                            },
+                        }
+                    )
+                    setTrackPreviewList(response.data)
+                } catch (error) {
+                    console.error(error)
+                    setFetchError(error.response?.data?.error || error.message)
+                }
             }
             fetchPlaylistSongs()
         }
     }, [playlistId, isSearchSelection])
 
-    return { trackPreviewList, currentSongPlaying, setCurrentSongPlaying }
+    return {
+        trackPreviewList,
+        currentSongPlaying,
+        setCurrentSongPlaying,
+        fetchError,
+    }
 }
