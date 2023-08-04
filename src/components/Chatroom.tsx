@@ -28,6 +28,7 @@ const Chatroom: React.FC = () => {
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
+    const [isSearchSelection, setIsSearchSelection] = useState<boolean>(false)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -56,13 +57,16 @@ const Chatroom: React.FC = () => {
         currentSongCredentials,
     } = useAudioManager(isGameOver, socket, currentChatroom)
 
-    const { currentSongPlaying, setCurrentSongPlaying } = usePlaylistManager(
-        playlistId,
-        currentChatroom,
-        csrfToken,
-        trackPreviewList,
-        setTrackPreviewList
-    )
+    const { currentSongPlaying, setCurrentSongPlaying, fetchError } =
+        usePlaylistManager(
+            playlistId,
+            currentChatroom,
+            trackPreviewList,
+            setTrackPreviewList,
+            isSearchSelection
+        )
+
+    console.log('trackPreviewList', trackPreviewList)
 
     useEffect(() => {
         if (!user) {
@@ -191,6 +195,8 @@ const Chatroom: React.FC = () => {
                     onPlaylistSelected={setPlaylistId}
                     isInRoom={isInRoom}
                     connectedUsers={connectedUsers}
+                    setIsSearchSelection={setIsSearchSelection}
+                    isSearchSelection={isSearchSelection}
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
@@ -227,6 +233,7 @@ const Chatroom: React.FC = () => {
                     isHost={isHost}
                 />
             )}
+            {fetchError && <div className="text-red">{fetchError}</div>}
         </>
     )
 }
