@@ -6,6 +6,11 @@ import { Chatroom, Playlist } from '../utils/types'
 import UsersInRoom from './UsersInRoom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
+import { AuthState } from '../store/authSlice'
+import _ from 'lodash'
+import ReactSelect from 'react-select'
 
 interface PlaylistPickerProps {
     currentChatroom: Chatroom
@@ -14,6 +19,8 @@ interface PlaylistPickerProps {
     onPlaylistSelected: (playlistId: string) => void
     isInRoom: boolean
     connectedUsers: string[]
+    setIsSearchSelection: React.Dispatch<React.SetStateAction<any>>
+    isSearchSelection: boolean
 }
 
 const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
@@ -23,10 +30,53 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     onPlaylistSelected,
     isInRoom,
     connectedUsers,
+    setIsSearchSelection,
+    isSearchSelection,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
+    const [searchedList, setSearchedList] = useState<any>([])
     const [loading, setLoading] = useState(false)
     const [selectedPlaylist, setSelectedPlaylist] = useState('')
+    const [searchTerm, setSearchTerm] = useState('')
+    const [defaultSelectedPlaylist, setDefaultSelectedPlaylist] = useState('')
+
+    const authUser = useSelector((state: RootState) => state.auth) as AuthState
+    const user = authUser.user
+
+    const [selectButtonClicked, setSelectButtonClicked] = useState(
+        user?.permissions !== 2
+    )
+
+    const options = searchedList.map((playlist: any) => ({
+        value: playlist.id,
+        label: playlist.name,
+    }))
+
+    const defaultOptions = playlistList.map((playlist: Playlist) => ({
+        value: playlist.spotify_playlist_id,
+        label: playlist.name,
+    }))
+
+    const handleSearchChangeDebounced = _.debounce(
+        async (inputValue: string) => {
+            setSearchTerm(inputValue)
+
+            if (inputValue) {
+                const response = await api.get(
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/search`,
+                    {
+                        params: { q: inputValue },
+                        withCredentials: true,
+                        headers: {
+                            Authorization: `Bearer ${authUser.token}`,
+                        },
+                    }
+                )
+                setSearchedList(response.data)
+            }
+        },
+        200
+    )
 
     useEffect(() => {
         const fetchPlaylistList = async () => {
@@ -61,12 +111,19 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
         setSelectedPlaylist('')
     }, [show])
 
-    const handlePlaylistChange = (event: any) => {
-        setSelectedPlaylist(event.target.value)
+    const handlePlaylistChange = (option: any) => {
+        setSelectedPlaylist(option.value)
+        setIsSearchSelection(true) // indicate that search mode was last used
+    }
+
+    const handleDefaultPlaylistChange = (selectedOption: any) => {
+        setSelectedPlaylist(selectedOption.value)
+        setIsSearchSelection(false) // indicate that default mode was last used
     }
 
     const handleSubmit = () => {
         if (selectedPlaylist) {
+            console.log('selectedPlaylist', selectedPlaylist)
             onPlaylistSelected(selectedPlaylist)
             onHide()
         }
@@ -92,26 +149,72 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     style={{ display: show ? 'block' : 'none' }}
                 >
                     <h4 className="mb-3">Select a Playlist</h4>
-                    {loading ? (
-                        <div>Loading...</div>
+                    {user?.permissions === 2 ? (
+                        <>
+                            <Button
+                                className="mb-3"
+                                onClick={() => {
+                                    setSelectButtonClicked(true)
+                                    setIsSearchSelection(false)
+                                }}
+                            >
+                                Select default playlist
+                            </Button>
+                            <Button
+                                className="mb-3"
+                                onClick={() => {
+                                    setSelectButtonClicked(true)
+                                    setIsSearchSelection(true)
+                                }}
+                            >
+                                Search for any playlist
+                            </Button>
+                            {isSearchSelection ? (
+                                <ReactSelect
+                                    className="mb-3 playlist-select"
+                                    options={
+                                        options.length > 0
+                                            ? options
+                                            : [
+                                                  {
+                                                      value: '',
+                                                      label: 'No result found',
+                                                      isDisabled: true,
+                                                  },
+                                              ]
+                                    }
+                                    value={options.find(
+                                        (option) =>
+                                            option.value === selectedPlaylist
+                                    )}
+                                    onChange={handlePlaylistChange}
+                                    onInputChange={handleSearchChangeDebounced}
+                                    menuIsOpen={searchTerm !== ''}
+                                />
+                            ) : (
+                                selectButtonClicked && (
+                                    <ReactSelect
+                                        className="mb-3 playlist-select"
+                                        options={defaultOptions}
+                                        value={defaultOptions.find(
+                                            (option) =>
+                                                option.value ===
+                                                selectedPlaylist
+                                        )}
+                                        onChange={handleDefaultPlaylistChange}
+                                    />
+                                )
+                            )}
+                        </>
                     ) : (
-                        <Form.Select
+                        <ReactSelect
                             className="mb-3 playlist-select"
-                            value={selectedPlaylist}
-                            onChange={handlePlaylistChange}
-                        >
-                            <option disabled value="">
-                                Select a playlist...
-                            </option>
-                            {playlistList.map((playlist: Playlist) => (
-                                <option
-                                    key={playlist.playlist_id}
-                                    value={playlist.spotify_playlist_id}
-                                >
-                                    {playlist.name}
-                                </option>
-                            ))}
-                        </Form.Select>
+                            options={defaultOptions}
+                            value={defaultOptions.find(
+                                (option) => option.value === selectedPlaylist
+                            )}
+                            onChange={handleDefaultPlaylistChange}
+                        />
                     )}
                     <p className="mb-5">
                         Chatroom created! Share this <a href={roomUrl}>link</a>{' '}
@@ -127,7 +230,10 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     <Button
                         className="green-button mb-3"
                         onClick={handleSubmit}
-                        disabled={selectedPlaylist === ''}
+                        disabled={
+                            selectedPlaylist === '' &&
+                            defaultSelectedPlaylist === ''
+                        }
                     >
                         Submit
                     </Button>

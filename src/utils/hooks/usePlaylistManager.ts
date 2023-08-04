@@ -1,16 +1,23 @@
+import { Chatroom } from './../types/Chatroom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { AuthState } from '../../store/authSlice'
 
 export const usePlaylistManager = (
-    playlistId,
-    currentChatroom,
-    csrfToken,
-    trackPreviewList,
-    setTrackPreviewList
+    playlistId: string,
+    currentChatroom: Chatroom,
+    trackPreviewList: any[],
+    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
+    isSearchSelection: boolean
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
+
+    const authUser = useSelector((state: RootState) => state.auth) as AuthState
+
     useEffect(() => {
-        if (playlistId) {
+        if (playlistId && !isSearchSelection) {
             const fetchTrackPreviews = async () => {
                 try {
                     const response = await axios.get(
@@ -23,6 +30,7 @@ export const usePlaylistManager = (
                         }
                     )
                     const previews = response.data
+                    console.log('previews', previews)
                     const previewList = previews.map((preview) => preview)
                     setTrackPreviewList(previewList)
                 } catch (error) {
@@ -30,8 +38,21 @@ export const usePlaylistManager = (
                 }
             }
             fetchTrackPreviews()
+        } else if (playlistId && isSearchSelection) {
+            const fetchPlaylistSongs = async () => {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/${playlistId}/tracks`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authUser.token}`,
+                        },
+                    }
+                )
+                setTrackPreviewList(response.data)
+            }
+            fetchPlaylistSongs()
         }
-    }, [playlistId])
+    }, [playlistId, isSearchSelection])
 
     return { trackPreviewList, currentSongPlaying, setCurrentSongPlaying }
 }
