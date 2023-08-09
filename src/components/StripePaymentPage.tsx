@@ -5,12 +5,13 @@ import {
     useStripe,
     useElements,
 } from '@stripe/react-stripe-js'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../store'
-import { AuthState } from '../store/authSlice'
+import { AuthState, authActions } from '../store/authSlice'
 import { CSSProperties, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api'
+import { User } from '../utils/types'
 import { Button, Container, Form } from 'react-bootstrap'
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
@@ -20,6 +21,7 @@ const CheckoutForm = () => {
     const stripe = useStripe()
     const elements = useElements()
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -76,6 +78,17 @@ const CheckoutForm = () => {
                 )
 
                 if (confirmPaymentRes.status === 200) {
+                    const updatedUser = confirmPaymentRes.data // Assuming this is the updated user object
+                    const formattedUser: User = {
+                        userId: updatedUser.user_id,
+                        username: updatedUser.username,
+                        email: updatedUser.email,
+                        permissions: updatedUser.permissions,
+                        isActive: updatedUser.is_active,
+                    }
+                    // Update the user in the store
+                    dispatch(authActions.setUser(formattedUser))
+
                     return navigate('/')
                 } else {
                     setError('Payment failed.')
