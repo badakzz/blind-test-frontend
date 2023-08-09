@@ -146,6 +146,7 @@ const Chatroom: React.FC = () => {
 
     useEffect(() => {
         if (currentSongPlaying && currentChatroom && socket) {
+            console.log({ currentSongPlaying, currentChatroom })
             socket.emit('currentSongPlaying', {
                 chatroomId: currentChatroom.chatroomId,
                 currentSongPlaying: currentSongPlaying,
