@@ -14,6 +14,7 @@ import { authActions } from './store/authSlice'
 import Cookies from 'js-cookie'
 import { getCSRFToken } from './store/csrfSlice'
 import { redirectQueue } from './api'
+import RoadmapTicketsList from './components/Roadmap'
 
 const App: React.FC = () => {
     const dispatch = useDispatch()
@@ -66,6 +67,7 @@ const App: React.FC = () => {
                 <Route path="/chatroom" element={<Chatroom />} />
                 <Route path="/getpremium" element={<StripePaymentPage />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/roadmap" element={<RoadmapTicketsList />} />
             </Routes>
         </Layout>
     )
