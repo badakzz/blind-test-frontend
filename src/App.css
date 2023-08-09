@@ -28,13 +28,19 @@ body {
     border-bottom: 1px solid #333333;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center !important;
+    align-self: center !important;
+}
+
 .grey-container {
-    background-color: #E5E5E5;
+    background-color: #e5e5e5;
     flex-wrap: wrap;
 }
 
 .yellow-container {
-    background-color: #FFEF9C;
+    background-color: #ffef9c;
     flex-wrap: wrap;
 }
 
@@ -53,12 +59,12 @@ body {
 }
 
 .green-button:disabled {
-        background-color: grey !important;
-        cursor: not-allowed !important;
+    background-color: grey !important;
+    cursor: not-allowed !important;
 }
 
 .green-button:hover {
-    background-color: #E5E5E5 !important;
+    background-color: #e5e5e5 !important;
     color: #000000 !important;
 }
 
@@ -69,12 +75,12 @@ body {
 }
 
 .green-button-sm:hover {
-    background-color: #E5E5E5 !important;
+    background-color: #e5e5e5 !important;
     color: #000000 !important;
 }
 
 .green-button-sm-inverted {
-    background-color: #E5E5E5 !important;
+    background-color: #e5e5e5 !important;
     color: #000000 !important;
     border: 0.1rem solid #333333 !important;
     border-radius: 0.3rem !important;
@@ -82,11 +88,11 @@ body {
 
 .green-button-sm-inverted:hover {
     background-color: #1db954 !important;
-    color: #EEEEEE !important;
+    color: #eeeeee !important;
 }
 
 .yellow-button {
-    background-color: #FFEF9C !important;
+    background-color: #ffef9c !important;
     border: 0.2rem solid #333333 !important;
     min-width: 10rem;
     border-radius: 10rem !important;
@@ -135,7 +141,7 @@ body {
     align-items: flex-start;
     justify-content: flex-start;
     border: 0.1rem solid white;
-    background-color: #FFEF9C;
+    background-color: #ffef9c;
     border-radius: 1rem;
     min-width: 15%;
     min-height: 15rem;
@@ -166,7 +172,7 @@ body {
         justify-content: flex-start;
     }
     .playlist-select {
-        width: 100%
+        width: 100%;
     }
 }
 
@@ -182,7 +188,7 @@ body {
 }
 
 .message-container {
-    border: 0.1rem solid #E5E5E5;
+    border: 0.1rem solid #e5e5e5;
     border-radius: 0.3rem;
     height: 30rem;
     width: 80%;
@@ -195,7 +201,7 @@ body {
     padding: 20px;
     border: 1px solid #eee;
     border-radius: 10px;
-    background-color: #E5E5E5;
+    background-color: #e5e5e5;
 }
 
 .stripe-input {

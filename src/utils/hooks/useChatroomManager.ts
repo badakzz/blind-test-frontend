@@ -1,10 +1,15 @@
 import { useState } from 'react'
 import api from '../../api'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
+import { AuthState } from '../../store/authSlice'
 
 export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
     const navigate = useNavigate()
+
+    const authUser = useSelector((state: RootState) => state.auth) as AuthState
 
     const createRoom = async (username, csrfToken) => {
         try {
@@ -14,6 +19,7 @@ export const useChatroomManager = (socket) => {
                 {
                     withCredentials: true,
                     headers: {
+                        Authorization: `Bearer ${authUser.token}`,
                         'X-CSRF-TOKEN': csrfToken,
                     },
                 }

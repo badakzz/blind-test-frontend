@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Provider, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import {
     Home,
@@ -8,6 +8,7 @@ import {
     Layout,
     Chatroom,
     StripePaymentPage,
+    Settings,
 } from './components'
 import { authActions } from './store/authSlice'
 import Cookies from 'js-cookie'
@@ -64,6 +65,7 @@ const App: React.FC = () => {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/chatroom" element={<Chatroom />} />
                 <Route path="/getpremium" element={<StripePaymentPage />} />
+                <Route path="/settings" element={<Settings />} />
             </Routes>
         </Layout>
     )
