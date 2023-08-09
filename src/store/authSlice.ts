@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { User } from '../utils/types'
 import Cookies from 'js-cookie'
 import api from '../api'
+import { RootState } from '.'
 
 export interface AuthState {
     token: string | null
@@ -27,13 +28,23 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
         credentials: { email: string; password: string },
-        { dispatch, rejectWithValue }
+        { getState, dispatch, rejectWithValue }
     ) => {
         try {
+            const state = getState() as RootState
+            const csrfToken = state.csrf.csrfToken
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found')
+            }
+
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/login`,
                 credentials,
-                { withCredentials: true }
+                {
+                    withCredentials: true,
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                }
             )
             if (response.status < 200 || response.status >= 300) {
                 throw new Error('Invalid credentials')
@@ -101,17 +112,63 @@ export const signupUser = createAsyncThunk(
     'auth/signupUser',
     async (
         userData: { username: string; email: string; password: string },
-        { rejectWithValue }
+        { getState, rejectWithValue }
     ) => {
         try {
+            const state = getState() as RootState
+            const csrfToken = state.csrf.csrfToken
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found')
+            }
+
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/signup`,
                 userData,
-                { withCredentials: true }
+                {
+                    withCredentials: true,
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                }
             )
             return response.data
         } catch (error) {
             return rejectWithValue('Signup failed')
+        }
+    }
+)
+
+export const updateSettings = createAsyncThunk(
+    'auth/updateSettings',
+    async (
+        settings: { userId: number; email?: string; password?: string },
+        { getState, rejectWithValue }
+    ) => {
+        try {
+            const state = getState() as RootState
+            const csrfToken = state.csrf.csrfToken
+            const jwtToken = state.auth.token
+
+            if (!csrfToken || !jwtToken) {
+                throw new Error('CSRF token or JWT token not found')
+            }
+
+            console.log('tokens', { jwtToken, csrfToken })
+
+            // Use the csrfToken and jwtToken in your request
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                Authorization: `Bearer ${jwtToken}`,
+            }
+
+            const response = await api.post('/api/auth/settings', settings, {
+                headers,
+                withCredentials: true,
+            })
+
+            return response.data
+        } catch (error) {
+            return rejectWithValue('Update failed')
         }
     }
 )
@@ -160,6 +217,13 @@ const authSlice = createSlice({
                 state.error = action.payload as string
             })
             .addCase(signupUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload as string
+            })
+            .addCase(updateSettings.fulfilled, (state, action) => {
+                state.loading = false
+            })
+            .addCase(updateSettings.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string
             })

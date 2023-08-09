@@ -81,7 +81,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                                 className="text-black"
                             >
                                 <NavDropdown.Item
-                                    to="#action/3.1"
+                                    onClick={() => navigate('/settings')}
                                     className="text-black"
                                 >
                                     Settings
@@ -93,12 +93,14 @@ const Layout: React.FC<Props> = ({ children }) => {
                                     Logout
                                 </NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item
-                                    onClick={() => navigate('/getpremium')}
-                                    className="text-black"
-                                >
-                                    Upgrade plan
-                                </NavDropdown.Item>
+                                {user.user.permissions !== 2 && (
+                                    <NavDropdown.Item
+                                        onClick={() => navigate('/getpremium')}
+                                        className="text-black"
+                                    >
+                                        Upgrade plan
+                                    </NavDropdown.Item>
+                                )}
                             </NavDropdown>
                         </Nav>
                     ) : (

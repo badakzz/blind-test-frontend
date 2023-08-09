@@ -1,6 +1,7 @@
 export * from './ChatMessage'
 export * from './Chatroom'
 export * from './Playlist'
+export * from './RoadmapTicket'
 export * from './Score'
 export * from './Song'
 export * from './User'
