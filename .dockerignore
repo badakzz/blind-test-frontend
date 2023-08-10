@@ -228,6 +228,7 @@ README.MD
 *.sh
 !/translationsCompile.sh
 /docker
+!docker/nginx.conf
 gcloud-service-key.json
 /gcloud_conf
 
