@@ -11,6 +11,7 @@ export interface AuthState {
     error: string | null
     user: User | null
     csrfToken: string
+    updateSuccess: boolean
 }
 
 const initialState: AuthState = {
@@ -20,6 +21,7 @@ const initialState: AuthState = {
     error: null,
     user: null,
     csrfToken: null,
+    updateSuccess: false,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
@@ -152,9 +154,6 @@ export const updateSettings = createAsyncThunk(
                 throw new Error('CSRF token or JWT token not found')
             }
 
-            console.log('tokens', { jwtToken, csrfToken })
-
-            // Use the csrfToken and jwtToken in your request
             const headers = {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
@@ -222,10 +221,12 @@ const authSlice = createSlice({
             })
             .addCase(updateSettings.fulfilled, (state, action) => {
                 state.loading = false
+                state.updateSuccess = true
             })
             .addCase(updateSettings.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string
+                state.updateSuccess = false
             })
     },
 })
@@ -233,6 +234,3 @@ const authSlice = createSlice({
 export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
-function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
-}

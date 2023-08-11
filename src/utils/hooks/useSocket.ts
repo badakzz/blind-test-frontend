@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react"
-import { io } from "socket.io-client"
+import { useState, useEffect } from 'react'
+import { io } from 'socket.io-client'
 
 export const useSocket = () => {
     const [socket, setSocket] = useState(null)
@@ -7,17 +7,17 @@ export const useSocket = () => {
 
     useEffect(() => {
         const newSocket = io(
-            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_WEBSOCKET_SERVER_PORT}`
+            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}`
         )
         setSocket(newSocket)
 
-        newSocket.on("connectedUsers", (users) => {
+        newSocket.on('connectedUsers', (users) => {
             const usernames = users.map((user) => user.username)
             setConnectedUsers(usernames)
         })
 
         return () => {
-            newSocket.off("connectedUsers")
+            newSocket.off('connectedUsers')
             newSocket.disconnect()
         }
     }, [])
