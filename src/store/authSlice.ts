@@ -60,18 +60,17 @@ export const loginUser = createAsyncThunk(
                 isActive: user.is_active,
             }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
-                expires: 7,
-                httpOnly: process.env.NODE_ENV === 'production',
-                secure: true,
-                sameSite: 'strict',
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                secure: process.env.NODE_ENV === 'production',
+                sameSite:
+                    process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             })
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
                 JSON.stringify(formattedUser),
                 {
                     expires: 7,
-                    httpOnly: process.env.NODE_ENV === 'production',
-                    secure: true,
+                    secure: process.env.NODE_ENV === 'production',
                     sameSite: 'strict',
                 }
             )
@@ -157,7 +156,6 @@ export const updateSettings = createAsyncThunk(
             const headers = {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
-                Authorization: `Bearer ${jwtToken}`,
             }
 
             const response = await api.post('/api/auth/settings', settings, {

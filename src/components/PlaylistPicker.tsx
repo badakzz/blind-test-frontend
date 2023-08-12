@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Container } from 'react-bootstrap'
-import { Form } from 'react-bootstrap'
 import api from '../api'
 import { Chatroom, Playlist } from '../utils/types'
 import UsersInRoom from './UsersInRoom'
@@ -67,9 +66,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     {
                         params: { q: inputValue },
                         withCredentials: true,
-                        headers: {
-                            Authorization: `Bearer ${authUser.token}`,
-                        },
                     }
                 )
                 setSearchedList(response.data)
