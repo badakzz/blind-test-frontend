@@ -6,7 +6,6 @@ import { RootState } from '../store'
 import api from '../api'
 import { Button, Form } from 'react-bootstrap'
 import UsersInRoom from './UsersInRoom'
-import { AuthState } from '../store/authSlice'
 
 type Props = {
     messages: ChatMessage[]
@@ -26,7 +25,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
     const [message, setMessage] = useState('')
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    const authUser = useSelector((state: RootState) => state.auth) as AuthState
 
     const sendMessageHandler = (e: FormEvent) => {
         e.preventDefault()
@@ -41,7 +39,6 @@ const ChatMessagesContainer: React.FC<Props> = ({
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${authUser.token}`,
                         'X-CSRF-TOKEN': csrfToken,
                     },
                 }

@@ -47,7 +47,6 @@ const CheckoutForm = () => {
                 {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${authUser.token}`,
                         'X-CSRF-TOKEN': csrfToken,
                     },
                 }
@@ -71,7 +70,6 @@ const CheckoutForm = () => {
                     {
                         withCredentials: true,
                         headers: {
-                            Authorization: `Bearer ${authUser.token}`,
                             'X-CSRF-TOKEN': csrfToken,
                         },
                     }

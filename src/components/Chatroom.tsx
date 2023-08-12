@@ -16,7 +16,6 @@ import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
 import { useNavigate } from 'react-router-dom'
 import { AuthState } from '../store/authSlice'
-import api from '../api'
 
 const Chatroom: React.FC = () => {
     const [messages, setMessages] = useState([])
@@ -35,6 +34,7 @@ const Chatroom: React.FC = () => {
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const navigate = useNavigate()
+    console.log(authUser, csrfToken)
 
     const { socket, connectedUsers } = useSocket()
 

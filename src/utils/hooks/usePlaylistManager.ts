@@ -1,9 +1,6 @@
 import { Chatroom } from './../types/Chatroom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../store'
-import { AuthState } from '../../store/authSlice'
 
 export const usePlaylistManager = (
     playlistId: string,
@@ -14,8 +11,6 @@ export const usePlaylistManager = (
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
-
-    const authUser = useSelector((state: RootState) => state.auth) as AuthState
 
     useEffect(() => {
         if (playlistId && !isSearchSelection) {
@@ -44,12 +39,8 @@ export const usePlaylistManager = (
             const fetchPlaylistSongs = async () => {
                 try {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${authUser.token}`,
-                            },
-                        }
+                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/${playlistId}/tracks`,
+                        { withCredentials: true }
                     )
 
                     const transformedData = response.data
