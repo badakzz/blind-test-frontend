@@ -10,7 +10,6 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
-    const [passwordError, setPasswordError] = useState('')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -28,7 +27,9 @@ const Login: React.FC = () => {
     }
 
     const handleEmailBlur = () => {
-        if (!isEmailValid(email)) {
+        if (email === '') {
+            setEmailError('')
+        } else if (!isEmailValid(email)) {
             setEmailError('Please enter a valid email')
         } else {
             setEmailError('')
@@ -68,9 +69,6 @@ const Login: React.FC = () => {
                         required
                         className="form-input"
                     />
-                    {passwordError && (
-                        <div className="text-red">{passwordError}</div>
-                    )}
                 </Form.Group>
                 <div className="d-flex justify-content-center">
                     <Button

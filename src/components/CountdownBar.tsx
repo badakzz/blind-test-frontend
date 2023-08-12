@@ -17,7 +17,7 @@ const CountdownBar: React.FC<CountdownBarProps> = ({
     const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
     useEffect(() => {
-        setRemainingTime(duration) // reset the remaining time whenever duration changes
+        setRemainingTime(duration)
         intervalRef.current = setInterval(() => {
             setRemainingTime((prevTime) => {
                 if (prevTime > 0) {

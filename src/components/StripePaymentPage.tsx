@@ -78,7 +78,7 @@ const CheckoutForm = () => {
                 )
 
                 if (confirmPaymentRes.status === 200) {
-                    const updatedUser = confirmPaymentRes.data // Assuming this is the updated user object
+                    const updatedUser = confirmPaymentRes.data
                     const formattedUser: User = {
                         userId: updatedUser.user_id,
                         username: updatedUser.username,
@@ -86,7 +86,6 @@ const CheckoutForm = () => {
                         permissions: updatedUser.permissions,
                         isActive: updatedUser.is_active,
                     }
-                    // Update the user in the store
                     dispatch(authActions.setUser(formattedUser))
 
                     return navigate('/')

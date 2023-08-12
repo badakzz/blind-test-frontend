@@ -38,14 +38,20 @@ const Chatroom: React.FC = () => {
 
     const { socket, connectedUsers } = useSocket()
 
-    const { gameStarted, firstSong, isGameOver, startGame, resetGame } =
-        useGameManager(
-            socket,
-            setTrackPreviewList,
-            isHost,
-            setShowPlaylistPicker,
-            setIsWaitingForHost
-        )
+    const {
+        gameStarted,
+        firstSong,
+        isGameOver,
+        startGame,
+        resetGame,
+        setFirstSong,
+    } = useGameManager(
+        socket,
+        setTrackPreviewList,
+        isHost,
+        setShowPlaylistPicker,
+        setIsWaitingForHost
+    )
 
     const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
 
@@ -65,8 +71,6 @@ const Chatroom: React.FC = () => {
             setTrackPreviewList,
             isSearchSelection
         )
-
-    console.log('trackPreviewList', trackPreviewList)
 
     useEffect(() => {
         if (!user) {
@@ -89,6 +93,26 @@ const Chatroom: React.FC = () => {
             }
         })
     }
+
+    useEffect(() => {
+        return () => {
+            setMessages([])
+            setIsInRoom(false)
+            setIsHost(false)
+            setIsWaitingForHost(false)
+            setIsSearchSelection(false)
+            setCurrentSongIndex(0)
+            setPlaylistId(null)
+            setFirstSong(null)
+            setShowPlaylistPicker(false)
+            setTrackPreviewList(null)
+            if (audio) {
+                audio.src = ''
+                audio.pause()
+            }
+            socket && socket.disconnect()
+        }
+    }, [])
 
     useEffect(() => {
         if (firstSong) {
@@ -146,7 +170,6 @@ const Chatroom: React.FC = () => {
 
     useEffect(() => {
         if (currentSongPlaying && currentChatroom && socket) {
-            console.log({ currentSongPlaying, currentChatroom })
             socket.emit('currentSongPlaying', {
                 chatroomId: currentChatroom.chatroomId,
                 currentSongPlaying: currentSongPlaying,

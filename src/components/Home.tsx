@@ -19,10 +19,6 @@ const Home: React.FC = () => {
         return navigate('/getpremium')
     }
 
-    console.log(
-        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/songs/credentials/`
-    )
-    console.log('user', user)
     return (
         <div className="d-flex flex-column flex-md-row align-items-center">
             <Container

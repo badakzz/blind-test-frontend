@@ -11,6 +11,7 @@ export interface AuthState {
     error: string | null
     user: User | null
     csrfToken: string
+    updateSuccess: boolean
 }
 
 const initialState: AuthState = {
@@ -20,6 +21,7 @@ const initialState: AuthState = {
     error: null,
     user: null,
     csrfToken: null,
+    updateSuccess: false,
 }
 
 const serverPort = process.env.REACT_APP_SERVER_PORT
@@ -50,7 +52,6 @@ export const loginUser = createAsyncThunk(
                 throw new Error('Invalid credentials')
             }
             const { token, user } = response.data
-            console.log({ token, user })
             const formattedUser: User = {
                 userId: user.user_id,
                 username: user.username,
@@ -60,15 +61,16 @@ export const loginUser = createAsyncThunk(
             }
             Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
                 expires: 7,
-                // httpOnly: true, for production only
+                httpOnly: process.env.NODE_ENV === 'production',
                 secure: true,
                 sameSite: 'strict',
-            }) // Add expiration for security
+            })
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
                 JSON.stringify(formattedUser),
                 {
                     expires: 7,
+                    httpOnly: process.env.NODE_ENV === 'production',
                     secure: true,
                     sameSite: 'strict',
                 }
@@ -152,9 +154,6 @@ export const updateSettings = createAsyncThunk(
                 throw new Error('CSRF token or JWT token not found')
             }
 
-            console.log('tokens', { jwtToken, csrfToken })
-
-            // Use the csrfToken and jwtToken in your request
             const headers = {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
@@ -178,11 +177,9 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         storeToken(state, action) {
-            console.log('state.token', state.token)
             state.token = action.payload.token
         },
         setUser(state, action) {
-            console.log('setuser', state, action)
             state.user = action.payload
         },
         setLoggedIn(state, action) {
@@ -222,10 +219,12 @@ const authSlice = createSlice({
             })
             .addCase(updateSettings.fulfilled, (state, action) => {
                 state.loading = false
+                state.updateSuccess = true
             })
             .addCase(updateSettings.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string
+                state.updateSuccess = false
             })
     },
 })
@@ -233,6 +232,3 @@ const authSlice = createSlice({
 export const { actions: authActions } = authSlice
 
 export default authSlice.reducer
-function dispatch(arg0: any) {
-    throw new Error('Function not implemented.')
-}

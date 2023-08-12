@@ -73,5 +73,12 @@ export const useGameManager = (
         }
     }, [socket, isHost])
 
-    return { startGame, resetGame, gameStarted, firstSong, isGameOver }
+    return {
+        startGame,
+        resetGame,
+        gameStarted,
+        firstSong,
+        isGameOver,
+        setFirstSong,
+    }
 }

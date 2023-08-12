@@ -15,6 +15,9 @@ const Settings: React.FC = () => {
     const dispatch = useDispatch()
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
+    const updateSuccess = useSelector(
+        (state: RootState) => state.auth.updateSuccess
+    )
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -101,6 +104,9 @@ const Settings: React.FC = () => {
                 </div>
             </Form>
             {error && <div className="text-red">{error}</div>}
+            {updateSuccess && (
+                <div className="text-green">Settings successfully updated</div>
+            )}
         </Container>
     )
 }
