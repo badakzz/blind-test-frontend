@@ -11,17 +11,21 @@ RUN yarn install --pure-lockfile
 # Copy the rest of the code
 COPY . .
 
-ARG ENV_CONTENTS
-RUN echo "$ENV_CONTENTS" > .env
+# dev
+# ARG ENV_CONTENTS
+# RUN echo "$ENV_CONTENTS" > .env
 
 # Build the app
 RUN yarn run build
 
-RUN printenv
+# dev
+# RUN printenv
 
 # Run phase
 FROM nginx
-COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
-COPY --from=builder /app/build /usr/share/nginx/html
+# EXPOSE 80
+COPY nginx.conf /etc/nginx/nginx.conf.template
+COPY /docker_scripts/start.sh /start.sh
+
+CMD ["/start.sh"]

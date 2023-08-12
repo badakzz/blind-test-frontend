@@ -8,7 +8,7 @@ export const useAudioManager = (isGameOver, socket, currentChatroom) => {
 
     const fetchSongCredentials = async (songId) => {
         return await api.get(
-            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/songs/credentials/${songId}`
+            `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/songs/credentials/${songId}`
         )
     }
 

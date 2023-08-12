@@ -32,7 +32,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
         e.preventDefault()
         if (message) {
             api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chat_messages`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chat_messages`,
                 {
                     chatroom_id: currentChatroom.chatroomId,
                     user_id: user.userId,

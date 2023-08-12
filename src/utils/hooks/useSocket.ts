@@ -6,9 +6,7 @@ export const useSocket = () => {
     const [connectedUsers, setConnectedUsers] = useState([])
 
     useEffect(() => {
-        const newSocket = io(
-            `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}`
-        )
+        const newSocket = io(`${process.env.REACT_APP_SERVER_DOMAIN}`)
         setSocket(newSocket)
 
         newSocket.on('connectedUsers', (users) => {

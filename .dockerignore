@@ -231,4 +231,4 @@ README.MD
 !docker/nginx.conf
 gcloud-service-key.json
 /gcloud_conf
-
+!prod.env

@@ -14,7 +14,7 @@ export const useChatroomManager = (socket) => {
     const createRoom = async (username, csrfToken) => {
         try {
             const response = await api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms`,
                 {},
                 {
                     withCredentials: true,
@@ -43,7 +43,7 @@ export const useChatroomManager = (socket) => {
     const joinRoom = async (username, chatroomId) => {
         try {
             const response = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chatrooms/${chatroomId}`
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`
             )
             const chatroom = response.data
             const formattedChatroom = {

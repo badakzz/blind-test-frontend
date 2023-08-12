@@ -10,7 +10,7 @@ const RoadmapTicketsList: React.FC = () => {
     useEffect(() => {
         axios
             .get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/roadmap_tickets`
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/roadmap_tickets`
             )
             .then((response) => {
                 setTickets(response.data)
