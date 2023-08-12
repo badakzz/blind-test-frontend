@@ -18,7 +18,6 @@ const Home: React.FC = () => {
     const handleGetPremiumButton = () => {
         return navigate('/getpremium')
     }
-    console.log('user', user)
     return (
         <div className="d-flex flex-column flex-md-row align-items-center">
             <Container

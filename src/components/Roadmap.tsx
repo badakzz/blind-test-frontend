@@ -13,7 +13,7 @@ const RoadmapTicketsList: React.FC = () => {
                 `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/roadmap_tickets`
             )
             .then((response) => {
-                setTickets(response.data) // Axios already parses JSON
+                setTickets(response.data)
                 setLoading(false)
             })
             .catch((error) => {

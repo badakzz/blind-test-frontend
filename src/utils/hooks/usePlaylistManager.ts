@@ -32,7 +32,6 @@ export const usePlaylistManager = (
                     )
                     setFetchError(null)
                     const previews = response.data
-                    console.log('previews', previews)
                     const previewList = previews.map((preview) => preview)
                     setTrackPreviewList(previewList)
                 } catch (error) {
@@ -52,12 +51,27 @@ export const usePlaylistManager = (
                             },
                         }
                     )
-                    setTrackPreviewList(response.data)
+
+                    const transformedData = response.data
+                        .map((track) => ({
+                            artist_name: track.artists[0].name,
+                            song_name: track.name,
+                            preview_url: track.preview_url,
+                        }))
+                        .filter(
+                            (item) =>
+                                item.preview_url &&
+                                item.artist_name &&
+                                item.song_name
+                        )
+
+                    setTrackPreviewList(transformedData)
                 } catch (error) {
                     console.error(error)
                     setFetchError(error.response?.data?.error || error.message)
                 }
             }
+
             fetchPlaylistSongs()
         }
     }, [playlistId, isSearchSelection])

@@ -113,17 +113,16 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     const handlePlaylistChange = (option: any) => {
         setSelectedPlaylist(option.value)
-        setIsSearchSelection(true) // indicate that search mode was last used
+        setIsSearchSelection(true)
     }
 
     const handleDefaultPlaylistChange = (selectedOption: any) => {
         setSelectedPlaylist(selectedOption.value)
-        setIsSearchSelection(false) // indicate that default mode was last used
+        setIsSearchSelection(false)
     }
 
     const handleSubmit = () => {
         if (selectedPlaylist) {
-            console.log('selectedPlaylist', selectedPlaylist)
             onPlaylistSelected(selectedPlaylist)
             onHide()
         }
