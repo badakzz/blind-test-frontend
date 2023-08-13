@@ -28,7 +28,6 @@ export const useChatroomManager = (socket) => {
         } catch (error) {
             console.error(error)
             if (error.response && error.response.status === 401) {
-                localStorage.removeItem('user')
                 navigate('/login')
             }
         }
@@ -54,7 +53,6 @@ export const useChatroomManager = (socket) => {
         } catch (error) {
             console.error(error)
             if (error.response && error.response.status === 401) {
-                localStorage.removeItem('user')
                 navigate('/login')
             }
         }

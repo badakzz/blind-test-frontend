@@ -20,6 +20,7 @@ interface PlaylistPickerProps {
     connectedUsers: string[]
     setIsSearchSelection: React.Dispatch<React.SetStateAction<any>>
     isSearchSelection: boolean
+    selectPlaylist: () => void
 }
 
 const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
@@ -31,6 +32,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     connectedUsers,
     setIsSearchSelection,
     isSearchSelection,
+    selectPlaylist,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
     const [searchedList, setSearchedList] = useState<any>([])
@@ -105,6 +107,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     useEffect(() => {
         setSelectedPlaylist('')
+        setDefaultSelectedPlaylist('')
     }, [show])
 
     const handlePlaylistChange = (option: any) => {
@@ -121,6 +124,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
         if (selectedPlaylist) {
             onPlaylistSelected(selectedPlaylist)
             onHide()
+            selectPlaylist()
         }
     }
 
