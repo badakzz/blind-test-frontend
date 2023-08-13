@@ -105,11 +105,6 @@ it('renders correctly for guest users', () => {
     expect(getPremiumButton).toBeInTheDocument()
 })
 
-store.dispatch({
-    type: 'auth/setUser',
-    payload: { user: { permissions: 1 } },
-})
-
 it('renders correctly for authenticated users', () => {
     renderWithStore(<Home />, { auth: { user: { permissions: 1 } } })
 
@@ -127,38 +122,26 @@ it('renders correctly for authenticated users', () => {
     expect(screen.getByText('Support us!')).toBeInTheDocument()
 })
 
-// Mocking the state to simulate a premium user
-// store.dispatch({
-//     type: 'auth/setUser',
-//     payload: { user: { permissions: 2 } },
-// })
+it('renders correctly for premium users', () => {
+    renderWithStore(<Home />, { auth: { user: { permissions: 2 } } })
 
-// it('renders correctly for premium users', () => {
-//     render(
-//         <Provider store={store}>
-//             <Router>
-//                 <Home />
-//             </Router>
-//         </Provider>
-//     )
-
-//     expect(screen.getByText('Thank you for supporting us!')).toBeInTheDocument()
-//     expect(
-//         screen.getByText(
-//             'You will now have access to the all the Spotify playlists you want in your games, enjoy!'
-//         )
-//     ).toBeInTheDocument()
-//     expect(screen.queryByText('Support us!')).not.toBeInTheDocument() // should not exist for premium users
-//     expect(
-//         screen.queryByText(
-//             'Bored of using the same playlists over and over again? For 5€, unlock the premium membership for life, and start browsing to Spotify, select and play with any playlist you want!'
-//         )
-//     ).not.toBeInTheDocument() // should not exist for premium users
-//     const getPremiumButton = screen.getByRole('button', {
-//         name: /get premium/i,
-//     })
-//     expect(getPremiumButton).not.toBeInTheDocument()
-// })
+    expect(screen.getByText('Thank you for supporting us!')).toBeInTheDocument()
+    expect(
+        screen.getByText(
+            "You've now gained access to the all the Spotify playlists you want in your games, enjoy!"
+        )
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Support us!')).not.toBeInTheDocument()
+    expect(
+        screen.queryByText(
+            'Bored of using the same playlists over and over again? For 5€, unlock the premium membership for life, and start browsing to Spotify, select and play with any playlist you want!'
+        )
+    ).not.toBeInTheDocument()
+    const getPremiumButton = screen.queryByRole('button', {
+        name: /get premium/i,
+    })
+    expect(getPremiumButton).not.toBeInTheDocument()
+})
 
 // it('navigates correctly on button clicks', () => {
 //     const history = createMemoryHistory()
