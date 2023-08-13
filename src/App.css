@@ -69,7 +69,7 @@ body {
 }
 
 .green-button:hover {
-    background-color: #e5e5e5 !important;
+    background-color: #ffef9c !important;
     color: #000000 !important;
 }
 
@@ -167,7 +167,7 @@ body {
 .users-connected-wrapper-no-margin {
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: flex-start;
     width: 100%;
 }
 
@@ -198,6 +198,9 @@ body {
     height: 30rem;
     width: 80%;
     padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .checkout-form {
@@ -228,4 +231,8 @@ body {
 
 .stripe-button:disabled {
     background-color: #aaa;
+}
+
+.users-connected-container {
+    overflow-y: auto;
 }

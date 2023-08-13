@@ -17,7 +17,7 @@ const UsersInRoom: React.FC<Props> = ({
     return (
         <div className={upperClassName}>
             <div className={subClassName}>Users online:</div>
-            <div className={className}>
+            <div className={`${className} users-connected-container`}>
                 {connectedUsers.map((user) => user).join(',\n')}
             </div>
         </div>
