@@ -50,8 +50,9 @@ const Login: React.FC = () => {
             <h4>Login</h4>
             <Form onSubmit={handleLogin}>
                 <Form.Group>
-                    <Form.Label>Email:</Form.Label>
+                    <Form.Label htmlFor="email">Email:</Form.Label>
                     <Form.Control
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -61,8 +62,9 @@ const Login: React.FC = () => {
                     {emailError && <div className="text-red">{emailError}</div>}
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Password:</Form.Label>
+                    <Form.Label htmlFor="password">Password:</Form.Label>
                     <Form.Control
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

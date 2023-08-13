@@ -59,13 +59,6 @@ export const loginUser = createAsyncThunk(
                 permissions: user.permissions,
                 isActive: user.is_active,
             }
-            // console.log('token', token)
-            // Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
-            //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            //     secure: process.env.NODE_ENV === 'production',
-            //     sameSite:
-            //         process.env.NODE_ENV === 'production' ? 'lax' : 'strict',
-            // })
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
                 JSON.stringify(formattedUser),
@@ -75,7 +68,6 @@ export const loginUser = createAsyncThunk(
                     sameSite: 'strict',
                 }
             )
-            // dispatch(authActions.storeToken({ token }))
             dispatch(authActions.setUser(formattedUser))
             if (response.status === 200) {
                 const csrfResponse = await api.get(
@@ -83,7 +75,6 @@ export const loginUser = createAsyncThunk(
                     { withCredentials: true }
                 )
                 return {
-                    // token,
                     user: formattedUser,
                     csrfToken: csrfResponse.data.csrfToken,
                 }
