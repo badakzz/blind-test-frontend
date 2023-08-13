@@ -1,4 +1,10 @@
-import React, { useState, FormEvent, CSSProperties } from 'react'
+import React, {
+    useState,
+    FormEvent,
+    CSSProperties,
+    useEffect,
+    useRef,
+} from 'react'
 import { User, ChatMessage, Chatroom } from '../utils/types'
 import { Socket } from 'socket.io-client'
 import { useSelector } from 'react-redux'
@@ -23,6 +29,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
     connectedUsers,
 }) => {
     const [message, setMessage] = useState('')
+    const messageContainerRef = useRef<HTMLDivElement>(null)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
@@ -52,24 +59,40 @@ const ChatMessagesContainer: React.FC<Props> = ({
             setMessage('')
         }
     }
+
+    useEffect(() => {
+        const container = messageContainerRef.current
+        if (container) {
+            container.scrollTop = 0
+        }
+    }, [messages])
+
     return (
         <div className="d-flex flex-column">
             <div className="d-flex flex-row align-items-start">
-                <div className="col-9 message-container m-5">
-                    {messages.map((msg, i) => (
-                        <div className="m-3" key={i}>
-                            <span style={styles.author}>{msg.author}: </span>
-                            <span
-                                style={
-                                    msg.author === 'SYSTEM'
-                                        ? styles.systemMessage
-                                        : styles.userMessage
-                                }
-                            >
-                                {msg.content}
-                            </span>
-                        </div>
-                    ))}
+                <div
+                    className="col-9 message-container m-5"
+                    ref={messageContainerRef}
+                >
+                    {messages
+                        .slice()
+                        .reverse()
+                        .map((msg, i) => (
+                            <div className="m-3" key={i}>
+                                <span style={styles.author}>
+                                    {msg.author}:{' '}
+                                </span>
+                                <span
+                                    style={
+                                        msg.author === 'SYSTEM'
+                                            ? styles.systemMessage
+                                            : styles.userMessage
+                                    }
+                                >
+                                    {msg.content}
+                                </span>
+                            </div>
+                        ))}
                 </div>
                 <UsersInRoom
                     className="users-connected-container"

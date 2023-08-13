@@ -11,6 +11,11 @@ export const usePlaylistManager = (
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
+    const [playlistVersion, setPlaylistVersion] = useState<number>(0) // Add this state
+
+    const selectPlaylist = () => {
+        setPlaylistVersion(playlistVersion + 1) // Increment the version
+    }
 
     useEffect(() => {
         if (playlistId && !isSearchSelection) {
@@ -65,12 +70,13 @@ export const usePlaylistManager = (
 
             fetchPlaylistSongs()
         }
-    }, [playlistId, isSearchSelection])
+    }, [playlistId, isSearchSelection, playlistVersion])
 
     return {
         trackPreviewList,
         currentSongPlaying,
         setCurrentSongPlaying,
         fetchError,
+        selectPlaylist,
     }
 }

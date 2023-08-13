@@ -26,7 +26,7 @@ const Chatroom: React.FC = () => {
     const [isHost, setIsHost] = useState<boolean>(false)
     const [trackPreviewList, setTrackPreviewList] = useState([])
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
-    const [currentSongIndex, setCurrentSongIndex] = useState<number>(0)
+    const [, setCurrentSongIndex] = useState<number>(0)
     const [isSearchSelection, setIsSearchSelection] = useState<boolean>(false)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
@@ -34,7 +34,6 @@ const Chatroom: React.FC = () => {
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const navigate = useNavigate()
-    console.log(authUser, csrfToken)
 
     const { socket, connectedUsers } = useSocket()
 
@@ -63,20 +62,24 @@ const Chatroom: React.FC = () => {
         currentSongCredentials,
     } = useAudioManager(isGameOver, socket, currentChatroom)
 
-    const { currentSongPlaying, setCurrentSongPlaying, fetchError } =
-        usePlaylistManager(
-            playlistId,
-            currentChatroom,
-            trackPreviewList,
-            setTrackPreviewList,
-            isSearchSelection
-        )
+    const {
+        currentSongPlaying,
+        setCurrentSongPlaying,
+        fetchError,
+        selectPlaylist,
+    } = usePlaylistManager(
+        playlistId,
+        currentChatroom,
+        trackPreviewList,
+        setTrackPreviewList,
+        isSearchSelection
+    )
 
     useEffect(() => {
         if (!user) {
             return navigate('/')
         }
-    }, [user])
+    }, [navigate, user])
 
     const playNextTrack = () => {
         setCurrentSongIndex((prevIndex) => {
@@ -110,7 +113,9 @@ const Chatroom: React.FC = () => {
                 audio.src = ''
                 audio.pause()
             }
-            socket && socket.disconnect()
+            if (socket) {
+                socket.disconnect()
+            }
         }
     }, [])
 
@@ -221,6 +226,7 @@ const Chatroom: React.FC = () => {
                     connectedUsers={connectedUsers}
                     setIsSearchSelection={setIsSearchSelection}
                     isSearchSelection={isSearchSelection}
+                    selectPlaylist={selectPlaylist}
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
