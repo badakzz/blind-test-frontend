@@ -7,6 +7,10 @@ import store from '../store'
 import { createMemoryHistory } from 'history'
 import { Router as CustomRouter } from 'react-router-dom'
 import axios from 'axios'
+import rootReducer from '../store' // Your root reducer
+import { configureStore } from '@reduxjs/toolkit'
+import authReducer from '../store/authSlice'
+import csrfReducer from '../store/csrfSlice'
 
 jest.mock('../api', () => {
     const originalModule = jest.requireActual('../api')
@@ -51,20 +55,25 @@ jest.mock('../api', () => {
     }
 })
 
-// store.dispatch({
-//     type: 'auth/setUser',
-//     payload: { user: null },
-// })
-
-it('renders correctly for guest users', () => {
-    render(
+const renderWithStore = (ui, initialState) => {
+    const store = configureStore({
+        reducer: {
+            auth: authReducer,
+            csrf: csrfReducer,
+        },
+        preloadedState: initialState,
+    })
+    return render(
         <Provider store={store}>
-            <Router>
-                <Home />
-            </Router>
+            <Router>{ui}</Router>
         </Provider>
     )
-    screen.debug()
+}
+
+it('renders correctly for guest users', () => {
+    renderWithStore(<Home />, { auth: { user: null } })
+
+    // screen.debug()
     expect(
         screen.getByText(
             'Play Blind-Test with your friends using Spotify playlist!'
@@ -96,33 +105,27 @@ it('renders correctly for guest users', () => {
     expect(getPremiumButton).toBeInTheDocument()
 })
 
-// store.dispatch({
-//     type: 'auth/setUser',
-//     payload: { user: { permissions: 1 } },
-// })
+store.dispatch({
+    type: 'auth/setUser',
+    payload: { user: { permissions: 1 } },
+})
 
-// it('renders correctly for authenticated users', () => {
-//     render(
-//         <Provider store={store}>
-//             <Router>
-//                 <Home />
-//             </Router>
-//         </Provider>
-//     )
+it('renders correctly for authenticated users', () => {
+    renderWithStore(<Home />, { auth: { user: { permissions: 1 } } })
 
-//     expect(
-//         screen.queryByText('Already have an account?')
-//     ).not.toBeInTheDocument()
-//     expect(screen.queryByText('Log in')).not.toBeInTheDocument()
-//     expect(screen.queryByText('Not a member?')).not.toBeInTheDocument()
-//     expect(screen.queryByText('Sign up')).not.toBeInTheDocument()
-//     expect(
-//         screen.getByText(
-//             'Bored of using the same playlists over and over again? For 5€, unlock the premium membership for life, and start browsing to Spotify, select and play with any playlist you want!'
-//         )
-//     ).toBeInTheDocument()
-//     expect(screen.getByText('Support us!')).toBeInTheDocument()
-// })
+    expect(
+        screen.queryByText('Already have an account?')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Log in')).not.toBeInTheDocument()
+    expect(screen.queryByText('Not a member?')).not.toBeInTheDocument()
+    expect(screen.queryByText('Sign up')).not.toBeInTheDocument()
+    expect(
+        screen.getByText(
+            'Bored of using the same playlists over and over again? For 5€, unlock the premium membership for life, and start browsing to Spotify, select and play with any playlist you want!'
+        )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Support us!')).toBeInTheDocument()
+})
 
 // Mocking the state to simulate a premium user
 // store.dispatch({
