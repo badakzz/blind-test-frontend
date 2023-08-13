@@ -11,10 +11,10 @@ export const usePlaylistManager = (
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
-    const [playlistVersion, setPlaylistVersion] = useState<number>(0) // Add this state
+    const [playlistVersion, setPlaylistVersion] = useState<number>(0)
 
     const selectPlaylist = () => {
-        setPlaylistVersion(playlistVersion + 1) // Increment the version
+        setPlaylistVersion(playlistVersion + 1)
     }
 
     useEffect(() => {
