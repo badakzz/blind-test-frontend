@@ -196,6 +196,13 @@ const authSlice = createSlice({
                 state.loading = false
                 state.error = action.payload as string
             })
+            .addCase(signupUser.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(signupUser.fulfilled, (state, action) => {
+                state.loading = false
+            })
             .addCase(signupUser.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload as string

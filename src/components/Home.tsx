@@ -16,7 +16,8 @@ const Home: React.FC = () => {
     }
 
     const handleGetPremiumButton = () => {
-        return navigate('/getpremium')
+        if (user) return navigate('/getpremium')
+        else return navigate('/login')
     }
 
     return (
@@ -99,7 +100,7 @@ const Home: React.FC = () => {
                                     Thank you for supporting us!
                                 </h4>
                                 <p className="d-flex flex-column justify-content-between text-justify">
-                                    You will now have access to the all the
+                                    You've now gained access to the all the
                                     Spotify playlists you want in your games,
                                     enjoy!
                                 </p>

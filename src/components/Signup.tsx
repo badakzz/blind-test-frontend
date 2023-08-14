@@ -70,8 +70,9 @@ const Signup: React.FC = () => {
             <h4>Signup</h4>
             <Form onSubmit={handleSignup}>
                 <Form.Group>
-                    <Form.Label>Username:</Form.Label>
+                    <Form.Label htmlFor="username">Username:</Form.Label>
                     <Form.Control
+                        id="username"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -80,8 +81,9 @@ const Signup: React.FC = () => {
                     />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Email:</Form.Label>
+                    <Form.Label htmlFor="email">Email:</Form.Label>
                     <Form.Control
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -93,8 +95,9 @@ const Signup: React.FC = () => {
                     {emailError && <div className="text-red">{emailError}</div>}
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>Password:</Form.Label>
+                    <Form.Label htmlFor="password">Password:</Form.Label>
                     <Form.Control
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
