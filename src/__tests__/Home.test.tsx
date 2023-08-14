@@ -6,42 +6,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '../store/authSlice'
 import csrfReducer from '../store/csrfSlice'
 
-// jest.mock('../api', () => {
-//     const originalModule = jest.requireActual('../api')
-
-//     return {
-//         __esModule: true,
-//         ...originalModule,
-//         default: {
-//             interceptors: originalModule.default.interceptors,
-//             baseURL: originalModule.default.baseURL,
-//             post: jest.fn((url) => {
-//                 switch (url) {
-//                     case `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/login`:
-//                         return Promise.resolve({
-//                             status: 200,
-//                             data: {
-//                                 user: {},
-//                             },
-//                         })
-//                     case `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/signup`:
-//                         break
-//                     default:
-//                         throw new Error(`Unhandled request to ${url}`)
-//                 }
-//             }),
-//             get: jest.fn((url) => {
-//                 switch (url) {
-//                     case `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`:
-//                         return Promise.resolve({})
-//                     default:
-//                         throw new Error(`Unhandled request to ${url}`)
-//                 }
-//             }),
-//         },
-//     }
-// })
-
 jest.mock('react-router-dom', () => ({
     ...jest.requireActual('react-router-dom'),
     useNavigate: jest.fn(),
