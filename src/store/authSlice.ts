@@ -48,9 +48,11 @@ export const loginUser = createAsyncThunk(
                     headers: { 'X-CSRF-TOKEN': csrfToken },
                 }
             )
+
             if (response.status < 200 || response.status >= 300) {
                 throw new Error('Invalid credentials')
             }
+
             const { user } = response.data
             const formattedUser: User = {
                 userId: user.user_id,
@@ -59,13 +61,6 @@ export const loginUser = createAsyncThunk(
                 permissions: user.permissions,
                 isActive: user.is_active,
             }
-            // console.log('token', token)
-            // Cookies.set(process.env.REACT_APP_JWT_COOKIE_NAME, token, {
-            //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            //     secure: process.env.NODE_ENV === 'production',
-            //     sameSite:
-            //         process.env.NODE_ENV === 'production' ? 'lax' : 'strict',
-            // })
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
                 JSON.stringify(formattedUser),
@@ -75,20 +70,11 @@ export const loginUser = createAsyncThunk(
                     sameSite: 'strict',
                 }
             )
-            // dispatch(authActions.storeToken({ token }))
             dispatch(authActions.setUser(formattedUser))
-            if (response.status === 200) {
-                const csrfResponse = await api.get(
-                    `${process.env.REACT_APP_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
-                    { withCredentials: true }
-                )
-                return {
-                    // token,
-                    user: formattedUser,
-                    csrfToken: csrfResponse.data.csrfToken,
-                }
+            return {
+                user: formattedUser,
+                csrfToken: csrfToken,
             }
-            return response.data
         } catch (error) {
             const errorMessage = error.response?.data?.message || error.message
 
@@ -193,7 +179,6 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false
-                state.token = action.payload.token
                 state.isLoggedIn = true
                 state.user = action.payload.user
                 state.csrfToken = action.payload.csrfToken
@@ -204,7 +189,6 @@ const authSlice = createSlice({
             })
             .addCase(logoutUser.fulfilled, (state, action) => {
                 state.loading = false
-                state.token = null
                 state.isLoggedIn = false
                 state.user = null
             })
