@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, configureStore } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import api from '../api'
 import csrfReducer, { getCSRFToken } from '../store/csrfSlice'
 
