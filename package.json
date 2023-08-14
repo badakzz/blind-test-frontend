@@ -10,8 +10,7 @@
         "@testing-library/jest-dom": "^5.14.1",
         "@testing-library/react": "^13.0.0",
         "@testing-library/user-event": "^13.2.1",
-        "@types/jest": "^27.0.1",
-        "@types/node": "^16.7.13",
+        "@types/node": "^20.5.0",
         "@types/react": "^18.0.0",
         "@types/react-dom": "^18.0.0",
         "@types/react-redux": "^7.1.25",
@@ -30,6 +29,7 @@
         "react-select": "^5.7.4",
         "react-toastify": "^9.1.3",
         "redux": "^4.2.1",
+        "redux-mock-store": "^1.5.4",
         "socket.io-client": "^4.6.2",
         "typescript": "^4.4.2",
         "web-vitals": "^2.1.0"
@@ -60,6 +60,14 @@
     },
     "devDependencies": {
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-        "@types/lodash": "^4.14.195"
+        "@types/history": "^5.0.0",
+        "@types/lodash": "^4.14.195",
+        "cypress": "^12.17.3",
+        "ts-node": "^10.9.1"
+    },
+    "jest": {
+        "moduleNameMapper": {
+            "axios": "axios/dist/node/axios.cjs"
+        }
     }
 }

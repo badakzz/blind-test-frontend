@@ -4,6 +4,7 @@ import { Chatroom } from '../utils/types'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import api from '../api'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     chatroom: Chatroom
@@ -18,12 +19,16 @@ const Scoreboard: React.FC<Props> = ({
     isHost,
     resetGame,
 }) => {
-    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-
     const [show, setShow] = useState(true)
     const [scores, setScores] = useState([])
 
-    const handleClose = () => setShow(false)
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+    const navigate = useNavigate()
+
+    const handleClose = () => {
+        setShow(false)
+        return navigate('/')
+    }
     const handleShow = () => setShow(true)
 
     useEffect(() => {

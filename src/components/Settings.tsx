@@ -64,9 +64,10 @@ const Settings: React.FC = () => {
             <h4>Settings</h4>
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                    <Form.Label>New email:</Form.Label>
+                    <Form.Label htmlFor="email">New email:</Form.Label>
                     <Form.Control
-                        type="text"
+                        id="email"
+                        type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="form-input mb-3"
@@ -75,8 +76,9 @@ const Settings: React.FC = () => {
                 </Form.Group>
                 {emailError && <div className="text-red">{emailError}</div>}
                 <Form.Group>
-                    <Form.Label>New Password:</Form.Label>
+                    <Form.Label htmlFor="password">New password:</Form.Label>
                     <Form.Control
+                        id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
