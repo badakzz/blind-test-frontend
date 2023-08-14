@@ -45,13 +45,9 @@ const App: React.FC = () => {
                 console.error('Parsing user cookie failed', e)
             }
         }
-        const token = Cookies.get(process.env.REACT_APP_JWT_COOKIE_NAME)
         if (user) {
             dispatch(authActions.setUser(user))
             dispatch(authActions.setLoggedIn(true))
-        }
-        if (token) {
-            dispatch(authActions.storeToken({ token }))
         }
     }, [dispatch])
 
