@@ -21,7 +21,7 @@ const Home: React.FC = () => {
     }
 
     return (
-        <div className="d-flex flex-column flex-md-row align-items-center">
+        <div className="d-flex home-container align-items-center">
             <Container
                 className="d-flex justifiy-content-center align-items-center grey-container m-5 p-5"
                 style={styles.container}

@@ -31,6 +31,7 @@ body {
     padding-bottom: 0 !important;
     background-color: white !important;
     border-bottom: 1px solid #e5e5e5;
+    gap: 3rem !important;
 }
 
 .button-container {
@@ -204,15 +205,16 @@ body {
 }
 
 .checkout-form {
-    width: 500px;
+    min-width: 100%;
     margin: 0 auto;
     padding: 20px;
-    border: 1px solid #eee;
+    border: 1px solid #e5e5e5;
     border-radius: 10px;
-    background-color: #e5e5e5;
+    background-color: white;
 }
 
 .stripe-input {
+    background-color: white;
     margin: 20px 0;
     padding: 10px;
     border: 1px solid #eee;
@@ -235,4 +237,71 @@ body {
 
 .users-connected-container {
     overflow-y: auto;
+}
+
+.logout-option {
+    text-align: start;
+    padding-left: 20px;
+}
+
+.logout-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+.logout-icon {
+    display: inline;
+}
+
+@media (max-width: 992px) {
+    .logout-item {
+        display: none !important;
+    }
+    .logout-group {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) {
+    .custom-navbrand {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (min-width: 992px) {
+    .home-container {
+        flex-direction: row;
+    }
+    .chat-message-container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 992px) {
+    .home-container {
+        flex-direction: column;
+    }
+    .chat-message-container {
+        flex-direction: row;
+    }
+    .nav-item {
+        border-top: 1px solid #e5e5e5;
+        margin-bottom: 5px;
+        padding-top: 5px;
+    }
+    .logout-group {
+        display: block;
+        align-items: unset;
+        gap: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .logout-icon {
+        display: none;
+    }
 }
