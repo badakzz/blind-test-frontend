@@ -34,7 +34,7 @@ const RoadmapTicketsList: React.FC = () => {
             className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 yellow-container"
             style={styles.container}
         >
-            <h4>Roadmap</h4>
+            <h4 className="mb-5">Roadmap</h4>
             <ul>
                 {tickets.map((ticket: RoadmapTicket) => (
                     <li key={ticket.ticketId}>
