@@ -68,49 +68,79 @@ const ChatMessagesContainer: React.FC<Props> = ({
     }, [messages])
 
     return (
-        <div className="d-flex flex-column">
-            <div className="d-flex flex-row align-items-start">
-                <div
-                    className="col-9 message-container m-5"
-                    ref={messageContainerRef}
-                >
-                    {messages
-                        .slice()
-                        .reverse()
-                        .map((msg, i) => (
-                            <div className="m-3" key={i}>
-                                <span style={styles.author}>
-                                    {msg.author}:{' '}
-                                </span>
-                                <span
-                                    style={
-                                        msg.author === 'SYSTEM'
-                                            ? styles.systemMessage
-                                            : styles.userMessage
-                                    }
-                                >
-                                    {msg.content}
-                                </span>
-                            </div>
-                        ))}
+        <div className="container-fluid">
+            <div className="row flex-md-row flex-column">
+                {/* Message Container */}
+                <div className="col-md-9 col-12">
+                    <div
+                        className="message-container m-5"
+                        ref={messageContainerRef}
+                    >
+                        {messages
+                            .slice()
+                            .reverse()
+                            .map((msg, i) => (
+                                <div className="m-3" key={i}>
+                                    <span style={styles.author}>
+                                        {msg.author}:{' '}
+                                    </span>
+                                    <span
+                                        style={
+                                            msg.author === 'SYSTEM'
+                                                ? styles.systemMessage
+                                                : styles.userMessage
+                                        }
+                                    >
+                                        {msg.content}
+                                    </span>
+                                </div>
+                            ))}
+                    </div>
+                    <Form onSubmit={sendMessageHandler} className="d-md-none">
+                        {' '}
+                        {/* Small Screens */}
+                        <div className="d-flex flex-row mx-5 mt-3">
+                            <Form.Control
+                                type="text"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                            />
+                            <Button
+                                className="green-button-sm mx-1"
+                                type="submit"
+                            >
+                                Send
+                            </Button>
+                        </div>
+                    </Form>
                 </div>
-                <UsersInRoom
-                    className="users-connected-container"
-                    upperClassName="m-5 users-connected-wrapper-no-margin"
-                    subClassName="text-align-center"
-                    connectedUsers={connectedUsers}
-                />
-            </div>
-            <Form onSubmit={sendMessageHandler}>
-                <div className="d-flex flex-row mx-5 mt-3">
-                    <Form.Control
-                        type="text"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                {/* Users Connected */}
+                <div className="col-md-3 col-12">
+                    <UsersInRoom
+                        className="users-connected-container"
+                        upperClassName="m-5 users-connected-wrapper-no-margin"
+                        subClassName="text-align-center"
+                        connectedUsers={connectedUsers}
                     />
-                    <Button className="green-button-sm mx-1" type="submit">
-                        Send
-                    </Button>
+                </div>
+            </div>
+            <Form
+                onSubmit={sendMessageHandler}
+                className="d-none d-md-block row"
+            >
+                {' '}
+                {/* Large Screens */}
+                <div className="col-12">
+                    <div className="d-flex flex-row mx-5 mt-3">
+                        <Form.Control
+                            type="text"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                        />
+                        <Button className="green-button-sm mx-1" type="submit">
+                            Send
+                        </Button>
+                    </div>
                 </div>
             </Form>
         </div>
