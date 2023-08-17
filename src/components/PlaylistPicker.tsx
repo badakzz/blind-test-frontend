@@ -64,7 +64,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
             if (inputValue) {
                 const response = await api.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/search`,
+                    `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/search`,
                     {
                         params: { q: inputValue },
                         withCredentials: true,
@@ -81,7 +81,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             setLoading(true)
 
             const playlists = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists`
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists`
             )
 
             const uniquePlaylistList = playlists.data.reduce(

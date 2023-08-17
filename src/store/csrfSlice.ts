@@ -18,7 +18,7 @@ export const getCSRFToken = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const response = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/auth/csrf`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/auth/csrf`,
                 { withCredentials: true }
             )
             return response.data.csrfToken

@@ -35,7 +35,7 @@ const Scoreboard: React.FC<Props> = ({
         const fetchScores = async () => {
             try {
                 const response = await api.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/scores/chatroom/${chatroom.chatroomId}`,
+                    `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/scores/chatroom/${chatroom.chatroomId}`,
                     {
                         withCredentials: true,
                         headers: {
