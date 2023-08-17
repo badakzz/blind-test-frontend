@@ -44,7 +44,7 @@ export const usePlaylistManager = (
             const fetchPlaylistSongs = async () => {
                 try {
                     const response = await axios.get(
-                        `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/playlists/${playlistId}/tracks`,
+                        `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
                         { withCredentials: true }
                     )
 
