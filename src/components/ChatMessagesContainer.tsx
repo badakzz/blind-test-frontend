@@ -37,7 +37,7 @@ const ChatMessagesContainer: React.FC<Props> = ({
         e.preventDefault()
         if (message) {
             api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/chat_messages`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chat_messages`,
                 {
                     chatroom_id: currentChatroom.chatroomId,
                     user_id: user.userId,
@@ -75,22 +75,25 @@ const ChatMessagesContainer: React.FC<Props> = ({
                         className="message-container m-5"
                         ref={messageContainerRef}
                     >
-                        {messages.map((msg, i) => (
-                            <div className="m-3" key={i}>
-                                <span style={styles.author}>
-                                    {msg.author}:{' '}
-                                </span>
-                                <span
-                                    style={
-                                        msg.author === 'SYSTEM'
-                                            ? styles.systemMessage
-                                            : styles.userMessage
-                                    }
-                                >
-                                    {msg.content}
-                                </span>
-                            </div>
-                        ))}
+                        {messages
+                            .slice()
+                            .reverse()
+                            .map((msg, i) => (
+                                <div className="m-3" key={i}>
+                                    <span style={styles.author}>
+                                        {msg.author}:{' '}
+                                    </span>
+                                    <span
+                                        style={
+                                            msg.author === 'SYSTEM'
+                                                ? styles.systemMessage
+                                                : styles.userMessage
+                                        }
+                                    >
+                                        {msg.content}
+                                    </span>
+                                </div>
+                            ))}
                     </div>
                     <Form onSubmit={sendMessageHandler} className="d-md-none">
                         <div className="d-flex flex-row mx-5 mt-3">

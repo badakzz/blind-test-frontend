@@ -3,7 +3,7 @@ import axios from 'axios'
 const redirectQueue = []
 
 const api = axios.create({
-    baseURL: `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}`,
+    baseURL: `${process.env.REACT_APP_SERVER_DOMAIN}`,
 })
 
 api.interceptors.response.use(

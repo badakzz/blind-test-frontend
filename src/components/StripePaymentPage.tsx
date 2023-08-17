@@ -39,7 +39,7 @@ const CheckoutForm = () => {
 
         try {
             const paymentIntentRes = await api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/payment_intents`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/payment_intents`,
                 {
                     amount: 500,
                     currency: 'eur',
@@ -61,7 +61,7 @@ const CheckoutForm = () => {
 
             if (!error) {
                 const confirmPaymentRes = await api.post(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}:${process.env.REACT_APP_SERVER_PORT}/api/v1/confirm_payment`,
+                    `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/confirm_payment`,
                     {
                         payment_method: paymentMethod.id,
                         stripe_payment_intent_id: stripePaymentIntentId,

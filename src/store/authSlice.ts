@@ -24,8 +24,6 @@ const initialState: AuthState = {
     updateSuccess: false,
 }
 
-const serverPort = process.env.REACT_APP_SERVER_PORT
-
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -41,7 +39,7 @@ export const loginUser = createAsyncThunk(
             }
 
             const response = await api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/login`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/auth/login`,
                 credentials,
                 {
                     withCredentials: true,
@@ -111,7 +109,7 @@ export const signupUser = createAsyncThunk(
             }
 
             const response = await api.post(
-                `${process.env.REACT_APP_SERVER_DOMAIN}:${serverPort}/api/auth/signup`,
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/auth/signup`,
                 userData,
                 {
                     withCredentials: true,
