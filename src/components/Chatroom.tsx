@@ -8,6 +8,7 @@ import {
     Scoreboard,
     CountdownBar,
     TimeUpMessage,
+    WaitingRoom,
 } from './'
 import { useSocket } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
@@ -230,7 +231,7 @@ const Chatroom: React.FC = () => {
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
-                <p>Waiting for the host to start the game...</p>
+                <WaitingRoom connectedUsers={connectedUsers} />
             )}
             {firstSong && !isGameOver && (
                 <>

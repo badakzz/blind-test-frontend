@@ -102,12 +102,12 @@ const CheckoutForm = () => {
 
     return (
         <Container
-            className="d-flex justify-content-center align-items-center flex-column mt-5 p-5"
+            className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 yellow-container"
             style={styles.container}
         >
+            <h4>Get premium</h4>
             <div className="checkout-form">
                 <Form onSubmit={handleSubmit}>
-                    <h4>Get premium</h4>
                     <div className="stripe-input">
                         <CardElement
                             options={{
