@@ -8,16 +8,16 @@ import { useNavigate } from 'react-router-dom'
 
 interface Props {
     chatroom: Chatroom
-    isGameOver: boolean
     isHost: boolean
     resetGame: (chatroomId: string) => void
+    closeGame: () => void
 }
 
 const Scoreboard: React.FC<Props> = ({
     chatroom,
-    isGameOver,
     isHost,
     resetGame,
+    closeGame,
 }) => {
     const [show, setShow] = useState(true)
     const [scores, setScores] = useState([])
@@ -26,6 +26,7 @@ const Scoreboard: React.FC<Props> = ({
     const navigate = useNavigate()
 
     const handleClose = () => {
+        closeGame()
         setShow(false)
         return navigate('/')
     }
@@ -78,7 +79,7 @@ const Scoreboard: React.FC<Props> = ({
                     >
                         Close
                     </Button>
-                    {isGameOver && isHost && (
+                    {isHost && (
                         <Button
                             className="green-button-sm-inverted"
                             onClick={() => resetGame(chatroom.chatroomId)}

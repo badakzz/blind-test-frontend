@@ -43,6 +43,7 @@ const Chatroom: React.FC = () => {
         firstSong,
         isGameOver,
         startGame,
+        closeGame,
         resetGame,
         setFirstSong,
     } = useGameManager(
@@ -61,7 +62,7 @@ const Chatroom: React.FC = () => {
         isAudioPlaying,
         setIsAudioPlaying,
         currentSongCredentials,
-    } = useAudioManager(isGameOver, socket, currentChatroom)
+    } = useAudioManager(isGameOver, socket, currentChatroom, isHost)
 
     const {
         currentSongPlaying,
@@ -146,22 +147,6 @@ const Chatroom: React.FC = () => {
             })
         }
     }, [socket])
-
-    useEffect(() => {
-        if (socket) {
-            socket.off('artistAndSongNamesFound')
-
-            socket.on('artistAndSongNamesFound', () => {
-                if (currentChatroom && currentChatroom.chatroomId) {
-                    if (audio && audio instanceof Audio) {
-                        audio.pause()
-                        setIsAudioPlaying(false)
-                        socket.emit('audioEnded', currentChatroom.chatroomId)
-                    }
-                }
-            })
-        }
-    }, [socket, currentChatroom, firstSong])
 
     useEffect(() => {
         if (socket) {
@@ -259,8 +244,8 @@ const Chatroom: React.FC = () => {
             {isGameOver && (
                 <Scoreboard
                     chatroom={currentChatroom}
-                    isGameOver={isGameOver}
                     resetGame={resetGame}
+                    closeGame={closeGame}
                     isHost={isHost}
                 />
             )}

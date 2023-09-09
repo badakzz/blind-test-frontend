@@ -62,7 +62,6 @@
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@types/history": "^5.0.0",
         "@types/lodash": "^4.14.195",
-        "cypress": "^12.17.3",
         "ts-node": "^10.9.1"
     },
     "jest": {
