@@ -7,7 +7,8 @@ export const usePlaylistManager = (
     currentChatroom: Chatroom,
     trackPreviewList: any[],
     setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
-    isSearchSelection: boolean
+    isSearchSelection: boolean,
+    isSearchSelected: boolean
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
@@ -42,33 +43,39 @@ export const usePlaylistManager = (
             fetchTrackPreviews()
         } else if (playlistId && isSearchSelection) {
             const fetchPlaylistSongs = async () => {
-                try {
-                    const response = await axios.get(
-                        `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
-                        {
-                            params: { chatroomId: currentChatroom.chatroomId },
-                            withCredentials: true,
-                        }
-                    )
-
-                    const transformedData = response.data
-                        .map((track) => ({
-                            artist_name: track.artist_name, // <- Directly using artist_name from track
-                            song_name: track.song_name, // <- Directly using song_name from track
-                            preview_url: track.preview_url,
-                            song_id: track.song_id,
-                        }))
-                        .filter(
-                            (item) =>
-                                item.preview_url &&
-                                item.artist_name &&
-                                item.song_name
+                if (isSearchSelected) {
+                    try {
+                        const response = await axios.get(
+                            `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
+                            {
+                                params: {
+                                    chatroomId: currentChatroom.chatroomId,
+                                },
+                                withCredentials: true,
+                            }
                         )
 
-                    setTrackPreviewList(transformedData)
-                } catch (error) {
-                    console.error(error)
-                    setFetchError(error.response?.data?.error || error.message)
+                        const transformedData = response.data
+                            .map((track) => ({
+                                artist_name: track.artist_name, // <- Directly using artist_name from track
+                                song_name: track.song_name, // <- Directly using song_name from track
+                                preview_url: track.preview_url,
+                                song_id: track.song_id,
+                            }))
+                            .filter(
+                                (item) =>
+                                    item.preview_url &&
+                                    item.artist_name &&
+                                    item.song_name
+                            )
+
+                        setTrackPreviewList(transformedData)
+                    } catch (error) {
+                        console.error(error)
+                        setFetchError(
+                            error.response?.data?.error || error.message
+                        )
+                    }
                 }
             }
 

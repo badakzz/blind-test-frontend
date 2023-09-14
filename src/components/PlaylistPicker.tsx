@@ -21,6 +21,7 @@ interface PlaylistPickerProps {
     setIsSearchSelection: React.Dispatch<React.SetStateAction<any>>
     isSearchSelection: boolean
     selectPlaylist: () => void
+    setIsPremiumPlaylistSelected
 }
 
 const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
@@ -33,6 +34,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     setIsSearchSelection,
     isSearchSelection,
     selectPlaylist,
+    setIsPremiumPlaylistSelected,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
     const [searchedList, setSearchedList] = useState<any>([])
@@ -47,6 +49,20 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     const [selectButtonClicked, setSelectButtonClicked] = useState(
         user?.permissions !== 2
     )
+    const initialState = {
+        playlistList: [],
+        searchedList: [],
+        loading: false,
+        selectedPlaylist: '',
+        searchTerm: '',
+        defaultSelectedPlaylist: '',
+    }
+    const [state, setState] = useState(initialState)
+
+    useEffect(() => {
+        setState(initialState)
+        setIsPremiumPlaylistSelected(false)
+    }, [])
 
     const options = searchedList.map((playlist: any) => ({
         value: playlist.id,
@@ -101,13 +117,16 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             setPlaylistList(uniquePlaylistList)
             setLoading(false)
         }
-
-        fetchPlaylistList()
+        if (selectButtonClicked) {
+            fetchPlaylistList()
+        }
     }, [selectButtonClicked])
 
     useEffect(() => {
-        setSelectedPlaylist('')
-        setDefaultSelectedPlaylist('')
+        if (show) {
+            setSelectedPlaylist('')
+            setDefaultSelectedPlaylist('')
+        }
     }, [show])
 
     const handlePlaylistChange = (option: any) => {
@@ -125,6 +144,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             onPlaylistSelected(selectedPlaylist)
             onHide()
             selectPlaylist()
+            setIsPremiumPlaylistSelected(true)
         }
     }
 
