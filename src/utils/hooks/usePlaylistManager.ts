@@ -8,7 +8,7 @@ export const usePlaylistManager = (
     trackPreviewList: any[],
     setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
     isSearchSelection: boolean,
-    isSearchSelected: boolean
+    isPremiumPlaylistSelected: boolean
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
@@ -43,7 +43,7 @@ export const usePlaylistManager = (
             fetchTrackPreviews()
         } else if (playlistId && isSearchSelection) {
             const fetchPlaylistSongs = async () => {
-                if (isSearchSelected) {
+                if (isPremiumPlaylistSelected) {
                     try {
                         const response = await axios.get(
                             `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
@@ -57,8 +57,8 @@ export const usePlaylistManager = (
 
                         const transformedData = response.data
                             .map((track) => ({
-                                artist_name: track.artist_name, // <- Directly using artist_name from track
-                                song_name: track.song_name, // <- Directly using song_name from track
+                                artist_name: track.artist_name,
+                                song_name: track.song_name,
                                 preview_url: track.preview_url,
                                 song_id: track.song_id,
                             }))

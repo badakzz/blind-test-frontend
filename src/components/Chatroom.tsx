@@ -31,6 +31,7 @@ const Chatroom: React.FC = () => {
     const [isSearchSelection, setIsSearchSelection] = useState<boolean>(false)
     const [isPremiumPlaylistSelected, setIsPremiumPlaylistSelected] =
         useState(false)
+
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
 
