@@ -103,7 +103,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
         }
 
         fetchPlaylistList()
-    }, [])
+    }, [selectButtonClicked])
 
     useEffect(() => {
         setSelectedPlaylist('')

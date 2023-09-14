@@ -45,14 +45,18 @@ export const usePlaylistManager = (
                 try {
                     const response = await axios.get(
                         `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
-                        { withCredentials: true }
+                        {
+                            params: { chatroomId: currentChatroom.chatroomId },
+                            withCredentials: true,
+                        }
                     )
 
                     const transformedData = response.data
                         .map((track) => ({
-                            artist_name: track.artists[0].name,
-                            song_name: track.name,
+                            artist_name: track.artist_name, // <- Directly using artist_name from track
+                            song_name: track.song_name, // <- Directly using song_name from track
                             preview_url: track.preview_url,
+                            song_id: track.song_id,
                         }))
                         .filter(
                             (item) =>
