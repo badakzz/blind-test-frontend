@@ -80,11 +80,9 @@ const CheckoutForm = () => {
                     const formattedUser: User = {
                         userId: updatedUser.user_id,
                         username: updatedUser.username,
-                        email: updatedUser.email,
                         permissions: updatedUser.permissions,
-                        isActive: updatedUser.is_active,
                     }
-                    dispatch(authActions.setUser(formattedUser))
+                    dispatch(authActions.setPermissions(formattedUser))
 
                     return navigate('/')
                 } else {

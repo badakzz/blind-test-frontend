@@ -55,9 +55,7 @@ export const loginUser = createAsyncThunk(
             const formattedUser: User = {
                 userId: user.user_id,
                 username: user.username,
-                email: user.email,
                 permissions: user.permissions,
-                isActive: user.is_active,
             }
             Cookies.set(
                 process.env.REACT_APP_AUTH_COOKIE_NAME,
@@ -129,12 +127,13 @@ export const updateSettings = createAsyncThunk(
         settings: { userId: number; email?: string; password?: string },
         { getState, rejectWithValue }
     ) => {
+        console.log('a')
         try {
             const state = getState() as RootState
             const csrfToken = state.csrf.csrfToken
-            const jwtToken = state.auth.token
+            console.log('b', csrfToken)
 
-            if (!csrfToken || !jwtToken) {
+            if (!csrfToken) {
                 throw new Error('CSRF token or JWT token not found')
             }
 
@@ -147,7 +146,7 @@ export const updateSettings = createAsyncThunk(
                 headers,
                 withCredentials: true,
             })
-
+            console.log('c', response.data)
             return response.data
         } catch (error) {
             return rejectWithValue('Update failed')
@@ -163,10 +162,35 @@ const authSlice = createSlice({
             state.token = action.payload.token
         },
         setUser(state, action) {
+            console.log('1', action.payload)
             state.user = action.payload
+            console.log('2', state.user)
         },
         setLoggedIn(state, action) {
             state.isLoggedIn = action.payload
+        },
+        setPermissions(state, action) {
+            state.user.permissions = action.payload.permissions
+
+            const rawCookieValue = Cookies.get(
+                process.env.REACT_APP_AUTH_COOKIE_NAME
+            )
+            const parsedCookieValue = rawCookieValue
+                ? JSON.parse(rawCookieValue)
+                : null
+            if (parsedCookieValue) {
+                parsedCookieValue.permissions = 2
+            }
+            const stringifiedCookieValue = JSON.stringify(parsedCookieValue)
+            Cookies.set(
+                process.env.REACT_APP_AUTH_COOKIE_NAME,
+                stringifiedCookieValue,
+                {
+                    expires: 7,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                }
+            )
         },
     },
     extraReducers: (builder) => {
