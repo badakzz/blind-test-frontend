@@ -5,11 +5,13 @@ import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
 import { Button, Container, Form } from 'react-bootstrap'
 import { isEmailValid } from '../utils/helpers'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
+    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -18,9 +20,13 @@ const Login: React.FC = () => {
         (state: RootState) => state.auth
     )
 
+    const handleCaptchaChange = (value: string | null) => {
+        setCaptchaValue(value)
+    }
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        const credentials = { email, password }
+        const credentials = { email, password, captchaValue }
         await dispatch(loginUser(credentials) as any)
         setEmail('')
         setPassword('')
@@ -72,6 +78,12 @@ const Login: React.FC = () => {
                         className="form-input"
                     />
                 </Form.Group>
+                <Form.Group className="mt-3">
+                    <ReCAPTCHA
+                        sitekey={process.env.REACT_APP_GOOGLE_PUBLIC_KEY}
+                        onChange={handleCaptchaChange}
+                    />
+                </Form.Group>
                 <div className="d-flex justify-content-center">
                     <Button
                         className="green-button fw-bold my-5"
@@ -79,7 +91,7 @@ const Login: React.FC = () => {
                         disabled={
                             loading || error || emailError
                                 ? Object.values(emailError).some(Boolean)
-                                : false || !email || !password
+                                : false || !email || !password || !captchaValue
                         }
                     >
                         Login

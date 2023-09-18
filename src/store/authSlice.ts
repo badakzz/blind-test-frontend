@@ -27,7 +27,7 @@ const initialState: AuthState = {
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
-        credentials: { email: string; password: string },
+        credentials: { email: string; password: string; captchaValue: string },
         { getState, dispatch, rejectWithValue }
     ) => {
         try {
@@ -95,7 +95,12 @@ export const logoutUser = createAsyncThunk(
 export const signupUser = createAsyncThunk(
     'auth/signupUser',
     async (
-        userData: { username: string; email: string; password: string },
+        userData: {
+            username: string
+            email: string
+            password: string
+            captchaValue: string
+        },
         { getState, rejectWithValue }
     ) => {
         try {
@@ -108,15 +113,24 @@ export const signupUser = createAsyncThunk(
 
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/auth/signup`,
-                userData,
+                {
+                    ...userData,
+                    captchaValue: userData.captchaValue,
+                },
                 {
                     withCredentials: true,
                     headers: { 'X-CSRF-TOKEN': csrfToken },
                 }
             )
-            return response.data
+
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error('Signup failed due to server error')
+            }
+
+            return response.data.user
         } catch (error) {
-            return rejectWithValue('Signup failed')
+            const errorMessage = error.response?.data?.message || error.message
+            return rejectWithValue(errorMessage)
         }
     }
 )
@@ -127,11 +141,9 @@ export const updateSettings = createAsyncThunk(
         settings: { userId: number; email?: string; password?: string },
         { getState, rejectWithValue }
     ) => {
-        console.log('a')
         try {
             const state = getState() as RootState
             const csrfToken = state.csrf.csrfToken
-            console.log('b', csrfToken)
 
             if (!csrfToken) {
                 throw new Error('CSRF token or JWT token not found')
@@ -146,7 +158,6 @@ export const updateSettings = createAsyncThunk(
                 headers,
                 withCredentials: true,
             })
-            console.log('c', response.data)
             return response.data
         } catch (error) {
             return rejectWithValue('Update failed')
@@ -162,9 +173,7 @@ const authSlice = createSlice({
             state.token = action.payload.token
         },
         setUser(state, action) {
-            console.log('1', action.payload)
             state.user = action.payload
-            console.log('2', state.user)
         },
         setLoggedIn(state, action) {
             state.isLoggedIn = action.payload
@@ -224,6 +233,8 @@ const authSlice = createSlice({
             })
             .addCase(signupUser.fulfilled, (state, action) => {
                 state.loading = false
+                state.isLoggedIn = true
+                state.user = action.payload
             })
             .addCase(signupUser.rejected, (state, action) => {
                 state.loading = false
