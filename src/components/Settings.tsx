@@ -19,18 +19,35 @@ const Settings: React.FC = () => {
         (state: RootState) => state.auth.updateSuccess
     )
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        try {
-            dispatch(
-                updateSettings({
-                    userId: user.userId,
-                    email: email,
-                    password: password,
-                }) as any
-            )
-        } catch (err) {
-            setError(err)
+        if (isEmailValid(email) && isPasswordValid(password)) {
+            try {
+                const action = await dispatch(
+                    updateSettings({
+                        userId: user.userId,
+                        email: email,
+                        password: password,
+                    }) as any
+                )
+                if (updateSettings.rejected.match(action)) {
+                    throw new Error(action.payload as string)
+                } else {
+                    await dispatch(
+                        updateSettings({
+                            userId: user.userId,
+                            email: email,
+                            password: password,
+                        }) as any
+                    )
+                }
+            } catch (error) {
+                setError(`Error occurred during signup: ${error.message}`)
+                console.error(error)
+            }
+        } else {
+            handleEmailBlur()
+            handlePasswordBlur()
         }
     }
 

@@ -12,11 +12,12 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [captchaValue, setCaptchaValue] = useState<string | null>(null)
+    const [error, setError] = useState('')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const { isLoggedIn, loading, error } = useSelector(
+    const { isLoggedIn, loading } = useSelector(
         (state: RootState) => state.auth
     )
 
@@ -26,10 +27,26 @@ const Login: React.FC = () => {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        const credentials = { email, password, captchaValue }
-        await dispatch(loginUser(credentials) as any)
-        setEmail('')
-        setPassword('')
+        if (isEmailValid(email)) {
+            const credentials = { email, password, captchaValue }
+            try {
+                const action = await dispatch(
+                    await dispatch(loginUser(credentials) as any)
+                )
+                if (loginUser.rejected.match(action)) {
+                    throw new Error(action.payload as string)
+                } else {
+                    const credentials = { email, password, captchaValue }
+                    await dispatch(loginUser(credentials) as any)
+                    return navigate('/')
+                }
+            } catch (error) {
+                setError(`Error occurred during signup: ${error.message}`)
+                console.error(error)
+            }
+        } else {
+            handleEmailBlur()
+        }
     }
 
     const handleEmailBlur = () => {

@@ -72,9 +72,9 @@ export const loginUser = createAsyncThunk(
                 csrfToken: csrfToken,
             }
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message
-
-            throw rejectWithValue(errorMessage)
+            const errorMessage = error.response?.data?.error || error.message
+            console.error(errorMessage)
+            return rejectWithValue(errorMessage)
         }
     }
 )
@@ -129,7 +129,8 @@ export const signupUser = createAsyncThunk(
 
             return response.data.user
         } catch (error) {
-            const errorMessage = error.response?.data?.message || error.message
+            const errorMessage = error.response?.data?.error || error.message
+            console.error(errorMessage)
             return rejectWithValue(errorMessage)
         }
     }
@@ -160,7 +161,9 @@ export const updateSettings = createAsyncThunk(
             })
             return response.data
         } catch (error) {
-            return rejectWithValue('Update failed')
+            const errorMessage = error.response?.data?.error || error.message
+            console.error(errorMessage)
+            return rejectWithValue(errorMessage)
         }
     }
 )
