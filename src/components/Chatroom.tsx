@@ -29,6 +29,8 @@ const Chatroom: React.FC = () => {
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [, setCurrentSongIndex] = useState<number>(0)
     const [isSearchSelection, setIsSearchSelection] = useState<boolean>(false)
+    const [isPremiumPlaylistSelected, setIsPremiumPlaylistSelected] =
+        useState(false)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -43,6 +45,7 @@ const Chatroom: React.FC = () => {
         firstSong,
         isGameOver,
         startGame,
+        closeGame,
         resetGame,
         setFirstSong,
     } = useGameManager(
@@ -61,7 +64,7 @@ const Chatroom: React.FC = () => {
         isAudioPlaying,
         setIsAudioPlaying,
         currentSongCredentials,
-    } = useAudioManager(isGameOver, socket, currentChatroom)
+    } = useAudioManager(isGameOver, socket, currentChatroom, isHost)
 
     const {
         currentSongPlaying,
@@ -73,7 +76,8 @@ const Chatroom: React.FC = () => {
         currentChatroom,
         trackPreviewList,
         setTrackPreviewList,
-        isSearchSelection
+        isSearchSelection,
+        isPremiumPlaylistSelected
     )
 
     useEffect(() => {
@@ -149,22 +153,6 @@ const Chatroom: React.FC = () => {
 
     useEffect(() => {
         if (socket) {
-            socket.off('artistAndSongNamesFound')
-
-            socket.on('artistAndSongNamesFound', () => {
-                if (currentChatroom && currentChatroom.chatroomId) {
-                    if (audio && audio instanceof Audio) {
-                        audio.pause()
-                        setIsAudioPlaying(false)
-                        socket.emit('audioEnded', currentChatroom.chatroomId)
-                    }
-                }
-            })
-        }
-    }, [socket, currentChatroom, firstSong])
-
-    useEffect(() => {
-        if (socket) {
             socket.off('syncTimeOut')
 
             socket.on('syncTimeOut', async () => {
@@ -217,7 +205,7 @@ const Chatroom: React.FC = () => {
                     onRoomEntered={setIsInRoom}
                 />
             )}
-            {currentChatroom && !isWaitingForHost && (
+            {!firstSong && currentChatroom && !isWaitingForHost && (
                 <PlaylistPicker
                     currentChatroom={currentChatroom}
                     show={showPlaylistPicker}
@@ -228,6 +216,7 @@ const Chatroom: React.FC = () => {
                     setIsSearchSelection={setIsSearchSelection}
                     isSearchSelection={isSearchSelection}
                     selectPlaylist={selectPlaylist}
+                    setIsPremiumPlaylistSelected={setIsPremiumPlaylistSelected}
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
@@ -259,8 +248,8 @@ const Chatroom: React.FC = () => {
             {isGameOver && (
                 <Scoreboard
                     chatroom={currentChatroom}
-                    isGameOver={isGameOver}
                     resetGame={resetGame}
+                    closeGame={closeGame}
                     isHost={isHost}
                 />
             )}

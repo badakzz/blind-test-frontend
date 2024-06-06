@@ -29,12 +29,21 @@ export const useGameManager = (
         }
     }
 
-    const resetGame = (chatroomId: string) => {
+    const resetGameState = () => {
         setGameStarted(false)
         setIsGameOver(false)
         setFirstSong(null)
         setShowPlaylistPicker(true)
         setTrackPreviewList(null)
+    }
+
+    const closeGame = () => {
+        resetGameState()
+        socket.disconnect()
+    }
+
+    const resetGame = (chatroomId: string) => {
+        resetGameState()
         socket.emit('resetGame', { chatroomId })
     }
 
@@ -76,6 +85,7 @@ export const useGameManager = (
     return {
         startGame,
         resetGame,
+        closeGame,
         gameStarted,
         firstSong,
         isGameOver,

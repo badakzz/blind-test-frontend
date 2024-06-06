@@ -4,6 +4,7 @@ import { loginUser, signupUser } from '../store/authSlice'
 import { useNavigate } from 'react-router-dom'
 import { isEmailValid, isPasswordValid } from '../utils/helpers'
 import { Button, Container, Form } from 'react-bootstrap'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('')
@@ -12,9 +13,14 @@ const Signup: React.FC = () => {
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
+    const [captchaValue, setCaptchaValue] = useState<string | null>(null)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const handleCaptchaChange = (value: string | null) => {
+        setCaptchaValue(value)
+    }
 
     const handleEmailBlur = () => {
         if (email === '') {
@@ -43,12 +49,17 @@ const Signup: React.FC = () => {
         if (isEmailValid(email) && isPasswordValid(password)) {
             try {
                 const action = await dispatch(
-                    signupUser({ username: username, email, password }) as any
+                    signupUser({
+                        username: username,
+                        email,
+                        password,
+                        captchaValue: captchaValue,
+                    }) as any
                 )
                 if (signupUser.rejected.match(action)) {
                     throw new Error(action.payload as string)
                 } else {
-                    const credentials = { email, password }
+                    const credentials = { email, password, captchaValue }
                     await dispatch(loginUser(credentials) as any)
                     return navigate('/')
                 }
@@ -110,6 +121,12 @@ const Signup: React.FC = () => {
                         <div className="text-red">{passwordError}</div>
                     )}
                 </Form.Group>
+                <Form.Group className="mt-3">
+                    <ReCAPTCHA
+                        sitekey={process.env.REACT_APP_GOOGLE_PUBLIC_KEY}
+                        onChange={handleCaptchaChange}
+                    />
+                </Form.Group>
                 <div className="d-flex justify-content-center">
                     <Button
                         className="green-button fw-bold mt-5"
@@ -119,7 +136,11 @@ const Signup: React.FC = () => {
                                 ? Object.values(passwordError).some(Boolean)
                                 : false || emailError
                                 ? Object.values(emailError).some(Boolean)
-                                : false || !username || !email || !password
+                                : false ||
+                                  !username ||
+                                  !email ||
+                                  !password ||
+                                  !captchaValue
                         }
                     >
                         Signup

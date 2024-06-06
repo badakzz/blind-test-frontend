@@ -77,7 +77,11 @@ const CreateOrJoinRoom: React.FC<Props> = ({
                             value={chatroomId}
                             onChange={(e) => setChatroomId(e.target.value)}
                         />
-                        <Button className="green-button" onClick={handleJoin}>
+                        <Button
+                            className="green-button"
+                            disabled={!chatroomId}
+                            onClick={handleJoin}
+                        >
                             Join Room
                         </Button>
                     </div>

@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import api from '../../api'
 
-export const useAudioManager = (isGameOver, socket, currentChatroom) => {
+export const useAudioManager = (
+    isGameOver,
+    socket,
+    currentChatroom,
+    isHost
+) => {
     const [isAudioPlaying, setIsAudioPlaying] = useState(false)
     const [currentSongCredentials, setCurrentSongCredentials] = useState(null)
     const audioRef = useRef(new Audio())
@@ -43,7 +48,11 @@ export const useAudioManager = (isGameOver, socket, currentChatroom) => {
                     if (audioRef.current && audioRef.current instanceof Audio) {
                         audioRef.current.pause()
                         setIsAudioPlaying(false)
-                        socket.emit('audioEnded', currentChatroom.chatroomId)
+                        if (isHost)
+                            socket.emit(
+                                'audioEnded',
+                                currentChatroom.chatroomId
+                            )
                     }
                 }
                 const response = await fetchSongCredentials(
