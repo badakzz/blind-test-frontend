@@ -99,42 +99,52 @@ const CheckoutForm = () => {
     }
 
     return (
-        <Container
-            className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 yellow-container"
-            style={styles.container}
-        >
-            <h4>Get premium</h4>
-            <div className="checkout-form">
-                <Form onSubmit={handleSubmit}>
-                    <div className="stripe-input">
-                        <CardElement
-                            options={{
-                                style: {
-                                    base: {
-                                        fontSize: '16px',
-                                        color: '#424770',
-                                        '::placeholder': {
-                                            color: '#aab7c4',
+        <>
+            <Container
+                className="d-flex justify-content-center align-items-center flex-column mt-5 p-5 yellow-container"
+                style={styles.container}
+            >
+                <h4>Get premium</h4>
+                <div className="checkout-form">
+                    <Form onSubmit={handleSubmit}>
+                        <div className="stripe-input">
+                            <CardElement
+                                options={{
+                                    style: {
+                                        base: {
+                                            fontSize: '16px',
+                                            color: '#424770',
+                                            '::placeholder': {
+                                                color: '#aab7c4',
+                                            },
+                                        },
+                                        invalid: {
+                                            color: '#9e2146',
                                         },
                                     },
-                                    invalid: {
-                                        color: '#9e2146',
-                                    },
-                                },
-                            }}
-                        />
-                    </div>
-                    <Button
-                        type="submit"
-                        disabled={!stripe}
-                        className="stripe-button"
-                    >
-                        Pay
-                    </Button>
-                </Form>
-                {error && <div className="text-red">{error}</div>}
+                                }}
+                            />
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={!stripe}
+                            className="stripe-button"
+                        >
+                            Pay
+                        </Button>
+                    </Form>
+                    {error && <div className="text-red">{error}</div>}
+                </div>
+            </Container>
+            <div
+                className="d-flex justify-content-center text-center"
+                style={{ color: 'red', fontWeight: 'bold' }}
+            >
+                Real payments are disabled for now. You can type a succession of
+                "42" to simulate one. 4242 4242 4242 4242 -- 02 / 42 -- 424 --
+                24242
             </div>
-        </Container>
+        </>
     )
 }
 

@@ -21,7 +21,6 @@ interface PlaylistPickerProps {
     setIsSearchSelection: React.Dispatch<React.SetStateAction<any>>
     isSearchSelection: boolean
     selectPlaylist: () => void
-    setIsPremiumPlaylistSelected
 }
 
 const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
@@ -34,7 +33,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     setIsSearchSelection,
     isSearchSelection,
     selectPlaylist,
-    setIsPremiumPlaylistSelected,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
     const [searchedList, setSearchedList] = useState<any>([])
@@ -61,7 +59,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     useEffect(() => {
         setState(initialState)
-        setIsPremiumPlaylistSelected(false)
     }, [])
 
     const options = searchedList.map((playlist: any) => ({
@@ -79,14 +76,18 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             setSearchTerm(inputValue)
 
             if (inputValue) {
-                const response = await api.get(
-                    `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/search`,
-                    {
-                        params: { q: inputValue },
-                        withCredentials: true,
-                    }
-                )
-                setSearchedList(response.data)
+                try {
+                    const response = await api.get(
+                        `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/search`,
+                        {
+                            params: { q: inputValue },
+                            withCredentials: true,
+                        }
+                    )
+                    setSearchedList(response.data)
+                } catch (error) {
+                    console.error('Error fetching searched playlists:', error)
+                }
             }
         },
         200
@@ -96,26 +97,32 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
         const fetchPlaylistList = async () => {
             setLoading(true)
 
-            const playlists = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists`
-            )
+            try {
+                const playlists = await api.get(
+                    `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists`
+                )
 
-            const uniquePlaylistList = playlists.data.reduce(
-                (acc: any, current: any) => {
-                    const x = acc.find(
-                        (item: any) => item.playlist_id === current.playlist_id
-                    )
-                    if (!x) {
-                        return acc.concat([current])
-                    } else {
-                        return acc
-                    }
-                },
-                []
-            )
+                const uniquePlaylistList = playlists.data.reduce(
+                    (acc: any, current: any) => {
+                        const x = acc.find(
+                            (item: any) =>
+                                item.playlist_id === current.playlist_id
+                        )
+                        if (!x) {
+                            return acc.concat([current])
+                        } else {
+                            return acc
+                        }
+                    },
+                    []
+                )
 
-            setPlaylistList(uniquePlaylistList)
-            setLoading(false)
+                setPlaylistList(uniquePlaylistList)
+            } catch (error) {
+                console.error('Error fetching playlists:', error)
+            } finally {
+                setLoading(false)
+            }
         }
         if (selectButtonClicked) {
             fetchPlaylistList()
@@ -144,7 +151,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             onPlaylistSelected(selectedPlaylist)
             onHide()
             selectPlaylist()
-            setIsPremiumPlaylistSelected(true)
         }
     }
 
