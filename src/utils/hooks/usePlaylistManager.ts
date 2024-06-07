@@ -6,9 +6,7 @@ export const usePlaylistManager = (
     playlistId: string,
     currentChatroom: Chatroom,
     trackPreviewList: any[],
-    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
-    isSearchSelection: boolean,
-    isPremiumPlaylistSelected: boolean
+    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)

@@ -21,7 +21,6 @@ interface PlaylistPickerProps {
     setIsSearchSelection: React.Dispatch<React.SetStateAction<any>>
     isSearchSelection: boolean
     selectPlaylist: () => void
-    setIsPremiumPlaylistSelected: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
@@ -34,7 +33,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     setIsSearchSelection,
     isSearchSelection,
     selectPlaylist,
-    setIsPremiumPlaylistSelected,
 }) => {
     const [playlistList, setPlaylistList] = useState<any>([])
     const [searchedList, setSearchedList] = useState<any>([])
@@ -61,7 +59,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     useEffect(() => {
         setState(initialState)
-        setIsPremiumPlaylistSelected(false)
     }, [])
 
     const options = searchedList.map((playlist: any) => ({
@@ -154,7 +151,6 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
             onPlaylistSelected(selectedPlaylist)
             onHide()
             selectPlaylist()
-            setIsPremiumPlaylistSelected(true)
         }
     }
 
