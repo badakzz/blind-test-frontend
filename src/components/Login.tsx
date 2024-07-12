@@ -6,16 +6,17 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Container, Form } from 'react-bootstrap'
 import { isEmailValid } from '../utils/helpers'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { useToast } from '../utils/hooks'
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [captchaValue, setCaptchaValue] = useState<string | null>(null)
-    const [error, setError] = useState('')
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { showToast } = useToast()
 
     const { isLoggedIn, loading } = useSelector(
         (state: RootState) => state.auth
@@ -41,8 +42,9 @@ const Login: React.FC = () => {
                     return navigate('/')
                 }
             } catch (error) {
-                setError(`Error occurred during signup: ${error.message}`)
-                console.error(error)
+                showToast({
+                    message: `Error occurred during signup: ${error.message}`,
+                })
             }
         } else {
             handleEmailBlur()
@@ -106,7 +108,7 @@ const Login: React.FC = () => {
                         className="green-button fw-bold my-5"
                         type="submit"
                         disabled={
-                            loading || error || emailError
+                            loading || emailError
                                 ? Object.values(emailError).some(Boolean)
                                 : false || !email || !password || !captchaValue
                         }
@@ -115,7 +117,6 @@ const Login: React.FC = () => {
                     </Button>
                 </div>
             </Form>
-            {error && <div className="text-red">{error}</div>}
         </Container>
     )
 }

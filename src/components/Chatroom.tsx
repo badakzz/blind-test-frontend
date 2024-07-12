@@ -10,7 +10,7 @@ import {
     TimeUpMessage,
     WaitingRoom,
 } from './'
-import { useSocket } from '../utils/hooks'
+import { useSocket, useToast } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
 import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
@@ -29,8 +29,6 @@ const Chatroom: React.FC = () => {
     const [isInRoom, setIsInRoom] = useState<boolean>(false)
     const [, setCurrentSongIndex] = useState<number>(0)
     const [isSearchSelection, setIsSearchSelection] = useState<boolean>(false)
-    const [isPremiumPlaylistSelected, setIsPremiumPlaylistSelected] =
-        useState(false)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -39,6 +37,7 @@ const Chatroom: React.FC = () => {
     const navigate = useNavigate()
 
     const { socket, connectedUsers } = useSocket()
+    const { showToast } = useToast()
 
     const {
         gameStarted,
@@ -75,9 +74,7 @@ const Chatroom: React.FC = () => {
         playlistId,
         currentChatroom,
         trackPreviewList,
-        setTrackPreviewList,
-        isSearchSelection,
-        isPremiumPlaylistSelected
+        setTrackPreviewList
     )
 
     useEffect(() => {
@@ -216,7 +213,6 @@ const Chatroom: React.FC = () => {
                     setIsSearchSelection={setIsSearchSelection}
                     isSearchSelection={isSearchSelection}
                     selectPlaylist={selectPlaylist}
-                    setIsPremiumPlaylistSelected={setIsPremiumPlaylistSelected}
                 />
             )}
             {!firstSong && isWaitingForHost && !isHost && (
@@ -253,7 +249,7 @@ const Chatroom: React.FC = () => {
                     isHost={isHost}
                 />
             )}
-            {fetchError && <div className="text-red">{fetchError}</div>}
+            {fetchError && showToast({ message: fetchError })}
         </>
     )
 }

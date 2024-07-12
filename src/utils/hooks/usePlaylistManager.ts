@@ -6,9 +6,7 @@ export const usePlaylistManager = (
     playlistId: string,
     currentChatroom: Chatroom,
     trackPreviewList: any[],
-    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>,
-    isSearchSelection: boolean,
-    isPremiumPlaylistSelected: boolean
+    setTrackPreviewList: React.Dispatch<React.SetStateAction<any>>
 ) => {
     const [currentSongPlaying, setCurrentSongPlaying] = useState('')
     const [fetchError, setFetchError] = useState(null)
@@ -19,7 +17,7 @@ export const usePlaylistManager = (
     }
 
     useEffect(() => {
-        if (playlistId && !isSearchSelection) {
+        if (playlistId) {
             const fetchTrackPreviews = async () => {
                 try {
                     const response = await axios.get(
@@ -41,47 +39,8 @@ export const usePlaylistManager = (
                 }
             }
             fetchTrackPreviews()
-        } else if (playlistId && isSearchSelection) {
-            const fetchPlaylistSongs = async () => {
-                if (isPremiumPlaylistSelected) {
-                    try {
-                        const response = await axios.get(
-                            `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/playlists/${playlistId}/tracks`,
-                            {
-                                params: {
-                                    chatroomId: currentChatroom.chatroomId,
-                                },
-                                withCredentials: true,
-                            }
-                        )
-
-                        const transformedData = response.data
-                            .map((track) => ({
-                                artist_name: track.artist_name,
-                                song_name: track.song_name,
-                                preview_url: track.preview_url,
-                                song_id: track.song_id,
-                            }))
-                            .filter(
-                                (item) =>
-                                    item.preview_url &&
-                                    item.artist_name &&
-                                    item.song_name
-                            )
-
-                        setTrackPreviewList(transformedData)
-                    } catch (error) {
-                        console.error(error)
-                        setFetchError(
-                            error.response?.data?.error || error.message
-                        )
-                    }
-                }
-            }
-
-            fetchPlaylistSongs()
         }
-    }, [playlistId, isSearchSelection, playlistVersion])
+    }, [playlistId, playlistVersion])
 
     return {
         trackPreviewList,

@@ -1,10 +1,13 @@
-import React, { CSSProperties, useEffect } from 'react'
+import React, { CSSProperties, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import { useNavigate } from 'react-router-dom'
 import { Container } from 'react-bootstrap'
 import UsersInRoom from './UsersInRoom'
 import { AuthState } from '../store/authSlice'
+import { io } from 'socket.io-client'
+
+const socket = io(process.env.REACT_APP_SERVER_DOMAIN)
 
 interface WaitingRoomProps {
     connectedUsers: string[]
@@ -12,15 +15,32 @@ interface WaitingRoomProps {
 
 const WaitingRoom: React.FC<WaitingRoomProps> = ({ connectedUsers }) => {
     const navigate = useNavigate()
+    const [hostLeft, setHostLeft] = useState(false)
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
 
     useEffect(() => {
         if (!user) {
-            return navigate('/')
+            navigate('/')
         }
     }, [navigate, user])
+
+    useEffect(() => {
+        socket.on('hostLeft', () => {
+            setHostLeft(true)
+        })
+
+        return () => {
+            socket.off('hostLeft')
+        }
+    }, [])
+
+    useEffect(() => {
+        if (hostLeft) {
+            navigate('/')
+        }
+    }, [hostLeft, navigate])
 
     return (
         <Container
