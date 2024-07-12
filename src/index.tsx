@@ -8,15 +8,18 @@ import store from './store'
 import { BrowserRouter as Router } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min'
+import { ToastProvider } from './components'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
     <React.StrictMode>
-        <Provider store={store}>
-            <Router basename="/">
-                <App />
-            </Router>
-        </Provider>
+        <ToastProvider>
+            <Provider store={store}>
+                <Router basename="/">
+                    <App />
+                </Router>
+            </Provider>
+        </ToastProvider>
     </React.StrictMode>
 )
 

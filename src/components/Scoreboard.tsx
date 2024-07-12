@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../store'
 import api from '../api'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../utils/hooks'
 
 interface Props {
     chatroom: Chatroom
@@ -24,6 +25,7 @@ const Scoreboard: React.FC<Props> = ({
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const navigate = useNavigate()
+    const { showToast } = useToast()
 
     const handleClose = () => {
         closeGame()
@@ -46,7 +48,7 @@ const Scoreboard: React.FC<Props> = ({
                 )
                 setScores(response.data)
             } catch (error) {
-                console.error(error)
+                showToast({ message: error })
             }
         }
 

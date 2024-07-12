@@ -1,6 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
 import { Button, Container, Form } from 'react-bootstrap'
 import { User } from '../utils/types'
+import { useToast } from '../utils/hooks'
 
 type Props = {
     user: User | null
@@ -20,6 +21,8 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const [username, setUsername] = useState('')
     const [chatroomId, setChatroomId] = useState('')
 
+    const { showToast } = useToast()
+
     useEffect(() => {
         user && setUsername(user.username)
     }, [user])
@@ -37,7 +40,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({
             joinRoom(user, chatroomId)
             onRoomEntered(true)
         } catch (e) {
-            console.error(e)
+            showToast({ message: e })
         }
     }
 

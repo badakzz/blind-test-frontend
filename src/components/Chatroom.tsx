@@ -10,7 +10,7 @@ import {
     TimeUpMessage,
     WaitingRoom,
 } from './'
-import { useSocket } from '../utils/hooks'
+import { useSocket, useToast } from '../utils/hooks'
 import { useAudioManager } from '../utils/hooks'
 import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
@@ -37,6 +37,7 @@ const Chatroom: React.FC = () => {
     const navigate = useNavigate()
 
     const { socket, connectedUsers } = useSocket()
+    const { showToast } = useToast()
 
     const {
         gameStarted,
@@ -248,7 +249,7 @@ const Chatroom: React.FC = () => {
                     isHost={isHost}
                 />
             )}
-            {fetchError && <div className="text-red">{fetchError}</div>}
+            {fetchError && showToast({ message: fetchError })}
         </>
     )
 }

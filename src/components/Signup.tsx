@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { isEmailValid, isPasswordValid } from '../utils/helpers'
 import { Button, Container, Form } from 'react-bootstrap'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { useToast } from '../utils/hooks'
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
-    const [error, setError] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
@@ -17,6 +17,7 @@ const Signup: React.FC = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { showToast } = useToast()
 
     const handleCaptchaChange = (value: string | null) => {
         setCaptchaValue(value)
@@ -64,8 +65,9 @@ const Signup: React.FC = () => {
                     return navigate('/')
                 }
             } catch (error) {
-                setError(`Error occurred during signup: ${error.message}`)
-                console.error(error)
+                showToast({
+                    message: `Error occurred during signup: ${error.message}`,
+                })
             }
         } else {
             handleEmailBlur()
@@ -147,7 +149,6 @@ const Signup: React.FC = () => {
                     </Button>
                 </div>
             </Form>
-            {error && <div className="text-red">{error}</div>}
         </Container>
     )
 }

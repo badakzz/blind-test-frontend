@@ -13,11 +13,11 @@ import { useNavigate } from 'react-router-dom'
 import api from '../api'
 import { User } from '../utils/types'
 import { Button, Container, Form } from 'react-bootstrap'
+import { useToast } from '../utils/hooks'
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY)
 
 const CheckoutForm = () => {
-    const [error, setError] = useState<string>('')
     const stripe = useStripe()
     const elements = useElements()
     const navigate = useNavigate()
@@ -27,6 +27,7 @@ const CheckoutForm = () => {
     const user = authUser.user
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+    const { showToast } = useToast()
 
     useEffect(() => {
         if (!user) {
@@ -86,15 +87,18 @@ const CheckoutForm = () => {
 
                     return navigate('/')
                 } else {
-                    setError('Payment failed.')
+                    showToast({
+                        message: `Payment failed: ${error}`,
+                    })
                 }
             } else {
-                setError('Payment failed.')
-                console.error('Payment method creation failed:', error)
+                showToast({
+                    message: `Payment method creation failed: ${error}`,
+                })
             }
         } catch (error) {
-            setError('Payment failed.')
             console.error(error)
+            showToast({ message: `Payment intent creation failed: ${error}` })
         }
     }
 
@@ -133,7 +137,6 @@ const CheckoutForm = () => {
                             Pay
                         </Button>
                     </Form>
-                    {error && <div className="text-red">{error}</div>}
                 </div>
             </Container>
             <div
