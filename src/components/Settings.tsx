@@ -4,13 +4,13 @@ import { AuthState, updateSettings } from '../store/authSlice'
 import { RootState } from '../store'
 import { isEmailValid, isPasswordValid } from '../utils/helpers'
 import { Button, Container, Form } from 'react-bootstrap'
+import { useToast } from '../utils/hooks'
 
 const Settings: React.FC = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
-    const [error, setError] = useState('')
 
     const dispatch = useDispatch()
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
@@ -18,6 +18,7 @@ const Settings: React.FC = () => {
     const updateSuccess = useSelector(
         (state: RootState) => state.auth.updateSuccess
     )
+    const { showToast } = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -42,8 +43,9 @@ const Settings: React.FC = () => {
                     )
                 }
             } catch (error) {
-                setError(`Error occurred during signup: ${error.message}`)
-                console.error(error)
+                showToast({
+                    message: `Error occurred during signup: ${error.message}`,
+                })
             }
         } else {
             handleEmailBlur()
@@ -122,7 +124,6 @@ const Settings: React.FC = () => {
                     </Button>
                 </div>
             </Form>
-            {error && <div className="text-red">{error}</div>}
             {updateSuccess && (
                 <div className="text-green">Settings successfully updated</div>
             )}

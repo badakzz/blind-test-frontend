@@ -8,6 +8,7 @@ import { logoutUser } from '../store/authSlice'
 import { AuthState } from '../store/authSlice'
 import logo from '../logo.png'
 import '../App.css'
+import { useToast } from '../utils/hooks'
 
 type Props = {
     children?: React.ReactNode
@@ -18,12 +19,13 @@ const Layout: React.FC<Props> = ({ children }) => {
     const user = useSelector((state: RootState) => state.auth) as AuthState
 
     const navigate = useNavigate()
+    const { showToast } = useToast()
 
     const handleLogout = async () => {
         try {
             await dispatch(logoutUser() as any)
         } catch (error) {
-            console.error(error)
+            showToast({ message: error })
         }
     }
 

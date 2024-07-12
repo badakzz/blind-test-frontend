@@ -10,6 +10,7 @@ import { RootState } from '../store'
 import { AuthState } from '../store/authSlice'
 import _ from 'lodash'
 import ReactSelect from 'react-select'
+import { useToast } from '../utils/hooks'
 
 interface PlaylistPickerProps {
     currentChatroom: Chatroom
@@ -43,6 +44,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
+    const { showToast } = useToast()
 
     const [selectButtonClicked, setSelectButtonClicked] = useState(
         user?.permissions !== 2
@@ -86,7 +88,9 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                     )
                     setSearchedList(response.data)
                 } catch (error) {
-                    console.error('Error fetching searched playlists:', error)
+                    showToast({
+                        message: `Error fetching searched playlists: ${error}`,
+                    })
                 }
             }
         },
@@ -119,7 +123,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
 
                 setPlaylistList(uniquePlaylistList)
             } catch (error) {
-                console.error('Error fetching playlists:', error)
+                showToast({ message: `Error fetching playlists:  ${error}` })
             } finally {
                 setLoading(false)
             }
