@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import api from '../../api'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../store'
 
-export const useChatroomManager = (socket, csrfToken) => {
+export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
+
+    const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
 
     const createRoom = async (username?: string) => {
         try {

@@ -2,13 +2,10 @@ import axios from 'axios'
 import React, { CSSProperties, useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
 import { RoadmapTicket } from '../utils/types'
-import { useToast } from '../utils/hooks'
 
 const RoadmapTicketsList: React.FC = () => {
     const [tickets, setTickets] = useState([])
     const [loading, setLoading] = useState(true)
-
-    const { showToast } = useToast()
 
     useEffect(() => {
         axios
@@ -20,10 +17,10 @@ const RoadmapTicketsList: React.FC = () => {
                 setLoading(false)
             })
             .catch((error) => {
-                showToast({
-                    message: `An error occurred while fetching tickets:',
-                    ${error}`,
-                })
+                console.error(
+                    'An error occurred while fetching tickets:',
+                    error
+                )
                 setLoading(false)
             })
     }, [])

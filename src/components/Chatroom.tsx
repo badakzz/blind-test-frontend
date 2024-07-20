@@ -52,10 +52,7 @@ const Chatroom: React.FC = () => {
         setIsWaitingForHost
     )
 
-    const { createRoom, joinRoom, currentChatroom } = useChatroomManager(
-        socket,
-        csrfToken
-    )
+    const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
 
     const {
         audio,
