@@ -2,11 +2,13 @@ import React, { CSSProperties, useEffect, useState } from 'react'
 import { Button, Container, Form } from 'react-bootstrap'
 import { User } from '../utils/types'
 import { useToast } from '../utils/hooks'
+import { createGuestUser } from '../store/authSlice'
+import { useDispatch } from 'react-redux'
 
 type Props = {
     user: User | null
-    createRoom: (user: User) => void
-    joinRoom: (user: User, chatroomId: string) => void
+    createRoom: (username: string) => void
+    joinRoom: (chatroomId: string, username: string) => void
     onShow: React.Dispatch<boolean>
     onRoomEntered: React.Dispatch<boolean>
 }
@@ -18,29 +20,37 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     onShow,
     onRoomEntered,
 }) => {
-    const [username, setUsername] = useState('')
-    const [chatroomId, setChatroomId] = useState('')
-
+    const [username, setUsername] = useState<string>('')
+    const [chatroomId, setChatroomId] = useState<string>('')
+    const dispatch = useDispatch()
     const { showToast } = useToast()
 
     useEffect(() => {
-        user && setUsername(user.username)
-    }, [user])
+        if (!user) {
+            dispatch(createGuestUser() as any)
+        } else {
+            setUsername(user.username)
+        }
+    }, [user, dispatch])
 
-    const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        createRoom(user)
-        onShow(true)
-        onRoomEntered(true)
-    }
-
-    const handleJoin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            joinRoom(user, chatroomId)
+            await createRoom(user.username)
+            onShow(true)
             onRoomEntered(true)
         } catch (e) {
-            showToast({ message: e })
+            showToast({ message: e.message || e.toString() })
+        }
+    }
+
+    const handleJoin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        try {
+            await joinRoom(chatroomId, user.username)
+            onRoomEntered(true)
+        } catch (e) {
+            showToast({ message: e.message || e.toString() })
         }
     }
 

@@ -24,6 +24,63 @@ const initialState: AuthState = {
     updateSuccess: false,
 }
 
+export const createGuestUser = createAsyncThunk(
+    'auth/createGuestUser',
+    async (_, { getState, dispatch, rejectWithValue }) => {
+        try {
+            const state = getState() as RootState
+            const csrfToken = state.csrf.csrfToken
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found')
+            }
+
+            if (!csrfToken) {
+                console.error('csrf')
+                throw new Error('CSRF token not found')
+            }
+
+            const response = await api.post(
+                '/api/v1/users',
+                { is_guest: true },
+                {
+                    withCredentials: true,
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                }
+            )
+
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error('Failed to create guest user')
+            }
+
+            const { user } = response.data
+            const formattedUser: User = {
+                userId: user.user_id,
+                username: user.username,
+                permissions: user.permissions,
+            }
+            Cookies.set(
+                process.env.REACT_APP_AUTH_COOKIE_NAME,
+                JSON.stringify(formattedUser),
+                {
+                    expires: 7,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                }
+            )
+            dispatch(authActions.setUser(formattedUser))
+
+            return {
+                user: formattedUser,
+                csrfToken: csrfToken,
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || error.message
+            return rejectWithValue(errorMessage)
+        }
+    }
+)
+
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -207,6 +264,20 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(createGuestUser.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(createGuestUser.fulfilled, (state, action) => {
+                state.loading = false
+                state.isLoggedIn = false
+                state.user = action.payload.user
+                state.csrfToken = action.payload.csrfToken
+            })
+            .addCase(createGuestUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload as string
+            })
             .addCase(loginUser.pending, (state) => {
                 state.loading = true
                 state.error = null

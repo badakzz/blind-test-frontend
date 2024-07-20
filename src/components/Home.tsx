@@ -11,8 +11,7 @@ const Home: React.FC = () => {
     const navigate = useNavigate()
 
     const handlePlayButton = () => {
-        if (user) return navigate('/chatroom')
-        else return navigate('/login')
+        return navigate('/chatroom')
     }
 
     const handleGetPremiumButton = () => {
@@ -33,28 +32,22 @@ const Home: React.FC = () => {
                                 Play Blind-Test with your friends using Spotify
                                 playlist!
                             </h4>
-                            {user ? (
-                                <p>
-                                    Welcome to our Blind-Test game! In order to
-                                    play, click on the play button to create a
-                                    game, then start inviting your friends!
-                                </p>
-                            ) : (
+
+                            <p>
+                                Welcome to our Blind-Test game! In order to
+                                play, click on the play button to create a game,
+                                then start inviting your friends!
+                            </p>
+                            {(!user || user.permissions === 0) && (
                                 <>
-                                    <p>
-                                        Welcome to our Blind-Test game! In order
-                                        to play, you will need to log in first.
-                                        After that, create a game and start
-                                        inviting your friends!
-                                    </p>
-                                    <p>
-                                        Already have an account?{' '}
+                                    <div className="d-flex gap-2 fw-bold">
+                                        Already have an account?
                                         <Link to="/login">Log in</Link>
-                                    </p>
-                                    <p>
-                                        Not a member?{' '}
+                                    </div>
+                                    <div className="d-flex gap-2 fw-bold">
+                                        Not a member?
                                         <Link to="/signup">Sign up</Link>
-                                    </p>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -115,9 +108,8 @@ const Home: React.FC = () => {
                 className="d-flex justify-content-center text-center"
                 style={{ color: 'red', fontWeight: 'bold' }}
             >
-                To make testing easier for you, the email account confirmation
-                upon sign up is disabled. Also, the current credentials for the
-                song currently being played will be displayed in the console.
+                For testing purposes, the currently played song credentials will
+                be displayed your browser's console.
             </div>
         </>
     )
