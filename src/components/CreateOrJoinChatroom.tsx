@@ -49,7 +49,6 @@ const CreateOrJoinRoom: React.FC<Props> = ({
         try {
             await joinRoom(chatroomId, user.username)
             onRoomEntered(true)
-            // setIsWaitingForHost(true)
         } catch (e) {
             showToast({ message: e.message || e.toString() })
         }

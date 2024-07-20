@@ -59,6 +59,15 @@ export const createGuestUser = createAsyncThunk(
                 username: user.username,
                 permissions: user.permissions,
             }
+            Cookies.set(
+                process.env.REACT_APP_AUTH_COOKIE_NAME,
+                JSON.stringify(formattedUser),
+                {
+                    expires: 7,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                }
+            )
             dispatch(authActions.setUser(formattedUser))
 
             return {
