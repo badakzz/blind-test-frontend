@@ -35,12 +35,13 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
     isSearchSelection,
     selectPlaylist,
 }) => {
-    const [playlistList, setPlaylistList] = useState<any>([])
+    const [playlistList, setPlaylistList] = useState<any[]>([])
     const [searchedList, setSearchedList] = useState<any>([])
-    const [loading, setLoading] = useState(false)
-    const [selectedPlaylist, setSelectedPlaylist] = useState('')
-    const [searchTerm, setSearchTerm] = useState('')
-    const [defaultSelectedPlaylist, setDefaultSelectedPlaylist] = useState('')
+    const [loading, setLoading] = useState<boolean>(false)
+    const [selectedPlaylist, setSelectedPlaylist] = useState<string>('')
+    const [searchTerm, setSearchTerm] = useState<string>('')
+    const [defaultSelectedPlaylist, setDefaultSelectedPlaylist] =
+        useState<string>('')
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
@@ -251,7 +252,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                         />
                     )}
                     <p className="mb-5">
-                        Chatroom created! Share this <a href={roomUrl}>link</a>{' '}
+                        Chatroom created! Share this <a href={roomUrl}>link</a>
                         with others to join or click on the button below to copy
                         the room id to you clipboard.
                     </p>

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Navbar, Nav, NavDropdown, Image } from 'react-bootstrap'
 import { FaSignOutAlt, FaPlayCircle } from 'react-icons/fa'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../store'
 import { logoutUser } from '../store/authSlice'
@@ -33,6 +33,10 @@ const Layout: React.FC<Props> = ({ children }) => {
         if (!user) navigate('/')
     })
 
+    const isLoggedIn = user.user && user.user.permissions !== 0
+    const isGuest = user.user && user.user.permissions === 0
+    const isLoggedInAndNotPremium = user.user && user.user.permissions === 2
+
     return (
         <>
             <Navbar
@@ -58,7 +62,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                     id="responsive-navbar-nav"
                     className="justify-content-between custom-collapse"
                 >
-                    {user.user && (
+                    {(isLoggedIn || isGuest) && (
                         <div className="d-flex align-items-center gap-5 flex-grow text-black custom-spacing-icon">
                             <Nav.Item
                                 onClick={() => navigate('/chatroom')}
@@ -69,7 +73,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             </Nav.Item>
                         </div>
                     )}
-                    {user && user.user && (
+                    {isLoggedIn && (
                         <NavDropdown
                             title={user?.user?.username}
                             id="collasible-nav-dropdown"
@@ -82,16 +86,14 @@ const Layout: React.FC<Props> = ({ children }) => {
                                 Settings
                             </NavDropdown.Item>
                             <NavDropdown.Divider />
-                            {user && user.user && (
-                                <Nav.Item
-                                    onClick={handleLogout}
-                                    className="text-black logout-option"
-                                >
-                                    Logout
-                                </Nav.Item>
-                            )}
+                            <Nav.Item
+                                onClick={handleLogout}
+                                className="text-black logout-option"
+                            >
+                                Logout
+                            </Nav.Item>
                             <NavDropdown.Divider />
-                            {user && user.user?.permissions !== 2 && (
+                            {isLoggedInAndNotPremium && (
                                 <NavDropdown.Item
                                     onClick={() => navigate('/getpremium')}
                                     className="text-black nav-item"
@@ -101,7 +103,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             )}
                         </NavDropdown>
                     )}
-                    {user && user.user ? (
+                    {isLoggedIn && (
                         <Nav className="d-lg-none flex-grow text-black mr-5">
                             <Nav.Item
                                 onClick={() => navigate('/settings')}
@@ -109,7 +111,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             >
                                 Settings
                             </Nav.Item>
-                            {user && user.user?.permissions !== 2 && (
+                            {isLoggedInAndNotPremium && (
                                 <Nav.Item
                                     onClick={() => navigate('/getpremium')}
                                     className="text-black nav-item"
@@ -118,7 +120,8 @@ const Layout: React.FC<Props> = ({ children }) => {
                                 </Nav.Item>
                             )}
                         </Nav>
-                    ) : (
+                    )}
+                    {(!isLoggedIn || isGuest) && (
                         <>
                             <Nav.Item
                                 onClick={() => navigate('/signup')}
@@ -142,7 +145,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                     >
                         Roadmap
                     </Nav.Item>
-                    {user.user ? (
+                    {isLoggedIn ? (
                         <Nav.Item onClick={handleLogout} className="text-black">
                             <div className="logout-group">
                                 <FaSignOutAlt className="mr-2 logout-icon" />

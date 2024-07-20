@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import api from '../../api'
-import { useNavigate } from 'react-router-dom'
 
-export const useChatroomManager = (socket) => {
+export const useChatroomManager = (socket, csrfToken) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
-    const navigate = useNavigate()
 
-    const createRoom = async (username, csrfToken) => {
+    const createRoom = async (username?: string) => {
         try {
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms`,
@@ -26,17 +24,20 @@ export const useChatroomManager = (socket) => {
             setCurrentChatroom(formattedChatroom)
             socket.emit('createRoom', username, chatroom.chatroom_id)
         } catch (error) {
-            console.error(error)
-            if (error.response && error.response.status === 401) {
-                navigate('/login')
-            }
+            throw new Error(`Failed to create room: ${error.message}`)
         }
     }
 
-    const joinRoom = async (username, chatroomId) => {
+    const joinRoom = async (chatroomId: string, username?: string) => {
         try {
             const response = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                }
             )
             const chatroom = response.data
             const formattedChatroom = {
@@ -51,11 +52,9 @@ export const useChatroomManager = (socket) => {
                 )
             }
         } catch (error) {
-            console.error(error)
-            if (error.response && error.response.status === 401) {
-                navigate('/login')
-            }
+            throw new Error(`'Failed to join room :' ${error.message}`)
         }
     }
+
     return { createRoom, joinRoom, currentChatroom }
 }
