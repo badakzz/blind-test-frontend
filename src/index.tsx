@@ -12,15 +12,15 @@ import { ToastProvider } from './components'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-    // <React.StrictMode>
-    <ToastProvider>
-        <Provider store={store}>
-            <Router basename="/">
-                <App />
-            </Router>
-        </Provider>
-    </ToastProvider>
-    // </React.StrictMode>
+    <React.StrictMode>
+        <ToastProvider>
+            <Provider store={store}>
+                <Router basename="/">
+                    <App />
+                </Router>
+            </Provider>
+        </ToastProvider>
+    </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function

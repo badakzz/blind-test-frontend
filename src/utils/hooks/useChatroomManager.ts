@@ -6,8 +6,6 @@ export const useChatroomManager = (socket, csrfToken) => {
 
     const createRoom = async (username?: string) => {
         try {
-            let finalUsername = username
-
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms`,
                 {},
@@ -24,7 +22,7 @@ export const useChatroomManager = (socket, csrfToken) => {
                 chatroomId: chatroom.chatroom_id,
             }
             setCurrentChatroom(formattedChatroom)
-            socket.emit('createRoom', finalUsername, chatroom.chatroom_id)
+            socket.emit('createRoom', username, chatroom.chatroom_id)
         } catch (error) {
             throw new Error(`Failed to create room: ${error.message}`)
         }
@@ -32,8 +30,6 @@ export const useChatroomManager = (socket, csrfToken) => {
 
     const joinRoom = async (chatroomId: string, username?: string) => {
         try {
-            let finalUsername = username
-
             const response = await api.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`,
                 {
@@ -49,7 +45,7 @@ export const useChatroomManager = (socket, csrfToken) => {
             }
             setCurrentChatroom(formattedChatroom)
             if (chatroom.chatroom_id) {
-                socket.emit('joinRoom', finalUsername, chatroomId)
+                socket.emit('joinRoom', username, chatroomId)
             } else {
                 throw new Error(
                     'Unable to find the chatroom. Please make sure it has been created already'

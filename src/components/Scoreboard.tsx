@@ -65,14 +65,23 @@ const Scoreboard: React.FC<Props> = ({
                 centered
             >
                 <Modal.Header style={styles}>
-                    <Modal.Title>Scores</Modal.Title>
+                    <Modal.Title
+                        style={{ color: '#ceac06', fontWeight: 'bold' }}
+                    >
+                        Scores
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={styles}>
-                    {scores.map((score, index) => (
-                        <p key={index}>
-                            {score.username}: {score.points}
-                        </p>
-                    ))}
+                    <div className="d-flex flex-column gap-2">
+                        {scores.map((score, index) => (
+                            <p key={index}>
+                                <span className="fw-bold">
+                                    {score.username}
+                                </span>
+                                : {score.points}
+                            </p>
+                        ))}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer style={styles}>
                     <Button

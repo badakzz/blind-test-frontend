@@ -7,8 +7,8 @@ import { useDispatch } from 'react-redux'
 
 type Props = {
     user: User | null
-    createRoom: (csrfToken: any, username?: string) => void
-    joinRoom: (csrfToken: any, chatroomId: string, username?: string) => void
+    createRoom: (username: string) => void
+    joinRoom: (chatroomId: string, username: string) => void
     onShow: React.Dispatch<boolean>
     onRoomEntered: React.Dispatch<boolean>
 }
@@ -20,9 +20,8 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     onShow,
     onRoomEntered,
 }) => {
-    const [username, setUsername] = useState('')
-    const [chatroomId, setChatroomId] = useState('')
-
+    const [username, setUsername] = useState<string>('')
+    const [chatroomId, setChatroomId] = useState<string>('')
     const dispatch = useDispatch()
     const { showToast } = useToast()
 
@@ -37,7 +36,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            await createRoom(username)
+            await createRoom(user.username)
             onShow(true)
             onRoomEntered(true)
         } catch (e) {
@@ -48,8 +47,9 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const handleJoin = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            await joinRoom(chatroomId, username)
+            await joinRoom(chatroomId, user.username)
             onRoomEntered(true)
+            // setIsWaitingForHost(true)
         } catch (e) {
             showToast({ message: e.message || e.toString() })
         }
