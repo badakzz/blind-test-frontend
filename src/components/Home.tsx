@@ -11,8 +11,9 @@ const Home: React.FC = () => {
     const navigate = useNavigate()
 
     const handlePlayButton = () => {
-        if (user) return navigate('/chatroom')
-        else return navigate('/login')
+        // if (user)
+        return navigate('/chatroom')
+        // else return navigate('/login')
     }
 
     const handleGetPremiumButton = () => {

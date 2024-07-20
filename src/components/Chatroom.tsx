@@ -77,11 +77,11 @@ const Chatroom: React.FC = () => {
         setTrackPreviewList
     )
 
-    useEffect(() => {
-        if (!user) {
-            return navigate('/')
-        }
-    }, [navigate, user])
+    // useEffect(() => {
+    //     if (!user) {
+    //         return navigate('/')
+    //     }
+    // }, [navigate, user])
 
     const playNextTrack = () => {
         setCurrentSongIndex((prevIndex) => {
@@ -189,11 +189,15 @@ const Chatroom: React.FC = () => {
             {!isInRoom && (
                 <CreateOrJoinChatroom
                     createRoom={() => {
-                        createRoom(user.username, csrfToken)
+                        createRoom(user ? user.username : undefined, csrfToken)
                         setIsHost(true)
                     }}
-                    joinRoom={(user, chatroomId) => {
-                        joinRoom(user.username, chatroomId)
+                    joinRoom={(chatroomId) => {
+                        joinRoom(
+                            user ? user.username : undefined,
+                            chatroomId,
+                            csrfToken
+                        )
                         setIsWaitingForHost(true)
                         setIsHost(false)
                     }}

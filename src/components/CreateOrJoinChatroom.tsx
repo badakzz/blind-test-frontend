@@ -5,8 +5,8 @@ import { useToast } from '../utils/hooks'
 
 type Props = {
     user: User | null
-    createRoom: (user: User) => void
-    joinRoom: (user: User, chatroomId: string) => void
+    createRoom: (username?: string) => void
+    joinRoom: (chatroomId: string, username?: string) => void
     onShow: React.Dispatch<boolean>
     onRoomEntered: React.Dispatch<boolean>
 }
@@ -24,23 +24,27 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const { showToast } = useToast()
 
     useEffect(() => {
-        user && setUsername(user.username)
+        setUsername(user ? user.username : 'Guest')
     }, [user])
 
     const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
-        createRoom(user)
-        onShow(true)
-        onRoomEntered(true)
+        try {
+            createRoom(username)
+            onShow(true)
+            onRoomEntered(true)
+        } catch (e) {
+            showToast({ message: e.message || e.toString() })
+        }
     }
 
     const handleJoin = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            joinRoom(user, chatroomId)
+            joinRoom(username, chatroomId)
             onRoomEntered(true)
         } catch (e) {
-            showToast({ message: e })
+            showToast({ message: e.message || e.toString() })
         }
     }
 

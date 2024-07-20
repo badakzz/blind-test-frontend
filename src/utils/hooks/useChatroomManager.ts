@@ -1,13 +1,37 @@
 import { useState } from 'react'
 import api from '../../api'
-import { useNavigate } from 'react-router-dom'
+import { useToast } from './'
 
 export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
-    const navigate = useNavigate()
+    const { showToast } = useToast()
 
-    const createRoom = async (username, csrfToken) => {
+    const createGuestUser = async (csrfToken) => {
         try {
+            const response = await api.post(
+                '/api/v1/users',
+                { is_guest: true },
+                {
+                    withCredentials: true,
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                }
+            )
+            return response.data
+        } catch (error) {
+            console.error('Error creating guest user:', error)
+            throw error
+        }
+    }
+
+    const createRoom = async (username: string, csrfToken) => {
+        try {
+            let finalUsername = username
+
+            if (!username) {
+                const guestUser = await createGuestUser(csrfToken)
+                finalUsername = guestUser.username
+            }
+
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms`,
                 {},
@@ -24,19 +48,32 @@ export const useChatroomManager = (socket) => {
                 chatroomId: chatroom.chatroom_id,
             }
             setCurrentChatroom(formattedChatroom)
-            socket.emit('createRoom', username, chatroom.chatroom_id)
+            socket.emit('createRoom', finalUsername, chatroom.chatroom_id)
         } catch (error) {
             console.error(error)
             if (error.response && error.response.status === 401) {
-                navigate('/login')
+                showToast({ message: error.message })
             }
         }
     }
 
-    const joinRoom = async (username, chatroomId) => {
+    const joinRoom = async (username: string, chatroomId, csrfToken) => {
         try {
+            let finalUsername = username
+
+            if (!username) {
+                const guestUser = await createGuestUser(csrfToken)
+                finalUsername = guestUser.username
+            }
+
             const response = await api.get(
-                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`
+                `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`,
+                {
+                    withCredentials: true,
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                }
             )
             const chatroom = response.data
             const formattedChatroom = {
@@ -44,7 +81,7 @@ export const useChatroomManager = (socket) => {
             }
             setCurrentChatroom(formattedChatroom)
             if (chatroom.chatroom_id) {
-                socket.emit('joinRoom', username, chatroomId)
+                socket.emit('joinRoom', finalUsername, chatroomId)
             } else {
                 throw new Error(
                     'Unable to find the chatroom. Please make sure it has been created already'
@@ -53,9 +90,10 @@ export const useChatroomManager = (socket) => {
         } catch (error) {
             console.error(error)
             if (error.response && error.response.status === 401) {
-                navigate('/login')
+                showToast({ message: error.message })
             }
         }
     }
+
     return { createRoom, joinRoom, currentChatroom }
 }
