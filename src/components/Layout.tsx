@@ -36,7 +36,7 @@ const Layout: React.FC<Props> = ({ children }) => {
     const isLoggedIn = user.user && user.user.permissions !== 0
     const isGuest = user.user && user.user.permissions === 0
     const isLoggedInAndNotPremium = user.user && user.user.permissions === 2
-    user?.user && console.log(user.user.permissions)
+
     return (
         <>
             <Navbar
@@ -121,7 +121,7 @@ const Layout: React.FC<Props> = ({ children }) => {
                             )}
                         </Nav>
                     )}
-                    {!(isLoggedIn || isGuest) && (
+                    {(!isLoggedIn || isGuest) && (
                         <>
                             <Nav.Item
                                 onClick={() => navigate('/signup')}

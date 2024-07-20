@@ -4,7 +4,6 @@ import { User } from '../utils/types'
 import { useToast } from '../utils/hooks'
 import { createGuestUser } from '../store/authSlice'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 
 type Props = {
     user: User | null
@@ -26,7 +25,6 @@ const CreateOrJoinRoom: React.FC<Props> = ({
 
     const dispatch = useDispatch()
     const { showToast } = useToast()
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (!user) {
@@ -35,10 +33,6 @@ const CreateOrJoinRoom: React.FC<Props> = ({
             setUsername(user.username)
         }
     }, [user, dispatch])
-
-    useEffect(() => {
-        if (!user) navigate('/')
-    })
 
     const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()

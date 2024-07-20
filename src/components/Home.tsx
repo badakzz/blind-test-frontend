@@ -38,20 +38,16 @@ const Home: React.FC = () => {
                                 play, click on the play button to create a game,
                                 then start inviting your friends!
                             </p>
-                            {(!user || user?.permissions !== 0) && (
+                            {(!user || user.permissions === 0) && (
                                 <>
-                                    <p>
-                                        <div className="d-flex gap-2">
-                                            Already have an account?
-                                            <Link to="/login">Log in</Link>
-                                        </div>
-                                    </p>
-                                    <p>
-                                        <div className="d-flex gap-2">
-                                            Not a member?
-                                            <Link to="/signup">Sign up</Link>
-                                        </div>
-                                    </p>
+                                    <div className="d-flex gap-2 fw-bold">
+                                        Already have an account?
+                                        <Link to="/login">Log in</Link>
+                                    </div>
+                                    <div className="d-flex gap-2 fw-bold">
+                                        Not a member?
+                                        <Link to="/signup">Sign up</Link>
+                                    </div>
                                 </>
                             )}
                         </div>
@@ -107,6 +103,13 @@ const Home: React.FC = () => {
                         </div>
                     </div>
                 </Container>
+            </div>
+            <div
+                className="d-flex justify-content-center text-center"
+                style={{ color: 'red', fontWeight: 'bold' }}
+            >
+                For testing purposes, the currently played song credentials will
+                be displayed your browser's console.
             </div>
         </>
     )

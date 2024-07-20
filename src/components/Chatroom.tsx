@@ -31,7 +31,7 @@ const Chatroom: React.FC = () => {
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
-    console.log(user)
+    console.log('user in chatroom', user)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const { socket, connectedUsers } = useSocket()

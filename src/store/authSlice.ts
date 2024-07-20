@@ -40,7 +40,6 @@ export const createGuestUser = createAsyncThunk(
                 throw new Error('CSRF token not found')
             }
 
-            console.log('making api call')
             const response = await api.post(
                 '/api/v1/users',
                 { is_guest: true },
@@ -51,8 +50,6 @@ export const createGuestUser = createAsyncThunk(
             )
 
             if (response.status < 200 || response.status >= 300) {
-                console.log('fail create')
-
                 throw new Error('Failed to create guest user')
             }
 

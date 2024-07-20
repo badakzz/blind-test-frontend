@@ -114,6 +114,11 @@ body {
     flex: 1;
 }
 
+.nav-item,
+.custom-navbrand {
+    cursor: pointer !important;
+}
+
 /* .dropdown-item {
     background-color: red !important;
 } */
