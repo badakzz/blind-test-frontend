@@ -4,7 +4,6 @@ import { User } from '../utils/types'
 import { useToast } from '../utils/hooks'
 
 type Props = {
-    csrfToken: any
     user: User | null
     createRoom: (csrfToken: any, username?: string) => void
     joinRoom: (csrfToken: any, chatroomId: string, username?: string) => void
@@ -13,7 +12,6 @@ type Props = {
 }
 
 const CreateOrJoinRoom: React.FC<Props> = ({
-    csrfToken,
     user,
     createRoom,
     joinRoom,
@@ -32,7 +30,7 @@ const CreateOrJoinRoom: React.FC<Props> = ({
     const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            await createRoom(username, csrfToken)
+            await createRoom(username)
             onShow(true)
             onRoomEntered(true)
         } catch (e) {

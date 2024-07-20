@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import api from '../../api'
 
-export const useChatroomManager = (socket) => {
+export const useChatroomManager = (socket, csrfToken) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
 
     const createGuestUser = async (csrfToken) => {
@@ -20,7 +20,7 @@ export const useChatroomManager = (socket) => {
         }
     }
 
-    const createRoom = async (csrfToken, username?: string) => {
+    const createRoom = async (username?: string) => {
         try {
             let finalUsername = username
 
@@ -51,11 +51,7 @@ export const useChatroomManager = (socket) => {
         }
     }
 
-    const joinRoom = async (
-        csrfToken,
-        chatroomId: string,
-        username?: string
-    ) => {
+    const joinRoom = async (chatroomId: string, username?: string) => {
         try {
             let finalUsername = username
 

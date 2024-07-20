@@ -33,7 +33,6 @@ const Chatroom: React.FC = () => {
     const user = authUser.user
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    console.log(csrfToken)
     const { socket, connectedUsers } = useSocket()
     const { showToast } = useToast()
 
@@ -53,7 +52,10 @@ const Chatroom: React.FC = () => {
         setIsWaitingForHost
     )
 
-    const { createRoom, joinRoom, currentChatroom } = useChatroomManager(socket)
+    const { createRoom, joinRoom, currentChatroom } = useChatroomManager(
+        socket,
+        csrfToken
+    )
 
     const {
         audio,
@@ -180,7 +182,6 @@ const Chatroom: React.FC = () => {
         <>
             {!isInRoom && (
                 <CreateOrJoinChatroom
-                    csrfToken={csrfToken}
                     createRoom={createRoom}
                     joinRoom={joinRoom}
                     user={user}
