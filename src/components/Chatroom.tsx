@@ -31,6 +31,7 @@ const Chatroom: React.FC = () => {
 
     const authUser = useSelector((state: RootState) => state.auth) as AuthState
     const user = authUser.user
+    console.log(user)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
     const { socket, connectedUsers } = useSocket()
@@ -182,7 +183,10 @@ const Chatroom: React.FC = () => {
         <>
             {!isInRoom && (
                 <CreateOrJoinChatroom
-                    createRoom={createRoom}
+                    createRoom={() => {
+                        createRoom()
+                        setIsHost(true)
+                    }}
                     joinRoom={joinRoom}
                     user={user}
                     onShow={setShowPlaylistPicker}

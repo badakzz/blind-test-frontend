@@ -251,7 +251,7 @@ const PlaylistPicker: React.FC<PlaylistPickerProps> = ({
                         />
                     )}
                     <p className="mb-5">
-                        Chatroom created! Share this <a href={roomUrl}>link</a>{' '}
+                        Chatroom created! Share this <a href={roomUrl}>link</a>
                         with others to join or click on the button below to copy
                         the room id to you clipboard.
                     </p>

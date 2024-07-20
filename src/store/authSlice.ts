@@ -24,6 +24,57 @@ const initialState: AuthState = {
     updateSuccess: false,
 }
 
+export const createGuestUser = createAsyncThunk(
+    'auth/createGuestUser',
+    async (_, { getState, dispatch, rejectWithValue }) => {
+        try {
+            const state = getState() as RootState
+            const csrfToken = state.csrf.csrfToken
+
+            if (!csrfToken) {
+                throw new Error('CSRF token not found')
+            }
+
+            if (!csrfToken) {
+                console.error('csrf')
+                throw new Error('CSRF token not found')
+            }
+
+            console.log('making api call')
+            const response = await api.post(
+                '/api/v1/users',
+                { is_guest: true },
+                {
+                    withCredentials: true,
+                    headers: { 'X-CSRF-TOKEN': csrfToken },
+                }
+            )
+
+            if (response.status < 200 || response.status >= 300) {
+                console.log('fail create')
+
+                throw new Error('Failed to create guest user')
+            }
+
+            const { user } = response.data
+            const formattedUser: User = {
+                userId: user.user_id,
+                username: user.username,
+                permissions: user.permissions,
+            }
+            dispatch(authActions.setUser(formattedUser))
+
+            return {
+                user: formattedUser,
+                csrfToken: csrfToken,
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || error.message
+            return rejectWithValue(errorMessage)
+        }
+    }
+)
+
 export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (
@@ -207,6 +258,20 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(createGuestUser.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(createGuestUser.fulfilled, (state, action) => {
+                state.loading = false
+                state.isLoggedIn = false
+                state.user = action.payload.user
+                state.csrfToken = action.payload.csrfToken
+            })
+            .addCase(createGuestUser.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload as string
+            })
             .addCase(loginUser.pending, (state) => {
                 state.loading = true
                 state.error = null

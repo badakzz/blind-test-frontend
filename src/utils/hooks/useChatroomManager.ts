@@ -4,30 +4,9 @@ import api from '../../api'
 export const useChatroomManager = (socket, csrfToken) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
 
-    const createGuestUser = async (csrfToken) => {
-        try {
-            const response = await api.post(
-                '/api/v1/users',
-                { is_guest: true },
-                {
-                    withCredentials: true,
-                    headers: { 'X-CSRF-TOKEN': csrfToken },
-                }
-            )
-            return response.data
-        } catch (error) {
-            throw new Error(`Failed to create guest user: ${error.message}`)
-        }
-    }
-
     const createRoom = async (username?: string) => {
         try {
             let finalUsername = username
-
-            if (!username) {
-                const guestUser = await createGuestUser(csrfToken)
-                finalUsername = guestUser.username
-            }
 
             const response = await api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms`,
@@ -54,11 +33,6 @@ export const useChatroomManager = (socket, csrfToken) => {
     const joinRoom = async (chatroomId: string, username?: string) => {
         try {
             let finalUsername = username
-
-            if (!username) {
-                const guestUser = await createGuestUser(csrfToken)
-                finalUsername = guestUser.username
-            }
 
             const response = await api.get(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chatrooms/${chatroomId}`,

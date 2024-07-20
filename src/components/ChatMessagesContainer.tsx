@@ -32,10 +32,12 @@ const ChatMessagesContainer: React.FC<Props> = ({
     const messageContainerRef = useRef<HTMLDivElement>(null)
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
+    console.log(user)
 
     const sendMessageHandler = (e: FormEvent) => {
         e.preventDefault()
         if (message) {
+            console.log('MEGAUSER', user.userId)
             api.post(
                 `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/chat_messages`,
                 {
