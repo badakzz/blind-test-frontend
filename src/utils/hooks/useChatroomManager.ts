@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import api from '../../api'
-import { useToast } from './'
 
 export const useChatroomManager = (socket) => {
     const [currentChatroom, setCurrentChatroom] = useState(null)
-    const { showToast } = useToast()
 
     const createGuestUser = async (csrfToken) => {
         try {
@@ -18,12 +16,11 @@ export const useChatroomManager = (socket) => {
             )
             return response.data
         } catch (error) {
-            console.error('Error creating guest user:', error)
-            throw error
+            throw new Error(`Failed to create guest user: ${error.message}`)
         }
     }
 
-    const createRoom = async (username: string, csrfToken) => {
+    const createRoom = async (csrfToken, username?: string) => {
         try {
             let finalUsername = username
 
@@ -50,14 +47,15 @@ export const useChatroomManager = (socket) => {
             setCurrentChatroom(formattedChatroom)
             socket.emit('createRoom', finalUsername, chatroom.chatroom_id)
         } catch (error) {
-            console.error(error)
-            if (error.response && error.response.status === 401) {
-                showToast({ message: error.message })
-            }
+            throw new Error(`Failed to create room: ${error.message}`)
         }
     }
 
-    const joinRoom = async (username: string, chatroomId, csrfToken) => {
+    const joinRoom = async (
+        csrfToken,
+        chatroomId: string,
+        username?: string
+    ) => {
         try {
             let finalUsername = username
 
@@ -88,10 +86,7 @@ export const useChatroomManager = (socket) => {
                 )
             }
         } catch (error) {
-            console.error(error)
-            if (error.response && error.response.status === 401) {
-                showToast({ message: error.message })
-            }
+            throw new Error(`'Failed to join room :' ${error.message}`)
         }
     }
 

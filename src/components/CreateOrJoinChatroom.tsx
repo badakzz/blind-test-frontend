@@ -4,14 +4,16 @@ import { User } from '../utils/types'
 import { useToast } from '../utils/hooks'
 
 type Props = {
+    csrfToken: any
     user: User | null
-    createRoom: (username?: string) => void
-    joinRoom: (chatroomId: string, username?: string) => void
+    createRoom: (csrfToken: any, username?: string) => void
+    joinRoom: (csrfToken: any, chatroomId: string, username?: string) => void
     onShow: React.Dispatch<boolean>
     onRoomEntered: React.Dispatch<boolean>
 }
 
 const CreateOrJoinRoom: React.FC<Props> = ({
+    csrfToken,
     user,
     createRoom,
     joinRoom,
@@ -27,10 +29,10 @@ const CreateOrJoinRoom: React.FC<Props> = ({
         setUsername(user ? user.username : 'Guest')
     }, [user])
 
-    const handleCreate = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            createRoom(username)
+            await createRoom(username, csrfToken)
             onShow(true)
             onRoomEntered(true)
         } catch (e) {
@@ -38,10 +40,10 @@ const CreateOrJoinRoom: React.FC<Props> = ({
         }
     }
 
-    const handleJoin = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleJoin = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         try {
-            joinRoom(username, chatroomId)
+            await joinRoom(chatroomId, username)
             onRoomEntered(true)
         } catch (e) {
             showToast({ message: e.message || e.toString() })

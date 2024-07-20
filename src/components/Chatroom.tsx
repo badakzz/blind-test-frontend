@@ -15,7 +15,6 @@ import { useAudioManager } from '../utils/hooks'
 import { useGameManager } from '../utils/hooks'
 import { useChatroomManager } from '../utils/hooks'
 import { usePlaylistManager } from '../utils/hooks'
-import { useNavigate } from 'react-router-dom'
 import { AuthState } from '../store/authSlice'
 
 const Chatroom: React.FC = () => {
@@ -34,8 +33,7 @@ const Chatroom: React.FC = () => {
     const user = authUser.user
 
     const csrfToken = useSelector((state: RootState) => state.csrf.csrfToken)
-    const navigate = useNavigate()
-
+    console.log(csrfToken)
     const { socket, connectedUsers } = useSocket()
     const { showToast } = useToast()
 
@@ -76,12 +74,6 @@ const Chatroom: React.FC = () => {
         trackPreviewList,
         setTrackPreviewList
     )
-
-    // useEffect(() => {
-    //     if (!user) {
-    //         return navigate('/')
-    //     }
-    // }, [navigate, user])
 
     const playNextTrack = () => {
         setCurrentSongIndex((prevIndex) => {
@@ -188,19 +180,9 @@ const Chatroom: React.FC = () => {
         <>
             {!isInRoom && (
                 <CreateOrJoinChatroom
-                    createRoom={() => {
-                        createRoom(user ? user.username : undefined, csrfToken)
-                        setIsHost(true)
-                    }}
-                    joinRoom={(chatroomId) => {
-                        joinRoom(
-                            user ? user.username : undefined,
-                            chatroomId,
-                            csrfToken
-                        )
-                        setIsWaitingForHost(true)
-                        setIsHost(false)
-                    }}
+                    csrfToken={csrfToken}
+                    createRoom={createRoom}
+                    joinRoom={joinRoom}
                     user={user}
                     onShow={setShowPlaylistPicker}
                     onRoomEntered={setIsInRoom}
